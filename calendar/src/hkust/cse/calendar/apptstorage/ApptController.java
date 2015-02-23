@@ -4,9 +4,11 @@ import hkust.cse.calendar.unit.Appt;
 import hkust.cse.calendar.unit.TimeSpan;
 import hkust.cse.calendar.unit.User;
 
-/* This class is for managing the Appt Storage according to different actions */
-public class ApptStorageControllerImpl {
-
+public class ApptController {
+	
+	/* Applying Singleton Structure */
+	private static ApptController instance = null;
+	
 	/* Remove the Appt from the storage */
 	public final static int REMOVE = 1;
 
@@ -21,12 +23,29 @@ public class ApptStorageControllerImpl {
 	 */
 	
 	/* The Appt storage */
-	private ApptStorage mApptStorage;
+	private static ApptStorage mApptStorage = null;
 
-	/* Create a new object of ApptStorageControllerImpl from an existing storage of Appt */
-	public ApptStorageControllerImpl(ApptStorage storage) {
-		mApptStorage = storage;
+	/* Empty Constructor, since in singleton getInstance() is used instead*/
+	public ApptController() {
+		
 	}
+	
+	public static ApptController getInstance(){
+		if (instance == null){
+			instance = new ApptController();
+		}
+		return instance;
+	}
+	
+	//Initialize mApptStorage. Returns false if ApptStorage object already exists
+	public boolean initApptStorage(ApptStorage storage){
+		if (mApptStorage == null){
+			mApptStorage = storage;
+			return true;
+		}
+		return false;
+	}
+	
 
 	/* Retrieve the Appt's in the storage for a specific user within the specific time span */
 	public Appt[] RetrieveAppts(User entity, TimeSpan time) {

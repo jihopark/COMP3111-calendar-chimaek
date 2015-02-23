@@ -1,6 +1,6 @@
 package hkust.cse.calendar.gui;
 
-import hkust.cse.calendar.apptstorage.ApptStorageControllerImpl;
+import hkust.cse.calendar.apptstorage.ApptController;
 import hkust.cse.calendar.apptstorage.ApptStorageNullImpl;
 import hkust.cse.calendar.unit.User;
 
@@ -100,7 +100,8 @@ public class LoginDialog extends JFrame implements ActionListener
 			
 			//login();
 			User user = new User( "noname", "nopass");
-			CalGrid grid = new CalGrid(new ApptStorageControllerImpl(new ApptStorageNullImpl(user)));
+			ApptController.getInstance().initApptStorage(new ApptStorageNullImpl(user));
+			CalGrid grid = new CalGrid();
 			setVisible( false );
 		}
 		else if(e.getSource() == signupButton)

@@ -1,7 +1,7 @@
 package hkust.cse.calendar.gui;
 
 import hkust.cse.calendar.Main.CalendarMain;
-import hkust.cse.calendar.apptstorage.ApptStorageControllerImpl;
+import hkust.cse.calendar.apptstorage.ApptController;
 import hkust.cse.calendar.unit.Appt;
 import hkust.cse.calendar.unit.TimeSpan;
 import hkust.cse.calendar.unit.User;
@@ -51,7 +51,6 @@ public class CalGrid extends JFrame implements ActionListener {
 
 	// private User mNewUser;
 	private static final long serialVersionUID = 1L;
-	public ApptStorageControllerImpl controller;
 	public User mCurrUser;
 	private String mCurrTitle = "Desktop Calendar - No User - ";
 	private GregorianCalendar today;
@@ -100,10 +99,10 @@ public class CalGrid extends JFrame implements ActionListener {
 			"",
 			"National Day\nChinese Mid-Autumn Festival\nChung Yeung Festival\nThanksgiving Day\n",
 			"Veterans Day(US)\nThanksgiving Day(US)\n", "Christmas\n" };
-
+	
 	private AppScheduler setAppDial;
 
-	public CalGrid(ApptStorageControllerImpl con) {
+	public CalGrid() {
 		super();
 
 		addWindowListener(new WindowAdapter() {
@@ -112,7 +111,6 @@ public class CalGrid extends JFrame implements ActionListener {
 			}
 		});
 
-		controller = con;
 		mCurrUser = null;
 
 		previousRow = 0;
@@ -345,7 +343,7 @@ public class CalGrid extends JFrame implements ActionListener {
 				int n = JOptionPane.showConfirmDialog(null, "Logout?",
 						"Comfirm", JOptionPane.YES_NO_OPTION);
 				if (n == JOptionPane.YES_OPTION){
-					//controller.dumpStorageToFile();
+					//ApptController.getInstance().dumpStorageToFile();
 					//System.out.println("closed");
 					dispose();
 					CalendarMain.logOut = true;
@@ -381,8 +379,8 @@ public class CalGrid extends JFrame implements ActionListener {
 
 	private void initializeSystem() {
 
-		mCurrUser = this.controller.getDefaultUser();	//get User from controller
-		controller.LoadApptFromXml();
+		mCurrUser = ApptController.getInstance().getDefaultUser();	//get User from ApptController.getInstance().
+		ApptController.getInstance().LoadApptFromXml();
 		// Fix Me !
 		// Load the saved appointments from disk
 		checkUpdateJoinAppt();
@@ -492,7 +490,7 @@ public class CalGrid extends JFrame implements ActionListener {
 		end.setDate(g.getActualMaximum(GregorianCalendar.DAY_OF_MONTH));
 		end.setHours(23);
 		TimeSpan period = new TimeSpan(start, end);
-		return controller.RetrieveAppts(mCurrUser, period);
+		return ApptController.getInstance().RetrieveAppts(mCurrUser, period);
 	}
 
 	private void mousePressResponse() {
@@ -576,7 +574,7 @@ public class CalGrid extends JFrame implements ActionListener {
 		end.setSeconds(59);
 		
 		TimeSpan period = new TimeSpan(start, end);
-		return controller.RetrieveAppts(mCurrUser, period);
+		return ApptController.getInstance().RetrieveAppts(mCurrUser, period);
 	}
 
 	public AppList getAppList() {

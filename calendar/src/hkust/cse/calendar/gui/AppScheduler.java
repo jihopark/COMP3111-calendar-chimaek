@@ -1,6 +1,6 @@
 package hkust.cse.calendar.gui;
 
-import hkust.cse.calendar.apptstorage.ApptStorageControllerImpl;
+import hkust.cse.calendar.apptstorage.ApptController;
 import hkust.cse.calendar.unit.Appt;
 import hkust.cse.calendar.unit.TimeSpan;
 
