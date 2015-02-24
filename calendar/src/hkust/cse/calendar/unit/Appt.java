@@ -3,6 +3,8 @@ package hkust.cse.calendar.unit;
 import java.io.Serializable;
 import java.util.LinkedList;
 
+import java.sql.Timestamp;
+
 public class Appt implements Serializable {
 
 	private TimeSpan mTimeSpan;					// Include day, start time and end time of the appointments
@@ -161,9 +163,18 @@ public class Appt implements Serializable {
 	}
 
 	// Setter of the mTimeSpan, Returns true for valid timespan, false for invalid timespan
-	public boolean setTimeSpan(TimeSpan d) {
-		mTimeSpan = d;
-		return true;
+	public boolean setTimeSpan(TimeSpan timespan) {
+		long FIFTEEN_MINS = 15*60*1000;
+		
+		if (timespan==null)
+			return false;
+		
+		Timestamp start = timespan.StartTime(), end = timespan.EndTime();
+		if (end.getTime() - start.getTime() >= FIFTEEN_MINS){
+			mTimeSpan = timespan;
+			return true;
+		}
+		return false;
 	}
 
 	// Setter if the appointment id
@@ -182,6 +193,12 @@ public class Appt implements Serializable {
 	}
 	
 	public boolean isValid(){
+		if (getID() <= 0)
+			return false;
+		if (TimeSpan()==null)
+			return false;
+		if (getTitle()==null || getTitle().equals(""))
+			return false;
 		return true;
 	}
 

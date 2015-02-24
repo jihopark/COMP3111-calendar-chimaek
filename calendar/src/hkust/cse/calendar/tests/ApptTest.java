@@ -22,7 +22,9 @@ public class ApptTest {
 		Timestamp start = new Timestamp(calendar.getTimeInMillis());
 		Timestamp end = new Timestamp(calendar.getTimeInMillis() + FIFTEEN_MINS);
 		TimeSpan span = new TimeSpan(start, end);
-
+		
+		assertFalse("Has No Timespan", appt.isValid());
+		
 		appt.setTitle("abcd");
 		appt.setID(123);
 		appt.setTimeSpan(span);
@@ -37,11 +39,6 @@ public class ApptTest {
 		appt.setID(0);
 		
 		assertFalse("Has No ID", appt.isValid());
-		
-		appt.setID(123);
-		appt.setTimeSpan(null);
-		
-		assertFalse("Has No Timespan", appt.isValid());
 	}
 	
 	@Test
@@ -54,6 +51,8 @@ public class ApptTest {
 		assertTrue("Has Valid Timespan", appt.setTimeSpan(new TimeSpan(start, end)));
 		assertFalse("Has Invalid Timespan. EndTime is earlier than StartTime", 
 				appt.setTimeSpan(new TimeSpan(end, start)));
+		assertFalse("Has Invalid Timespan. EndTime is same with StartTime", 
+				appt.setTimeSpan(new TimeSpan(end, end)));
 	}
 	
 	@Test
