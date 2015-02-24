@@ -160,9 +160,10 @@ public class Appt implements Serializable {
 		mInfo = in;
 	}
 
-	// Setter of the mTimeSpan
-	public void setTimeSpan(TimeSpan d) {
+	// Setter of the mTimeSpan, Returns true for valid timespan, false for invalid timespan
+	public boolean setTimeSpan(TimeSpan d) {
 		mTimeSpan = d;
+		return true;
 	}
 
 	// Setter if the appointment id
@@ -178,6 +179,10 @@ public class Appt implements Serializable {
 	// setter of the isJoint
 	public void setJoint(boolean isjoint){
 		this.isjoint = isjoint;
+	}
+	
+	public boolean isValid(){
+		return true;
 	}
 
 
