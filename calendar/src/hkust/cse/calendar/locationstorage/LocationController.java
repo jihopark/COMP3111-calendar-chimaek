@@ -1,5 +1,6 @@
 package hkust.cse.calendar.locationstorage;
 
+import hkust.cse.calendar.apptstorage.ApptController;
 import hkust.cse.calendar.unit.Location;
 
 public class LocationController {
@@ -21,7 +22,7 @@ public class LocationController {
 	 */
 	
 	/* The Location storage */
-	private static LocationController mLocationStorage = null;
+	private static LocationStorage mLocationStorage = null;
 
 	/* Empty Constructor, since in singleton getInstance() is used instead*/
 	public LocationController() {
@@ -36,4 +37,14 @@ public class LocationController {
 		mLocationStorage.setLocationList(locations);
 	}
 
+	//temporary function
+	public static LocationController getInstance()
+	{
+		if (instance == null){
+			instance = new LocationController();
+		}
+		return instance;
+		
+	}
+	
 }
