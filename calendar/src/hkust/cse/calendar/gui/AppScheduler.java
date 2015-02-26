@@ -1,7 +1,10 @@
 package hkust.cse.calendar.gui;
 
 import hkust.cse.calendar.apptstorage.ApptController;
+import hkust.cse.calendar.locationstorage.LocationController;
+import hkust.cse.calendar.locationstorage.LocationStorage;
 import hkust.cse.calendar.unit.Appt;
+import hkust.cse.calendar.unit.Location;
 import hkust.cse.calendar.unit.TimeSpan;
 
 import java.awt.BorderLayout;
@@ -26,6 +29,7 @@ import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.DefaultListModel;
 import javax.swing.JButton;
+import javax.swing.JComboBox;
 import javax.swing.JDialog;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
@@ -42,20 +46,20 @@ import javax.swing.border.TitledBorder;
 public class AppScheduler extends JDialog implements ActionListener,
 		ComponentListener {
 
-	private JLabel yearL;
-	private JTextField yearF;
-	private JLabel monthL;
-	private JTextField monthF;
-	private JLabel dayL;
-	private JTextField dayF;
-	private JLabel sTimeHL;
-	private JTextField sTimeH;
-	private JLabel sTimeML;
-	private JTextField sTimeM;
-	private JLabel eTimeHL;
-	private JTextField eTimeH;
-	private JLabel eTimeML;
-	private JTextField eTimeM;
+	private JLabel yearLabel;
+	private JTextField yearField;
+	private JLabel monthLabel;
+	private JTextField monthField;
+	private JLabel dayLabel;
+	private JTextField dayField;
+	private JLabel startTimeHourLabel;
+	private JTextField startTimeHourField;
+	private JLabel startTimeMinuteLabel;
+	private JTextField startTimeMinuteField;
+	private JLabel endTimeHourLabel;
+	private JTextField endTimeHourField;
+	private JLabel endTimeMinuteLabel;
+	private JTextField endTimeMinuteField;
 
 	private DefaultListModel model;
 	private JTextField titleField;
@@ -76,6 +80,9 @@ public class AppScheduler extends JDialog implements ActionListener,
 	private JSplitPane pDes;
 	JPanel detailPanel;
 
+	private JComboBox locationField;
+	
+	
 //	private JTextField attendField;
 //	private JTextField rejectField;
 //	private JTextField waitingField;
@@ -91,66 +98,73 @@ public class AppScheduler extends JDialog implements ActionListener,
 		Container contentPane;
 		contentPane = getContentPane();
 		
-		JPanel pDate = new JPanel();
+		JPanel panelDate = new JPanel();
 		Border dateBorder = new TitledBorder(null, "DATE");
-		pDate.setBorder(dateBorder);
+		panelDate.setBorder(dateBorder);
 
-		yearL = new JLabel("YEAR: ");
-		pDate.add(yearL);
-		yearF = new JTextField(6);
-		pDate.add(yearF);
-		monthL = new JLabel("MONTH: ");
-		pDate.add(monthL);
-		monthF = new JTextField(4);
-		pDate.add(monthF);
-		dayL = new JLabel("DAY: ");
-		pDate.add(dayL);
-		dayF = new JTextField(4);
-		pDate.add(dayF);
+		yearLabel = new JLabel("YEAR: ");
+		panelDate.add(yearLabel);
+		yearField = new JTextField(6);
+		panelDate.add(yearField);
+		monthLabel = new JLabel("MONTH: ");
+		panelDate.add(monthLabel);
+		monthField = new JTextField(4);
+		panelDate.add(monthField);
+		dayLabel = new JLabel("DAY: ");
+		panelDate.add(dayLabel);
+		dayField = new JTextField(4);
+		panelDate.add(dayField);
 
-		JPanel psTime = new JPanel();
-		Border stimeBorder = new TitledBorder(null, "START TIME");
-		psTime.setBorder(stimeBorder);
-		sTimeHL = new JLabel("Hour");
-		psTime.add(sTimeHL);
-		sTimeH = new JTextField(4);
-		psTime.add(sTimeH);
-		sTimeML = new JLabel("Minute");
-		psTime.add(sTimeML);
-		sTimeM = new JTextField(4);
-		psTime.add(sTimeM);
+		JPanel panelStartTime = new JPanel();
+		Border startTimeBorder = new TitledBorder(null, "START TIME");
+		panelStartTime.setBorder(startTimeBorder);
+		startTimeHourLabel = new JLabel("Hour");
+		panelStartTime.add(startTimeHourLabel);
+		startTimeHourField = new JTextField(4);
+		panelStartTime.add(startTimeHourField);
+		startTimeMinuteLabel = new JLabel("Minute");
+		panelStartTime.add(startTimeMinuteLabel);
+		startTimeMinuteField = new JTextField(4);
+		panelStartTime.add(startTimeMinuteField);
 
-		JPanel peTime = new JPanel();
+		JPanel panelEndTime = new JPanel();
 		Border etimeBorder = new TitledBorder(null, "END TIME");
-		peTime.setBorder(etimeBorder);
-		eTimeHL = new JLabel("Hour");
-		peTime.add(eTimeHL);
-		eTimeH = new JTextField(4);
-		peTime.add(eTimeH);
-		eTimeML = new JLabel("Minute");
-		peTime.add(eTimeML);
-		eTimeM = new JTextField(4);
-		peTime.add(eTimeM);
+		panelEndTime.setBorder(etimeBorder);
+		endTimeHourLabel = new JLabel("Hour");
+		panelEndTime.add(endTimeHourLabel);
+		endTimeHourField = new JTextField(4);
+		panelEndTime.add(endTimeHourField);
+		endTimeMinuteLabel = new JLabel("Minute");
+		panelEndTime.add(endTimeMinuteLabel);
+		endTimeMinuteField = new JTextField(4);
+		panelEndTime.add(endTimeMinuteField);
 
-		JPanel pTime = new JPanel();
-		pTime.setLayout(new BorderLayout());
-		pTime.add("West", psTime);
-		pTime.add("East", peTime);
+		JPanel panelBothTime = new JPanel();
+		panelBothTime.setLayout(new BorderLayout());
+		panelBothTime.add("West", panelStartTime);
+		panelBothTime.add("East", panelEndTime);
 
-		JPanel top = new JPanel();
-		top.setLayout(new BorderLayout());
-		top.setBorder(new BevelBorder(BevelBorder.RAISED));
-		top.add(pDate, BorderLayout.NORTH);
-		top.add(pTime, BorderLayout.CENTER);
+		JPanel panelTop = new JPanel();
+		panelTop.setLayout(new BorderLayout());
+		panelTop.setBorder(new BevelBorder(BevelBorder.RAISED));
+		panelTop.add(panelDate, BorderLayout.NORTH);
+		panelTop.add(panelBothTime, BorderLayout.CENTER);
 
-		contentPane.add("North", top);
+		contentPane.add("North", panelTop);
 
 		JPanel titleAndTextPanel = new JPanel();
 		JLabel titleL = new JLabel("TITLE");
 		titleField = new JTextField(15);
 		titleAndTextPanel.add(titleL);
 		titleAndTextPanel.add(titleField);
-
+		
+		//test for location combobox.
+		Location[] locations = {};
+		JLabel locationLabel = new JLabel("LOCATION");
+		locationField = new JComboBox(locations);
+		titleAndTextPanel.add(locationLabel);
+		titleAndTextPanel.add(locationField);
+		
 		detailPanel = new JPanel();
 		detailPanel.setLayout(new BorderLayout());
 		Border detailBorder = new TitledBorder(null, "Appointment Description");
@@ -164,7 +178,7 @@ public class AppScheduler extends JDialog implements ActionListener,
 		pDes = new JSplitPane(JSplitPane.VERTICAL_SPLIT, titleAndTextPanel,
 				detailPanel);
 
-		top.add(pDes, BorderLayout.SOUTH);
+		panelTop.add(pDes, BorderLayout.SOUTH);
 
 		if (NewAppt != null) {
 			detailArea.setText(NewAppt.getInfo());
@@ -213,14 +227,26 @@ public class AppScheduler extends JDialog implements ActionListener,
 
 	}
 	
+	//add the title and text panel
+	//NOT YET FULLY IMPLEMENTED
+	public void addTitleAndTextPanel()
+	{
+		
+	}
+	
+	
+	//Constructor	
 	AppScheduler(String title, CalGrid cal, int selectedApptId) {
 		this.selectedApptId = selectedApptId;
 		commonConstructor(title, cal);
 	}
 
+	
+	//Constructor
 	AppScheduler(String title, CalGrid cal) {
 		commonConstructor(title, cal);
 	}
+	
 	
 	public void actionPerformed(ActionEvent e) {
 
@@ -267,8 +293,8 @@ public class AppScheduler extends JDialog implements ActionListener,
 	private int[] getValidDate() {
 
 		int[] date = new int[3];
-		date[0] = Utility.getNumber(yearF.getText());
-		date[1] = Utility.getNumber(monthF.getText());
+		date[0] = Utility.getNumber(yearField.getText());
+		date[1] = Utility.getNumber(monthField.getText());
 		if (date[0] < 1980 || date[0] > 2100) {
 			JOptionPane.showMessageDialog(this, "Please input proper year",
 					"Input Error", JOptionPane.ERROR_MESSAGE);
@@ -280,7 +306,7 @@ public class AppScheduler extends JDialog implements ActionListener,
 			return null;
 		}
 
-		date[2] = Utility.getNumber(dayF.getText());
+		date[2] = Utility.getNumber(dayField.getText());
 		int monthDay = CalGrid.monthDays[date[1] - 1];
 		if (date[1] == 2) {
 			GregorianCalendar c = new GregorianCalendar();
@@ -312,8 +338,8 @@ public class AppScheduler extends JDialog implements ActionListener,
 	private int[] getValidTimeInterval() {
 
 		int[] result = new int[2];
-		result[0] = getTime(sTimeH, sTimeM);
-		result[1] = getTime(eTimeH, eTimeM);
+		result[0] = getTime(startTimeHourField, startTimeMinuteField);
+		result[1] = getTime(endTimeHourField, endTimeMinuteField);
 		if ((result[0] % 15) != 0 || (result[1] % 15) != 0) {
 			JOptionPane.showMessageDialog(this,
 					"Minute Must be 0, 15, 30, or 45 !", "Input Error",
@@ -321,8 +347,8 @@ public class AppScheduler extends JDialog implements ActionListener,
 			return null;
 		}
 		
-		if (!sTimeM.getText().equals("0") && !sTimeM.getText().equals("15") && !sTimeM.getText().equals("30") && !sTimeM.getText().equals("45") 
-			|| !eTimeM.getText().equals("0") && !eTimeM.getText().equals("15") && !eTimeM.getText().equals("30") && !eTimeM.getText().equals("45")){
+		if (!startTimeMinuteField.getText().equals("0") && !startTimeMinuteField.getText().equals("15") && !startTimeMinuteField.getText().equals("30") && !startTimeMinuteField.getText().equals("45") 
+			|| !endTimeMinuteField.getText().equals("0") && !endTimeMinuteField.getText().equals("15") && !endTimeMinuteField.getText().equals("30") && !endTimeMinuteField.getText().equals("45")){
 			JOptionPane.showMessageDialog(this,
 					"Minute Must be 0, 15, 30, or 45 !", "Input Error",
 					JOptionPane.ERROR_MESSAGE);
@@ -396,13 +422,13 @@ public class AppScheduler extends JDialog implements ActionListener,
 	}
 	
 	private void allDisableEdit(){
-		yearF.setEditable(false);
-		monthF.setEditable(false);
-		dayF.setEditable(false);
-		sTimeH.setEditable(false);
-		sTimeM.setEditable(false);
-		eTimeH.setEditable(false);
-		eTimeM.setEditable(false);
+		yearField.setEditable(false);
+		monthField.setEditable(false);
+		dayField.setEditable(false);
+		startTimeHourField.setEditable(false);
+		startTimeMinuteField.setEditable(false);
+		endTimeHourField.setEditable(false);
+		endTimeMinuteField.setEditable(false);
 		titleField.setEditable(false);
 		detailArea.setEditable(false);
 	}
