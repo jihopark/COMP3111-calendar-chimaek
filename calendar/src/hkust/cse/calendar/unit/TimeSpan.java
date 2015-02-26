@@ -2,9 +2,13 @@ package hkust.cse.calendar.unit;
 
 import java.io.Serializable;
 import java.sql.Timestamp;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 /* This class represents the time span between two points of time */
 public class TimeSpan implements Serializable {
+	
+	public static SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm");
 	/* The starting time of the time span */
 	private Timestamp mStartTime;
 	/* The ending time of the time span */
@@ -71,5 +75,9 @@ public class TimeSpan implements Serializable {
 	/* Set the ending time */
 	public void EndTime(Timestamp e) {
 		mEndTime = e;
+	}
+	
+	public String toString(){
+		return "TimeSpan From " + dateFormat.format(new Date(mStartTime.getTime())) + " to " + dateFormat.format(new Date(mEndTime.getTime()));
 	}
 }
