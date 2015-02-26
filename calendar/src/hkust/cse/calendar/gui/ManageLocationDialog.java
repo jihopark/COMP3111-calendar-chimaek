@@ -2,6 +2,7 @@ package hkust.cse.calendar.gui;
 
 import hkust.cse.calendar.unit.Location;
 import hkust.cse.calendar.locationstorage.LocationController;
+import hkust.cse.calendar.tests.GUITest;
 
 import java.awt.*;
 import java.awt.event.*;
@@ -16,13 +17,9 @@ public class ManageLocationDialog extends JPanel
     private static final String AddButtonString = "Add";
     private static final String DeleteButtonString = "Delete";
     
-	//private DefaultListModel<Location> listModel;
-	//private JList<Location> list;
-	//private JTextField locNameText;
-	
-    //private JList list;
-    private static Location[] locationList;
-
+	private JList displayList;
+	private JTextField locNameText;
+    private Location[] locationList;
 
     private JButton deleteButton;
     private JTextField locationName;
@@ -30,18 +27,19 @@ public class ManageLocationDialog extends JPanel
     public ManageLocationDialog() {
         super(new BorderLayout());
 
-        locationList = LocationController.getLocationList();
-        locationList.addElement("Jane Doe");
-        locationList.addElement("John Smith");
-        locationList.addElement("Kathy Green");
+        //implement after locationlist implementation is complete.
+        //locationList = LocationController.getInstance().getLocationList();
+        
+        locationList = GUITest.getLocationListTest();
+        
 
         //Create the list and put it in a scroll pane.
-        list = new JList(locationList);
-        list.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-        list.setSelectedIndex(0);
-        list.addListSelectionListener(this);
-        list.setVisibleRowCount(5);
-        JScrollPane listScrollPane = new JScrollPane(list);
+        displayList = new JList(locationList);
+        displayList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+        displayList.setSelectedIndex(0);
+        displayList.addListSelectionListener(this);
+        displayList.setVisibleRowCount(5);
+        JScrollPane listScrollPane = new JScrollPane(displayList);
 
         JButton addButton = new JButton(AddButtonString);
         AddListener addListener = new AddListener(addButton);
@@ -56,19 +54,20 @@ public class ManageLocationDialog extends JPanel
         locationName = new JTextField(10);
         locationName.addActionListener(addListener);
         locationName.getDocument().addDocumentListener(addListener);
-        String name = locationList.getElementAt(
-                              list.getSelectedIndex()).toString();
+        
+        String name = locationList[displayList.getSelectedIndex()].toString(); 
 
         //Create a panel that uses BoxLayout.
         JPanel buttonPane = new JPanel();
         buttonPane.setLayout(new BoxLayout(buttonPane,
                                            BoxLayout.LINE_AXIS));
-        buttonPane.add(deleteButton);
+        //buttonPane.add(deleteButton);
         buttonPane.add(Box.createHorizontalStrut(5));
         buttonPane.add(new JSeparator(SwingConstants.VERTICAL));
         buttonPane.add(Box.createHorizontalStrut(5));
         buttonPane.add(locationName);
         buttonPane.add(addButton);
+        buttonPane.add(deleteButton);
         buttonPane.setBorder(BorderFactory.createEmptyBorder(5,5,5,5));
 
         add(listScrollPane, BorderLayout.CENTER);
@@ -80,27 +79,41 @@ public class ManageLocationDialog extends JPanel
             //This method can be called only if
             //there's a valid selection
             //so go ahead and remove whatever's selected.
-            int index = list.getSelectedIndex();
-            locationList.remove(index);
+            int index = displayList.getSelectedIndex();
+            
+            
+            //didn't know how to use the Array Util Library...
+            //manual deletion
+            //locationList=Arrays.remove(locationList,index);
+            
+            Location[] locationListAfterDeletion= new Location[locationList.length-1];
+            for(int i=0; i<(locationList.length); i++) {
+            	if(i<index){
+            		locationListAfterDeletion[i]=locationList[i];
+            	}
+            	else if(i>index){
+            		locationListAfterDeletion[i-1]=locationList[i];
+            	}
+            }
+            locationList=locationListAfterDeletion;
 
-            int size = locationList.getSize();
-
-            if (size == 0) { //Nobody's left, disable firing.
+            int size = locationList.length;
+            if (size == 0) { //None's left, disable delete button.
                 deleteButton.setEnabled(false);
             } 
             else { //Select an index.
-                if (index == locationList.getSize()) {
+                if (index == locationList.length) {
                     //removed item in last position
                     index--;
                 }
 
-                list.setSelectedIndex(index);
-                list.ensureIndexIsVisible(index);
+                displayList.setSelectedIndex(index);
+                displayList.ensureIndexIsVisible(index);
             }
         }
     }
     
-    //This listener is shared by the text field and the hire button.
+    //This listener is shared by the text field and the add button.
     class AddListener implements ActionListener, DocumentListener {
         private boolean alreadyEnabled = false;
         private JButton button;
@@ -121,31 +134,44 @@ public class ManageLocationDialog extends JPanel
                 return;
             }
 
-            int index = list.getSelectedIndex(); //get selected index
+            int index = displayList.getSelectedIndex(); //get selected index
             if (index == -1) { //no selection, so insert at beginning
                 index = 0;
             } else {           //add after the selected item
                 index++;
             }
+            
+            Location newLocation = new Location(locationName.getText());
+            
+            //add new location at the end of the locationList array manually
+            // need to change later to be sorted in order
+            
+            Location[] locationListAfterAddition = new Location[locationList.length+1];
+            for(int i=0; i<locationList.length; i++)
+            {
+            	locationListAfterAddition[i]=locationList[i];	
+            }
+            locationListAfterAddition[locationList.length]= newLocation;
 
-            locationList.insertElementAt(locationName.getText(), index);
-            //If we just wanted to add to the end, we'd do this:
-            //listModel.addElement(employeeName.getText());
 
             //Reset the text field.
             locationName.requestFocusInWindow();
             locationName.setText("");
 
             //Select the new item and make it visible.
-            list.setSelectedIndex(index);
-            list.ensureIndexIsVisible(index);
+            displayList.setSelectedIndex(index);
+            displayList.ensureIndexIsVisible(index);
         }
 
-        //This method tests for string equality. You could certainly
-        //get more sophisticated about the algorithm.  For example,
-        //you might want to ignore white space and capitalization.
+        //This method tests for string equality. 
+        //further implement to test more rigorously (ignore whitespace, capital, etc)
         protected boolean alreadyInList(String name) {
-            return locationList.contains(name);
+        	for(int i=0; i<locationList.length;i++)
+        	{
+        		if(locationList[i].getName().equals(name))
+        			return true;
+        	}
+            return false;
         }
 
         //Required by DocumentListener.
@@ -185,7 +211,7 @@ public class ManageLocationDialog extends JPanel
     public void valueChanged(ListSelectionEvent e) {
         if (e.getValueIsAdjusting() == false) {
 
-            if (list.getSelectedIndex() == -1) {
+            if (displayList.getSelectedIndex() == -1) {
             //No selection, disable fire button.
                 deleteButton.setEnabled(false);
 
@@ -201,7 +227,7 @@ public class ManageLocationDialog extends JPanel
      * this method should be invoked from the
      * event-dispatching thread.
      */
-    public static void createAndShowLocationsDialogGUI() {
+    public static void createAndShowManageLocationDialogGUI() {
         //Create and set up the window.
         JFrame frame = new JFrame("Manage Locations");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
