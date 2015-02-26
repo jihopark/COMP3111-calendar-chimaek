@@ -77,8 +77,8 @@ public class AppScheduler extends JDialog implements ActionListener,
 
 	private JTextArea detailArea;
 
-	private JSplitPane pDes;
-	JPanel detailPanel;
+	private JSplitPane panelApptDescription;
+	JPanel panelDetail;
 
 	private JComboBox locationField;
 	
@@ -98,87 +98,23 @@ public class AppScheduler extends JDialog implements ActionListener,
 		Container contentPane;
 		contentPane = getContentPane();
 		
-		JPanel panelDate = new JPanel();
-		Border dateBorder = new TitledBorder(null, "DATE");
-		panelDate.setBorder(dateBorder);
-
-		yearLabel = new JLabel("YEAR: ");
-		panelDate.add(yearLabel);
-		yearField = new JTextField(6);
-		panelDate.add(yearField);
-		monthLabel = new JLabel("MONTH: ");
-		panelDate.add(monthLabel);
-		monthField = new JTextField(4);
-		panelDate.add(monthField);
-		dayLabel = new JLabel("DAY: ");
-		panelDate.add(dayLabel);
-		dayField = new JTextField(4);
-		panelDate.add(dayField);
-
-		JPanel panelStartTime = new JPanel();
-		Border startTimeBorder = new TitledBorder(null, "START TIME");
-		panelStartTime.setBorder(startTimeBorder);
-		startTimeHourLabel = new JLabel("Hour");
-		panelStartTime.add(startTimeHourLabel);
-		startTimeHourField = new JTextField(4);
-		panelStartTime.add(startTimeHourField);
-		startTimeMinuteLabel = new JLabel("Minute");
-		panelStartTime.add(startTimeMinuteLabel);
-		startTimeMinuteField = new JTextField(4);
-		panelStartTime.add(startTimeMinuteField);
-
-		JPanel panelEndTime = new JPanel();
-		Border etimeBorder = new TitledBorder(null, "END TIME");
-		panelEndTime.setBorder(etimeBorder);
-		endTimeHourLabel = new JLabel("Hour");
-		panelEndTime.add(endTimeHourLabel);
-		endTimeHourField = new JTextField(4);
-		panelEndTime.add(endTimeHourField);
-		endTimeMinuteLabel = new JLabel("Minute");
-		panelEndTime.add(endTimeMinuteLabel);
-		endTimeMinuteField = new JTextField(4);
-		panelEndTime.add(endTimeMinuteField);
-
-		JPanel panelBothTime = new JPanel();
-		panelBothTime.setLayout(new BorderLayout());
+		JPanel panelTop = initiateTopPanel();
+		JPanel panelDate = initiateDatePanel();
+		JPanel panelStartTime = initiateStartTimePanel();
+		JPanel panelEndTime = initiateEndTimePanel();
+		JPanel panelBothTime = initiateBothTimePanel();
+		
 		panelBothTime.add("West", panelStartTime);
 		panelBothTime.add("East", panelEndTime);
-
-		JPanel panelTop = new JPanel();
-		panelTop.setLayout(new BorderLayout());
-		panelTop.setBorder(new BevelBorder(BevelBorder.RAISED));
 		panelTop.add(panelDate, BorderLayout.NORTH);
 		panelTop.add(panelBothTime, BorderLayout.CENTER);
-
 		contentPane.add("North", panelTop);
 
-		JPanel titleAndTextPanel = new JPanel();
-		JLabel titleL = new JLabel("TITLE");
-		titleField = new JTextField(15);
-		titleAndTextPanel.add(titleL);
-		titleAndTextPanel.add(titleField);
-		
-		//test for location combobox.
-		Location[] locations = {};
-		JLabel locationLabel = new JLabel("LOCATION");
-		locationField = new JComboBox(locations);
-		titleAndTextPanel.add(locationLabel);
-		titleAndTextPanel.add(locationField);
-		
-		detailPanel = new JPanel();
-		detailPanel.setLayout(new BorderLayout());
-		Border detailBorder = new TitledBorder(null, "Appointment Description");
-		detailPanel.setBorder(detailBorder);
-		detailArea = new JTextArea(20, 30);
+		JPanel panelTitleAndText = initiateTitleAndTextPanel();
+		panelDetail = initiateDetailPanel();
+		panelApptDescription = initiateApptDescriptionPanel(panelTitleAndText, panelDetail);
 
-		detailArea.setEditable(true);
-		JScrollPane detailScroll = new JScrollPane(detailArea);
-		detailPanel.add(detailScroll);
-
-		pDes = new JSplitPane(JSplitPane.VERTICAL_SPLIT, titleAndTextPanel,
-				detailPanel);
-
-		panelTop.add(pDes, BorderLayout.SOUTH);
+		panelTop.add(panelApptDescription, BorderLayout.SOUTH);
 
 		if (NewAppt != null) {
 			detailArea.setText(NewAppt.getInfo());
@@ -227,13 +163,126 @@ public class AppScheduler extends JDialog implements ActionListener,
 
 	}
 	
-	//add the title and text panel
-	//NOT YET FULLY IMPLEMENTED
-	public void addTitleAndTextPanel()
+	
+	public JPanel initiateDatePanel()
 	{
+		JPanel panelDate = new JPanel();
+		Border dateBorder = new TitledBorder(null, "DATE");
+		panelDate.setBorder(dateBorder);
+
+		yearLabel = new JLabel("YEAR: ");
+		panelDate.add(yearLabel);
+		yearField = new JTextField(6);
+		panelDate.add(yearField);
+		monthLabel = new JLabel("MONTH: ");
+		panelDate.add(monthLabel);
+		monthField = new JTextField(4);
+		panelDate.add(monthField);
+		dayLabel = new JLabel("DAY: ");
+		panelDate.add(dayLabel);
+		dayField = new JTextField(4);
+		panelDate.add(dayField);
+		
+		return panelDate;
+	}
+	
+	public JPanel initiateStartTimePanel()
+	{
+	
+		JPanel panelStartTime = new JPanel();
+		Border startTimeBorder = new TitledBorder(null, "START TIME");
+		panelStartTime.setBorder(startTimeBorder);
+		startTimeHourLabel = new JLabel("Hour");
+		panelStartTime.add(startTimeHourLabel);
+		startTimeHourField = new JTextField(4);
+		panelStartTime.add(startTimeHourField);
+		startTimeMinuteLabel = new JLabel("Minute");
+		panelStartTime.add(startTimeMinuteLabel);
+		startTimeMinuteField = new JTextField(4);
+		panelStartTime.add(startTimeMinuteField);
+
+		return panelStartTime;
+
+	}
+	
+	public JPanel initiateEndTimePanel()
+	{
+		JPanel panelEndTime = new JPanel();
+		Border etimeBorder = new TitledBorder(null, "END TIME");
+		panelEndTime.setBorder(etimeBorder);
+		endTimeHourLabel = new JLabel("Hour");
+		panelEndTime.add(endTimeHourLabel);
+		endTimeHourField = new JTextField(4);
+		panelEndTime.add(endTimeHourField);
+		endTimeMinuteLabel = new JLabel("Minute");
+		panelEndTime.add(endTimeMinuteLabel);
+		endTimeMinuteField = new JTextField(4);
+		panelEndTime.add(endTimeMinuteField);
+		
+		return panelEndTime;
 		
 	}
 	
+	public JPanel initiateBothTimePanel()
+	{
+		JPanel panelBothTime = new JPanel();
+		panelBothTime.setLayout(new BorderLayout());
+		return panelBothTime;
+		
+	}
+	
+	public JPanel initiateTopPanel()
+	{
+		JPanel panelTop = new JPanel();
+		panelTop.setLayout(new BorderLayout());
+		panelTop.setBorder(new BevelBorder(BevelBorder.RAISED));
+		
+		return panelTop;
+	}
+	
+	
+	public JPanel initiateTitleAndTextPanel()
+	{
+		JPanel panelTitleAndText = new JPanel();
+		JLabel titleL = new JLabel("TITLE");
+		titleField = new JTextField(15);
+		panelTitleAndText.add(titleL);
+		panelTitleAndText.add(titleField);
+		
+		//test for location combobox.
+		Location[] locations = {};
+		
+		JLabel locationLabel = new JLabel("LOCATION");
+		locationField = new JComboBox(locations);
+		panelTitleAndText.add(locationLabel);
+		panelTitleAndText.add(locationField);
+		
+		return panelTitleAndText;
+	}
+	
+	public JPanel initiateDetailPanel()
+	{
+		JPanel tempPanelDetail = new JPanel();
+		tempPanelDetail.setLayout(new BorderLayout());
+		Border detailBorder = new TitledBorder(null, "Appointment Description");
+		tempPanelDetail.setBorder(detailBorder);
+		detailArea = new JTextArea(20, 30);
+
+		detailArea.setEditable(true);
+		JScrollPane detailScroll = new JScrollPane(detailArea);
+		tempPanelDetail.add(detailScroll);
+		
+		return tempPanelDetail;
+	}
+	
+	public JSplitPane initiateApptDescriptionPanel(JPanel panelTitleAndText, JPanel tempPanelDetail)
+	{
+		JSplitPane tempPanelApptDescription = new JSplitPane(JSplitPane.VERTICAL_SPLIT, panelTitleAndText,
+				tempPanelDetail);
+		
+		return tempPanelApptDescription;
+		
+	}
 	
 	//Constructor	
 	AppScheduler(String title, CalGrid cal, int selectedApptId) {
@@ -405,10 +454,10 @@ public class AppScheduler extends JDialog implements ActionListener,
 
 	public void componentResized(ComponentEvent e) {
 
-		Dimension dm = pDes.getSize();
+		Dimension dm = panelApptDescription.getSize();
 		double width = dm.width * 0.93;
 		double height = dm.getHeight() * 0.6;
-		detailPanel.setSize((int) width, (int) height);
+		panelDetail.setSize((int) width, (int) height);
 
 	}
 
