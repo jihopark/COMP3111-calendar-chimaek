@@ -1,18 +1,26 @@
 package hkust.cse.calendar.tests;
 
+import java.util.ArrayList;
+
+import javax.swing.DefaultListModel;
+
 import hkust.cse.calendar.gui.ManageLocationDialog;
 import hkust.cse.calendar.unit.Location;
 
 public class GUITest {
 
-	public static Location[] getLocationListTest(){
+	public static DefaultListModel<Location> getLocationListTest(){
 		
 		//if location is already registered
 		
 		Location location1= new Location("RM2464");
 		Location location2= new Location("RM3002");
 		Location location3= new Location("LSK1026");
-		Location[] locationlist = {location1, location2, location3};
+		DefaultListModel<Location> locationlist = new DefaultListModel<Location>();
+		
+		locationlist.addElement(location1);
+		locationlist.addElement(location2);
+		locationlist.addElement(location3);
 		
 		//if location list is empty
 		/*
@@ -28,7 +36,7 @@ public class GUITest {
 	        javax.swing.SwingUtilities.invokeLater(new Runnable() {
 	            public void run() {
 	                ManageLocationDialog.createAndShowManageLocationDialogGUI();
-	            }
+	            }	
 	        });
 
 	}

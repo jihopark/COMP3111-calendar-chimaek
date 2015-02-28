@@ -6,6 +6,7 @@ import hkust.cse.calendar.tests.GUITest;
 
 import java.awt.*;
 import java.awt.event.*;
+import java.util.ArrayList;
 
 import javax.swing.*;
 import javax.swing.event.*;
@@ -14,12 +15,16 @@ import javax.swing.event.*;
 public class ManageLocationDialog extends JPanel 
 								implements ListSelectionListener {
 
+	private static final long serialVersionUID = 1L;
+	
     private static final String AddButtonString = "Add";
     private static final String DeleteButtonString = "Delete";
     
-	private JList displayList;
+	private JList<String> displayList;
 	private JTextField locNameText;
-    private Location[] locationList;
+   
+	private DefaultListModel<Location> retrievedLocationList;
+    private DefaultListModel<String> retrievedLocationStringList;
 
     private JButton deleteButton;
     private JTextField locationName;
@@ -28,13 +33,18 @@ public class ManageLocationDialog extends JPanel
         super(new BorderLayout());
 
         //implement after locationlist implementation is complete.
-        //locationList = LocationController.getInstance().getLocationList();
+        //retrievedlocationList = LocationController.getInstance().getLocationList();
         
-        locationList = GUITest.getLocationListTest();
+        retrievedLocationList = GUITest.getLocationListTest();
         
+        //copy only the name(String) of the locations to another list for display
+        retrievedLocationStringList = new DefaultListModel<String>();
+        for(int i =0; i<retrievedLocationList.getSize();i++)
+        	retrievedLocationStringList.addElement(retrievedLocationList.getElementAt(i).getName());	
+      
 
         //Create the list and put it in a scroll pane.
-        displayList = new JList(locationList);
+        displayList = new JList<String>(retrievedLocationStringList);
         displayList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         displayList.setSelectedIndex(0);
         displayList.addListSelectionListener(this);
@@ -55,7 +65,6 @@ public class ManageLocationDialog extends JPanel
         locationName.addActionListener(addListener);
         locationName.getDocument().addDocumentListener(addListener);
         
-        String name = locationList[displayList.getSelectedIndex()].toString(); 
 
         //Create a panel that uses BoxLayout.
         JPanel buttonPane = new JPanel();
@@ -76,33 +85,21 @@ public class ManageLocationDialog extends JPanel
     
     class DeleteListener implements ActionListener {
         public void actionPerformed(ActionEvent e) {
-            //This method can be called only if
+            
+        	//This method can be called only if
             //there's a valid selection
             //so go ahead and remove whatever's selected.
             int index = displayList.getSelectedIndex();
+            retrievedLocationList.removeElementAt(index);
             
             
-            //didn't know how to use the Array Util Library...
-            //manual deletion
-            //locationList=Arrays.remove(locationList,index);
             
-            Location[] locationListAfterDeletion= new Location[locationList.length-1];
-            for(int i=0; i<(locationList.length); i++) {
-            	if(i<index){
-            		locationListAfterDeletion[i]=locationList[i];
-            	}
-            	else if(i>index){
-            		locationListAfterDeletion[i-1]=locationList[i];
-            	}
-            }
-            locationList=locationListAfterDeletion;
-
-            int size = locationList.length;
+            int size = retrievedLocationList.getSize();
             if (size == 0) { //None's left, disable delete button.
                 deleteButton.setEnabled(false);
             } 
             else { //Select an index.
-                if (index == locationList.length) {
+                if (index == retrievedLocationList.getSize()	) {
                     //removed item in last position
                     index--;
                 }
@@ -111,6 +108,7 @@ public class ManageLocationDialog extends JPanel
                 displayList.ensureIndexIsVisible(index);
             }
         }
+        
     }
     
     //This listener is shared by the text field and the add button.
@@ -143,16 +141,9 @@ public class ManageLocationDialog extends JPanel
             
             Location newLocation = new Location(locationName.getText());
             
-            //add new location at the end of the locationList array manually
+            //adds new location at the end of the retrievedLocationList
             // need to change later to be sorted in order
-            
-            Location[] locationListAfterAddition = new Location[locationList.length+1];
-            for(int i=0; i<locationList.length; i++)
-            {
-            	locationListAfterAddition[i]=locationList[i];	
-            }
-            locationListAfterAddition[locationList.length]= newLocation;
-
+            retrievedLocationList.addElement(newLocation);
 
             //Reset the text field.
             locationName.requestFocusInWindow();
@@ -166,9 +157,9 @@ public class ManageLocationDialog extends JPanel
         //This method tests for string equality. 
         //further implement to test more rigorously (ignore whitespace, capital, etc)
         protected boolean alreadyInList(String name) {
-        	for(int i=0; i<locationList.length;i++)
+        	for(int i=0; i<retrievedLocationList.getSize();i++)
         	{
-        		if(locationList[i].getName().equals(name))
+        		if(retrievedLocationList.getElementAt(i).getName().equals(name))
         			return true;
         	}
             return false;
