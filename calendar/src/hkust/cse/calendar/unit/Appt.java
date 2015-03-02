@@ -149,7 +149,7 @@ public class Appt implements Serializable {
 	}
 	// Getter of the appointment title
 	public String toString() {
-		return mTitle;
+		return mTitle + " " + TimeSpan();
 	}
 
 	// Setter of the appointment title
@@ -190,6 +190,10 @@ public class Appt implements Serializable {
 	// setter of the isJoint
 	public void setJoint(boolean isjoint){
 		this.isjoint = isjoint;
+	}
+	
+	public boolean equals(Appt a){
+		return this.getID() == a.getID();
 	}
 	
 	public boolean isValid(){

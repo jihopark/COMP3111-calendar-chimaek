@@ -21,14 +21,14 @@ public class ApptStorageTest {
 	private static long currentTime = Calendar.getInstance().getTimeInMillis(); 
 	private static final long ONE_HOUR = 60*60*1000;
 	private static final long FIFTEEN_MINS = 15*60*1000;
-
+	
+	private static int assignID = 1;
 	private static ApptStorageMemory memory = null;
 
 
 	@Before
 	public void initializeApptStorageMemory(){
-		if (memory==null)
-			memory = new ApptStorageMemory(new User("default","default"));
+		memory = new ApptStorageMemory(new User("default","default"));
 	}
 
 	@Test
@@ -38,24 +38,37 @@ public class ApptStorageTest {
 
 	@Test
 	public void shouldNotSavePastAppt(){
+		System.out.println("\nApptStorageTest/shouldNotSavePastAppt");
 		assertTrue("Should Save Future Appt", memory.SaveAppt(createRandomFutureAppt()));
 		assertFalse("Should Not Save Past Appt", memory.SaveAppt(createRandomPastAppt()));
 	}
 
 	@Test
 	public void shouldNotModifyPastAppt(){
-		assertTrue("Should Modify Future Appt", memory.UpdateAppt(createRandomFutureAppt()));
-		assertFalse("Should Not Modify Past Appt", memory.UpdateAppt(createRandomPastAppt()));
+		Appt tmp = createRandomFutureAppt();
+		System.out.println("\nApptStorageTest/shouldNotModifyPastAppt");
+		memory.SaveAppt(tmp);
+		assertTrue("Should Modify Future Appt", memory.UpdateAppt(tmp));
+		tmp = createRandomPastAppt();
+		memory.SavePastAppt(tmp);
+		assertFalse("Should Not Modify Past Appt", memory.UpdateAppt(tmp));
 	}
 
 	@Test
 	public void shouldNotRemovePastAppt(){
-		assertTrue("Should Remove Future Appt", memory.RemoveAppt(createRandomFutureAppt()));
-		assertFalse("Should Not Remove Past Appt", memory.RemoveAppt(createRandomPastAppt()));
+		Appt tmp = createRandomFutureAppt();
+		System.out.println("\nApptStorageTest/shouldNotRemovePastAppt");
+		memory.SaveAppt(tmp);
+		assertTrue("Should Remove Future Appt", memory.RemoveAppt(tmp));
+		tmp = createRandomPastAppt();
+		memory.SavePastAppt(tmp);
+		assertFalse("Should Not Remove Past Appt", memory.RemoveAppt(tmp));
 	}
 
 	@Test
 	public void shouldRetrieveCorrectAppt(){
+		System.out.println("\nApptStorageTest/shouldNotRetrievePastAppt");
+
 		TimeSpan span = createRandom6HourLongTimeSpan();
 		List<Appt> apptTestCases = createRandomApptTestCases(span);
 		for (Appt appt : apptTestCases)
@@ -68,6 +81,7 @@ public class ApptStorageTest {
 		System.out.println("\nshouldRetrieveCorrectAppt : " + "Generated Front" + front);
 		
 		Appt randomFrontTime = new Appt();
+		randomFrontTime.setID(assignID++);
 		randomFrontTime.setTimeSpan(front);
 		memory.SaveAppt(randomFrontTime);
 		
@@ -95,7 +109,7 @@ public class ApptStorageTest {
 	
 	public List<Appt> createRandomApptTestCases(TimeSpan span){
 		ArrayList<Appt> list = new ArrayList<Appt>();
-		int n = (int) (Math.random()*9)+1;
+		int n = (int) (Math.random()*9)+5;
 		ArrayList<Timestamp> timestamps = new ArrayList<Timestamp>();
 		
 		System.out.println("\ncreateRandomApptTestCases: " + "Creating " + n + " Cases");
@@ -105,12 +119,21 @@ public class ApptStorageTest {
 			timestamps.add(new Timestamp(span.StartTime().getTime() + (long)(span.TimeLength()*Math.random())));
 		Collections.sort(timestamps);
 		
-		for (int i=0; i<n*2; i+=2){
-			TimeSpan s = new TimeSpan(timestamps.get(i),timestamps.get(i+1));
+		int i=0,j=1; //To prevent timespan less than FIFTEEN_MINS
+		
+		while(j<n*2){
+			if (timestamps.get(j).getTime() - timestamps.get(i).getTime() < FIFTEEN_MINS){
+				j++;
+				continue;
+			}
+			TimeSpan s = new TimeSpan(timestamps.get(i),timestamps.get(j));
 			System.out.println("\ncreateRandomApptTestCases: " + "Created " + s );
 			Appt a = new Appt();
 			a.setTimeSpan(s);
+			a.setID(assignID++);
 			list.add(a);
+			i = j + 1;
+			j = i + 1;
 		}
 		return list;
 	}
@@ -134,7 +157,7 @@ public class ApptStorageTest {
 		System.out.println("Past randomTimeSpan is " + randomTimeSpan);
 
 		randomPastAppt.setTimeSpan(randomTimeSpan);
-		randomPastAppt.setID(1);
+		randomPastAppt.setID(assignID++);
 
 		return randomPastAppt;
 	}
@@ -150,14 +173,14 @@ public class ApptStorageTest {
 		System.out.println("Future randomTimeSpan is " + randomTimeSpan);
 
 		randomFutureAppt.setTimeSpan(randomTimeSpan);
-		randomFutureAppt.setID(1);
+		randomFutureAppt.setID(assignID++);
 
 		return randomFutureAppt;
 	}
 
 	public long generateRandomLengthLessThanThreeHour(){
 		long randomLength = FIFTEEN_MINS + (long)((3*ONE_HOUR-FIFTEEN_MINS)*Math.random());
-		System.out.println("\ngenerateRandomLengthLessThanThreeHour: randomLength is " + randomLength/1000/60 + " in mins");
+		//System.out.println("\ngenerateRandomLengthLessThanThreeHour: randomLength is " + randomLength/1000/60 + " in mins");
 		return randomLength;
 	}
 
