@@ -4,11 +4,11 @@ import hkust.cse.calendar.unit.Appt;
 import hkust.cse.calendar.unit.TimeSpan;
 import hkust.cse.calendar.unit.User;
 
-public class ApptStorageNullImpl extends ApptStorage {
+public class ApptStorageMemory extends ApptStorage {
 
 	private User defaultUser = null;
 	
-	public ApptStorageNullImpl( User user )
+	public ApptStorageMemory( User user )
 	{
 		defaultUser = user;
 	}
