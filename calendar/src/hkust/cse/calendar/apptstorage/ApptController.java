@@ -4,10 +4,13 @@ import hkust.cse.calendar.unit.Appt;
 import hkust.cse.calendar.unit.TimeSpan;
 import hkust.cse.calendar.unit.User;
 
+import java.util.List;
+
 public class ApptController {
 	
 	/* Applying Singleton Structure */
 	private static ApptController instance = null;
+	private static int apptIDCount = 1;
 	
 	@Deprecated
 	public final static int REMOVE = 1;
@@ -42,8 +45,13 @@ public class ApptController {
 	
 
 	/* Retrieve the Appt's in the storage for a specific user within the specific time span */
+	@Deprecated
 	public Appt[] RetrieveAppts(User entity, TimeSpan time) {
 		return mApptStorage.RetrieveAppts(entity, time);
+	}
+	
+	public List<Appt> RetrieveApptsInList(User user, TimeSpan time){
+		return mApptStorage.RetrieveApptsInList(time);
 	}
 
 	// overload method to retrieve appointment with the given joint appointment id
@@ -70,18 +78,19 @@ public class ApptController {
 	}
 	
 	//Register appt as New Appt of user. Return true if successfully registered
-	public boolean registerNewAppt(User user, Appt appt){
-		return true;
+	public boolean saveNewAppt(User user, Appt appt){
+		appt.setID(apptIDCount++);
+		return mApptStorage.SaveAppt(appt);
 	}
 	
 	//Modify appt of user. Return true if successfully modified
 	public boolean modifyAppt(User user, Appt appt){
-		return true;
+		return mApptStorage.UpdateAppt(appt);
 	}
 	
 	//Remove appt of user. Return true if successfully removed
 	public boolean removeAppt(User user, Appt appt){
-		return true;
+		return mApptStorage.RemoveAppt(appt);
 	}
 	
 	/* Get the defaultUser of mApptStorage */
