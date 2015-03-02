@@ -5,6 +5,7 @@ import hkust.cse.calendar.unit.TimeSpan;
 import hkust.cse.calendar.unit.User;
 
 import java.util.HashMap;
+import java.util.List;
 
 
 public abstract class ApptStorage {
@@ -16,17 +17,21 @@ public abstract class ApptStorage {
 	public ApptStorage() {	//default constructor
 	}
 
-	public abstract void SaveAppt(Appt appt);	//abstract method to save an appointment record
+	public abstract boolean SaveAppt(Appt appt);	//abstract method to save an appointment record
 
+	@Deprecated
 	public abstract Appt[] RetrieveAppts(TimeSpan d);	//abstract method to retrieve an appointment record by a given timespan
-
+	
+	@Deprecated
 	public abstract Appt[] RetrieveAppts(User entity, TimeSpan time);	//overloading abstract method to retrieve an appointment record by a given user object and timespan
 	
+	public abstract List<Appt> RetrieveApptsInList(TimeSpan d);
+
 	public abstract Appt RetrieveAppts(int joinApptID);					// overload method to retrieve appointment with the given joint appointment id
 
-	public abstract void UpdateAppt(Appt appt);	//abstract method to update an appointment record
+	public abstract boolean UpdateAppt(Appt appt);	//abstract method to update an appointment record
 
-	public abstract void RemoveAppt(Appt appt);	//abstract method to remove an appointment record
+	public abstract boolean RemoveAppt(Appt appt);	//abstract method to remove an appointment record
 	
 	public abstract User getDefaultUser();		//abstract method to return the current user object
 	

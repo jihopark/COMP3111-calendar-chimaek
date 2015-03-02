@@ -9,19 +9,13 @@ public class ApptController {
 	/* Applying Singleton Structure */
 	private static ApptController instance = null;
 	
-	/* Remove the Appt from the storage */
+	@Deprecated
 	public final static int REMOVE = 1;
-
-	/* Modify the Appt the storage */
+	@Deprecated	
 	public final static int MODIFY = 2;
-
-	/* Add a new Appt into the storage */
+	@Deprecated	
 	public final static int NEW = 3;
-	
-	/*
-	 * Add additional flags which you feel necessary
-	 */
-	
+
 	/* The Appt storage */
 	private static ApptStorage mApptStorage = null;
 
@@ -59,6 +53,7 @@ public class ApptController {
 	
 	/* Manage the Appt in the storage
 	 * parameters: the Appt involved, the action to take on the Appt */
+	@Deprecated
 	public void ManageAppt(Appt appt, int action) {
 
 		if (action == NEW) {				// Save the Appt into the storage if it is new and non-null
@@ -73,7 +68,22 @@ public class ApptController {
 			mApptStorage.RemoveAppt(appt);
 		} 
 	}
-
+	
+	//Register appt as New Appt of user. Return true if successfully registered
+	public boolean registerNewAppt(User user, Appt appt){
+		return true;
+	}
+	
+	//Modify appt of user. Return true if successfully modified
+	public boolean modifyAppt(User user, Appt appt){
+		return true;
+	}
+	
+	//Remove appt of user. Return true if successfully removed
+	public boolean removeAppt(User user, Appt appt){
+		return true;
+	}
+	
 	/* Get the defaultUser of mApptStorage */
 	public User getDefaultUser() {
 		return mApptStorage.getDefaultUser();

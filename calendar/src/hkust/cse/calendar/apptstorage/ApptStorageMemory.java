@@ -4,6 +4,8 @@ import hkust.cse.calendar.unit.Appt;
 import hkust.cse.calendar.unit.TimeSpan;
 import hkust.cse.calendar.unit.User;
 
+import java.util.List;
+
 public class ApptStorageMemory extends ApptStorage {
 
 	private User defaultUser = null;
@@ -14,18 +16,26 @@ public class ApptStorageMemory extends ApptStorage {
 	}
 	
 	@Override
-	public void SaveAppt(Appt appt) {
+	public boolean SaveAppt(Appt appt) {
 		// TODO Auto-generated method stub
-
+		return true;
 	}
 
 	@Override
+	@Deprecated
 	public Appt[] RetrieveAppts(TimeSpan d) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+	
+	@Override
+	public List<Appt> RetrieveApptsInList(TimeSpan d) {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
+	@Deprecated	
 	public Appt[] RetrieveAppts(User entity, TimeSpan time) {
 		// TODO Auto-generated method stub
 		return null;
@@ -38,15 +48,15 @@ public class ApptStorageMemory extends ApptStorage {
 	}
 
 	@Override
-	public void UpdateAppt(Appt appt) {
+	public boolean UpdateAppt(Appt appt) {
 		// TODO Auto-generated method stub
-
+		return true;
 	}
 
 	@Override
-	public void RemoveAppt(Appt appt) {
+	public boolean RemoveAppt(Appt appt) {
 		// TODO Auto-generated method stub
-
+		return true;
 	}
 
 	@Override
