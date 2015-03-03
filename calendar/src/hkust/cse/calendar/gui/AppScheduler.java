@@ -108,8 +108,8 @@ public class AppScheduler extends JDialog implements ActionListener,
 		JPanel panelBothTime = initiateBothTimePanel();
 		JPanel panelDateAndTime = initiateDateAndTimePanel();
 		JPanel panelFreq = initiateFreqPanel();
-		//JPanel panelReminder = initiateReminderPanel();
-		//JPanel panelFreqAndReminder = initiateFreqAndReminderPanel();
+		JPanel panelReminder = initiateReminderPanel();
+		JPanel panelFreqAndReminder = initiateFreqAndReminderPanel();
 		
 		//Adding the panels to respective parent panels.
 		panelBothTime.add(panelStartTime);
@@ -118,9 +118,9 @@ public class AppScheduler extends JDialog implements ActionListener,
 		panelDateAndTime.add("South", panelBothTime);
 		panelTop.add(panelDateAndTime, BorderLayout.NORTH);
 		
-		//panelFreqAndReminder.add(panelFreq);
-		//panelFreqAndReminder.add(panelReminder);
-		//panelTop.add(panelFreqAndReminder, BorderLayout.CENTER);
+		panelFreqAndReminder.add(panelFreq);
+		panelFreqAndReminder.add(panelReminder);
+		panelTop.add(panelFreqAndReminder, BorderLayout.CENTER);
 		
 		JPanel panelTitleAndText = initiateTitleAndTextPanel();
 		panelDetail = initiateDetailPanel();
@@ -270,6 +270,32 @@ public class AppScheduler extends JDialog implements ActionListener,
 		
 		return panelFreq;
 		
+	}
+	
+	public JPanel initiateReminderPanel()
+	{
+		JPanel panelReminder = new JPanel();
+		Border reminderBorder = new TitledBorder(null, "Reminder");
+		panelReminder.setBorder(reminderBorder);
+		BoxLayout boxLayout = new BoxLayout(panelReminder, BoxLayout.Y_AXIS);
+		panelReminder.setLayout(boxLayout);
+		panelReminder.add(new JCheckBox("1 hour"));
+		panelReminder.add(new JCheckBox("3 hours"));
+		panelReminder.add(new JCheckBox("12 hours"));
+		panelReminder.add(new JCheckBox("24 hours"));
+		
+		return panelReminder;
+		
+	}
+	
+	public JPanel initiateFreqAndReminderPanel()
+	{
+		final int ROWS = 1;
+		final int COLUMNS = 2;
+		JPanel panelFreqAndReminder = new JPanel();
+		panelFreqAndReminder.setLayout(new GridLayout(ROWS,COLUMNS));
+		
+		return panelFreqAndReminder;
 	}
 	
 	public JPanel initiateTopPanel()
