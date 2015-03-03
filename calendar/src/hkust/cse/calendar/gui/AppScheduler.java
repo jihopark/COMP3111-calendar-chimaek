@@ -12,6 +12,7 @@ import java.awt.Color;
 import java.awt.Container;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
+import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ComponentEvent;
@@ -29,6 +30,7 @@ import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.DefaultListModel;
 import javax.swing.JButton;
+import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JDialog;
 import javax.swing.JLabel;
@@ -98,24 +100,38 @@ public class AppScheduler extends JDialog implements ActionListener,
 		Container contentPane;
 		contentPane = getContentPane();
 		
+		//Initializing individual panels.
 		JPanel panelTop = initiateTopPanel();
 		JPanel panelDate = initiateDatePanel();
 		JPanel panelStartTime = initiateStartTimePanel();
 		JPanel panelEndTime = initiateEndTimePanel();
 		JPanel panelBothTime = initiateBothTimePanel();
+		JPanel panelDateAndTime = initiateDateAndTimePanel();
+		//JPanel panelFreq = initiateFreqPanel();
+		//JPanel panelReminder = initiateReminderPanel();
+		//JPanel panelFreqAndReminder = initiateFreqAndReminderPanel();
 		
-		panelBothTime.add("West", panelStartTime);
-		panelBothTime.add("East", panelEndTime);
-		panelTop.add(panelDate, BorderLayout.NORTH);
-		panelTop.add(panelBothTime, BorderLayout.CENTER);
-		contentPane.add("North", panelTop);
-
+		//Adding the panels to respective parent panels.
+		panelBothTime.add(panelStartTime);
+		panelBothTime.add(panelEndTime);
+		panelDateAndTime.add("North", panelDate);
+		panelDateAndTime.add("South", panelBothTime);
+		panelTop.add(panelDateAndTime, BorderLayout.NORTH);
+		
+		//panelFreqAndReminder.add(panelFreq);
+		//panelFreqAndReminder.add(panelReminder);
+		//panelTop.add(panelFreqAndReminder, BorderLayout.CENTER);
+		
 		JPanel panelTitleAndText = initiateTitleAndTextPanel();
 		panelDetail = initiateDetailPanel();
 		panelApptDescription = initiateApptDescriptionPanel(panelTitleAndText, panelDetail);
 
 		panelTop.add(panelApptDescription, BorderLayout.SOUTH);
 
+		contentPane.add("North", panelTop);
+		
+		//NOT FOR PHASE 1
+		//THIS IS FOR INVITATION PURPOSE
 		if (NewAppt != null) {
 			detailArea.setText(NewAppt.getInfo());
 
@@ -225,10 +241,19 @@ public class AppScheduler extends JDialog implements ActionListener,
 	
 	public JPanel initiateBothTimePanel()
 	{
+		final int ROWS = 1;
+		final int COLUMNS = 2;
 		JPanel panelBothTime = new JPanel();
-		panelBothTime.setLayout(new BorderLayout());
+		panelBothTime.setLayout(new GridLayout(ROWS,COLUMNS));
 		return panelBothTime;
 		
+	}
+	
+	public JPanel initiateDateAndTimePanel()
+	{
+		JPanel panelDateAndTime = new JPanel();
+		panelDateAndTime.setLayout(new BorderLayout());
+		return panelDateAndTime;
 	}
 	
 	public JPanel initiateTopPanel()
@@ -425,6 +450,9 @@ public class AppScheduler extends JDialog implements ActionListener,
 		return result;
 	}
 
+	//This method executed when the save button is clicked 
+	//Must check for valid input
+	//If the input is valid, save the responses.
 	private void saveButtonResponse() {
 		// Fix Me!
 		// Save the appointment to the hard disk
