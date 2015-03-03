@@ -107,7 +107,7 @@ public class AppScheduler extends JDialog implements ActionListener,
 		JPanel panelEndTime = initiateEndTimePanel();
 		JPanel panelBothTime = initiateBothTimePanel();
 		JPanel panelDateAndTime = initiateDateAndTimePanel();
-		//JPanel panelFreq = initiateFreqPanel();
+		JPanel panelFreq = initiateFreqPanel();
 		//JPanel panelReminder = initiateReminderPanel();
 		//JPanel panelFreqAndReminder = initiateFreqAndReminderPanel();
 		
@@ -256,6 +256,22 @@ public class AppScheduler extends JDialog implements ActionListener,
 		return panelDateAndTime;
 	}
 	
+	public JPanel initiateFreqPanel()
+	{
+		JPanel panelFreq = new JPanel();
+		Border freqBorder = new TitledBorder(null, "Frequency");
+		panelFreq.setBorder(freqBorder);
+		BoxLayout boxLayout = new BoxLayout(panelFreq, BoxLayout.Y_AXIS);
+		panelFreq.setLayout(boxLayout);
+		panelFreq.add(new JCheckBox("One-Time"));
+		panelFreq.add(new JCheckBox("Daily"));
+		panelFreq.add(new JCheckBox("Weekly"));
+		panelFreq.add(new JCheckBox("Monthly"));
+		
+		return panelFreq;
+		
+	}
+	
 	public JPanel initiateTopPanel()
 	{
 		JPanel panelTop = new JPanel();
@@ -264,7 +280,6 @@ public class AppScheduler extends JDialog implements ActionListener,
 		
 		return panelTop;
 	}
-	
 	
 	public JPanel initiateTitleAndTextPanel()
 	{
