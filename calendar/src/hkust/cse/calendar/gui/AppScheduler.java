@@ -80,7 +80,7 @@ public class AppScheduler extends JDialog implements ActionListener,
 	private JTextArea detailArea;
 
 	private JSplitPane panelApptDescription;
-	JPanel panelDetail;
+	private JPanel panelDetail;
 
 	private JComboBox locationField;
 	
@@ -137,27 +137,26 @@ public class AppScheduler extends JDialog implements ActionListener,
 
 		}
 		
-		JPanel panel2 = new JPanel();
-		panel2.setLayout(new FlowLayout(FlowLayout.RIGHT));
+		JPanel panelBottom = new JPanel();
+		panelBottom.setLayout(new FlowLayout(FlowLayout.RIGHT));
 
 //		inviteBut = new JButton("Invite");
 //		inviteBut.addActionListener(this);
-//		panel2.add(inviteBut);
+//		panelBottom.add(inviteBut);
 		
-		saveBut = new JButton("Save");
-		saveBut.addActionListener(this);
-		panel2.add(saveBut);
-
-		rejectBut = new JButton("Reject");
-		rejectBut.addActionListener(this);
-		panel2.add(rejectBut);
+		//initiate buttons.
+		saveBut = initiateSaveButton();
+		rejectBut = initiateRejectButton();
+		CancelBut = initiateCancelButton();
+		
+		//add them to the panel
+		panelBottom.add(saveBut);
+		panelBottom.add(rejectBut);
 		rejectBut.show(false);
-
-		CancelBut = new JButton("Cancel");
-		CancelBut.addActionListener(this);
-		panel2.add(CancelBut);
-
-		contentPane.add("South", panel2);
+		panelBottom.add(CancelBut);
+		contentPane.add("South", panelBottom);
+		
+		
 		NewAppt = new Appt();
 
 		if (this.getTitle().equals("Join Appointment Content Change") || this.getTitle().equals("Join Appointment Invitation")){
@@ -350,6 +349,28 @@ public class AppScheduler extends JDialog implements ActionListener,
 		
 	}
 	
+	public JButton initiateSaveButton()
+	{
+		JButton tempSaveButton = new JButton("Save");
+		saveBut.addActionListener(this);
+		return tempSaveButton;
+	}
+	
+	public JButton initiateRejectButton()
+	{
+		JButton tempRejButton = new JButton("Reject");
+		rejectBut.addActionListener(this);
+		return tempRejButton;
+		
+	}
+	
+	public JButton initiateCancelButton()
+	{
+		JButton tempCloseButton = new JButton("Cancel");
+		CancelBut.addActionListener(this);
+		return tempCloseButton;
+	}
+	
 	//Constructor	
 	AppScheduler(String title, CalGrid cal, int selectedApptId) {
 		this.selectedApptId = selectedApptId;
@@ -437,6 +458,8 @@ public class AppScheduler extends JDialog implements ActionListener,
 		return date;
 	}
 
+	
+	//helper function
 	private int getTime(JTextField h, JTextField min) {
 
 		int hour = Utility.getNumber(h.getText());
@@ -495,10 +518,13 @@ public class AppScheduler extends JDialog implements ActionListener,
 	//Must check for valid input
 	//If the input is valid, save the responses.
 	private void saveButtonResponse() {
-		// Fix Me!
-		// Save the appointment to the hard disk
+		
+
 	}
 
+	
+	//This method can be used in conjunction with getValidDate() and getValidTimeInterval()
+	//to create a Timestamp object.
 	private Timestamp CreateTimeStamp(int[] date, int time) {
 		Timestamp stamp = new Timestamp(0);
 		stamp.setYear(date[0]);
