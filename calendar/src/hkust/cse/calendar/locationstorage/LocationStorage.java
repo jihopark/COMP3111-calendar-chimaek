@@ -4,7 +4,9 @@ import hkust.cse.calendar.unit.Appt;
 import hkust.cse.calendar.unit.TimeSpan;
 import hkust.cse.calendar.unit.User;
 import hkust.cse.calendar.unit.Location;
+
 import java.util.HashMap;
+import java.util.List;
 
 
 public abstract class LocationStorage {
@@ -16,9 +18,16 @@ public abstract class LocationStorage {
 	public LocationStorage() {	//default constructor
 	}
 	
-	public abstract Location[] getLocationList();
+	public abstract List<Location> getLocationList();
+
+	public abstract boolean UpdateLocation(Location location);
+
+	public abstract boolean RemoveLocation(Location location);
+
+	public abstract boolean SaveLocation(Location location);
+
+	public abstract Location RetrieveLocations(int joinLocationID);
 	
-	public abstract void setLocationList(Location[] locations);
 
 	/*
 	 * Add other methods if necessary
