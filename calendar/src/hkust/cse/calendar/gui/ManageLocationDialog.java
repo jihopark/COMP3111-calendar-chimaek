@@ -16,6 +16,8 @@ public class ManageLocationDialog extends JPanel
 								implements ListSelectionListener {
 
 	private static final long serialVersionUID = 1L;
+	//add Controller for location
+	//private LocationController _controller;
 	
     private static final String AddButtonString = "Add";
     private static final String DeleteButtonString = "Delete";
@@ -28,6 +30,7 @@ public class ManageLocationDialog extends JPanel
 
     public ManageLocationDialog() {
         super(new BorderLayout());
+        // _controller = controller;
 
         //implement after locationlist implementation is complete.
         //retrievedlocationList = LocationController.getInstance().getLocationList();
