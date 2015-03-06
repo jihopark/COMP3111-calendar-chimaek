@@ -2,6 +2,7 @@ package hkust.cse.calendar.gui;
 
 import hkust.cse.calendar.Main.CalendarMain;
 import hkust.cse.calendar.apptstorage.ApptController;
+import hkust.cse.calendar.apptstorage.ApptStorageMemory;
 import hkust.cse.calendar.unit.Appt;
 import hkust.cse.calendar.unit.TimeSpan;
 import hkust.cse.calendar.unit.User;
@@ -372,6 +373,21 @@ public class CalGrid extends JFrame implements ActionListener {
 				"Appointment Management");
 		mi = new JMenuItem("Manual Scheduling");
 		mi.addActionListener(listener);
+		Appmenu.add(mi);
+		
+		//Add manage location to CalGrid
+		mi = new JMenuItem("Manage Locations");	
+		mi.addActionListener(new ActionListener() {	
+			public void actionPerformed(ActionEvent arg0) {
+				//CalGrid grid = new CalGrid(new ApptStorageControllerImpl(new ApptStorageNullImpl(user)));
+				//ApptController.getInstance().initApptStorage(new ApptStorageMemory(user));
+				//CalGrid grid = new CalGrid();
+				
+				ManageLocationDialog dlg = new ManageLocationDialog();
+				dlg.createAndShowManageLocationDialogGUI();
+				//ManageLocationDialog.createAndShowManageLocationDialogGUI();
+			}	
+		});	
 		Appmenu.add(mi);
 
 		return menuBar;
