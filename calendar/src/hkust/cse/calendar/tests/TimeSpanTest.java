@@ -1,12 +1,12 @@
 package hkust.cse.calendar.tests;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+import hkust.cse.calendar.time.TimeController;
+import hkust.cse.calendar.unit.TimeSpan;
 
 import java.sql.Timestamp;
 import java.util.Calendar;
-import java.util.Date;
-
-import hkust.cse.calendar.unit.TimeSpan;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -16,16 +16,12 @@ public class TimeSpanTest {
 	private TimeSpan randomTimeSpan;
 	private long randomLength;
 
-	private static long currentTime = Calendar.getInstance().getTimeInMillis(); 
-	private static final long ONE_HOUR = 60*60*1000;
-	private static final long FIFTEEN_MINS = 15*60*1000;
-
 
 	@Before
 	public void initizlizeRandomTimeSpan(){
-		Timestamp randomStartTime = new Timestamp(currentTime - 6*ONE_HOUR + (long)(12*ONE_HOUR*Math.random()));
+		Timestamp randomStartTime = new Timestamp(TimeController.getInstance().getCurrentTimeInMillis() - 6*TimeController.ONE_HOUR + (long)(12*TimeController.ONE_HOUR*Math.random()));
 
-		randomLength = FIFTEEN_MINS + (long)((6*ONE_HOUR-FIFTEEN_MINS)*Math.random());
+		randomLength = TimeController.FIFTEEN_MINS + (long)((6*TimeController.ONE_HOUR-TimeController.FIFTEEN_MINS)*Math.random());
 		System.out.println("\nrandomLength is " + randomLength/1000/60 + " in mins");
 
 		randomTimeSpan = new TimeSpan(randomStartTime, 
