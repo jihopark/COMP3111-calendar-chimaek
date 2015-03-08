@@ -65,6 +65,14 @@ public class AppScheduler extends JDialog implements ActionListener,
 	private JLabel endTimeMinuteLabel;
 	private JTextField endTimeMinuteField;
 
+	private JLabel endAtYearLabel;
+	private JTextField endAtYearField;
+	private JLabel endAtMonthLabel;
+	private JTextField endAtMonthField;
+	private JLabel endAtDayLabel;
+	private JTextField endAtDayField;
+
+	
 	private DefaultListModel model;
 	private JTextField titleField;
 
@@ -112,6 +120,8 @@ public class AppScheduler extends JDialog implements ActionListener,
 		JPanel panelFreq = initiateFreqPanel();
 		JPanel panelReminder = initiateReminderPanel();
 		JPanel panelFreqAndReminder = initiateFreqAndReminderPanel();
+		JPanel panelFreqEndAt = initiateFreqEndAtPanel();
+		JPanel panelEndAtFreqAndReminder = initiateEndAtFreqAndReminderPanel();
 		
 		//Adding the panels to respective parent panels.
 		panelBothTime.add(panelStartTime);
@@ -122,7 +132,9 @@ public class AppScheduler extends JDialog implements ActionListener,
 		
 		panelFreqAndReminder.add(panelFreq);
 		panelFreqAndReminder.add(panelReminder);
-		panelTop.add(panelFreqAndReminder, BorderLayout.CENTER);
+		panelEndAtFreqAndReminder.add("North",panelFreqAndReminder);
+		panelEndAtFreqAndReminder.add("South",panelFreqEndAt);
+		panelTop.add(panelEndAtFreqAndReminder, BorderLayout.CENTER);
 		
 		JPanel panelTitleAndText = initiateTitleAndTextPanel();
 		panelDetail = initiateDetailPanel();
@@ -309,6 +321,37 @@ public class AppScheduler extends JDialog implements ActionListener,
 		panelFreqAndReminder.setLayout(new GridLayout(ROWS,COLUMNS));
 		
 		return panelFreqAndReminder;
+	}
+	
+	public JPanel initiateFreqEndAtPanel()
+	{
+		JPanel panelFreqEndAt = new JPanel();
+		Border freqBorder = new TitledBorder(null, "Appointment Ends At");
+		panelFreqEndAt.setBorder(freqBorder);
+
+		endAtYearLabel = new JLabel("YEAR: ");
+		panelFreqEndAt.add(endAtYearLabel);
+		endAtYearField = new JTextField(6);
+		panelFreqEndAt.add(endAtYearField);
+		endAtMonthLabel = new JLabel("MONTH: ");
+		panelFreqEndAt.add(endAtMonthLabel);
+		endAtMonthField = new JTextField(4);
+		panelFreqEndAt.add(endAtMonthField);
+		endAtDayLabel = new JLabel("DAY: ");
+		panelFreqEndAt.add(endAtDayLabel);
+		endAtDayField = new JTextField(4);
+		panelFreqEndAt.add(endAtDayField);
+		
+		return panelFreqEndAt;
+	}
+	
+	public JPanel initiateEndAtFreqAndReminderPanel()
+	{
+	
+		JPanel panelEndAtFreqAndReminder = new JPanel();
+		panelEndAtFreqAndReminder.setLayout(new BorderLayout());
+		
+		return panelEndAtFreqAndReminder;
 	}
 	
 	public JPanel initiateTopPanel()
@@ -536,6 +579,7 @@ public class AppScheduler extends JDialog implements ActionListener,
 	//Must check for valid input
 	//If the input is valid, save the responses.
 	private void saveButtonResponse() {
+		
 		
 
 
