@@ -26,8 +26,8 @@ public abstract class LocationStorage {
 
 	public abstract boolean SaveLocation(Location location);
 
-	public abstract Location RetrieveLocations(int joinLocationID);
-	
+	public abstract Location RetrieveLocations(int LocationID);
+
 
 	/*
 	 * Add other methods if necessary
