@@ -13,9 +13,7 @@ public class LocationController {
 	
 	/* Applying Singleton Structure */
 	private static LocationController instance = null;
-		//public LocationController(LocationStorage storage) {
-		//	mLocationStorage = storage;
-		//}
+
 	private static int locationIDCount = 1;
 		
 	/* The Location storage */
@@ -42,17 +40,23 @@ public class LocationController {
 		return false;
 	}
 	
-	public Location RetrieveLocations(int joinLocationID) {
-		return mLocationStorage.RetrieveLocations(joinLocationID);
+	public Location RetrieveLocations(int LocationID) {
+		return mLocationStorage.RetrieveLocations(LocationID);
 	}
 	
-	//Modify location of user. Return true if successfully modified
-	public boolean modifyLocation(User user, Location location){
+	//save new location
+	public boolean saveNewLocation(Location location){
+		location.setID(locationIDCount++);
+		return mLocationStorage.SaveLocation(location);
+	}
+	
+	//Modify location Return true if successfully modified
+	public boolean modifyLocation(Location location){
 		return mLocationStorage.UpdateLocation(location);
 	}
 	
-	//Remove appt of user. Return true if successfully removed
-	public boolean removeLocation(User user, Location location){
+	//Remove location. Return true if successfully removed
+	public boolean removeLocation(Location location){
 		return mLocationStorage.RemoveLocation(location);
 	}
 	

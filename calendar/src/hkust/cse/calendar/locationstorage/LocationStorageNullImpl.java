@@ -23,8 +23,13 @@ public class LocationStorageNullImpl extends LocationStorage {
 	}
 	
 	@Override
-	public Location RetrieveLocations(int joinLocationID) {
-		// TODO Auto-generated method stub
+	public Location RetrieveLocations(int LocationID) {
+		for (Location a : list){
+			if (a.getID() == LocationID){
+				return a;
+			}
+		}
+		//if can't find location in the list
 		return null;
 	}
 	@Override
