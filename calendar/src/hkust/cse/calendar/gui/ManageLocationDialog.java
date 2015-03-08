@@ -224,7 +224,7 @@ public class ManageLocationDialog extends JPanel
     public static void createAndShowManageLocationDialogGUI() {
         //Create and set up the window.
         JFrame frame = new JFrame("Manage Locations");
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 
         //Create and set up the content pane.
         JComponent newContentPane = new ManageLocationDialog();
