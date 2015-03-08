@@ -28,6 +28,7 @@ import java.util.Scanner;
 import javax.swing.BorderFactory;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
+import javax.swing.ButtonGroup;
 import javax.swing.DefaultListModel;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
@@ -36,6 +37,7 @@ import javax.swing.JDialog;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JRadioButton;
 import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
 import javax.swing.JTextArea;
@@ -262,10 +264,22 @@ public class AppScheduler extends JDialog implements ActionListener,
 		panelFreq.setBorder(freqBorder);
 		BoxLayout boxLayout = new BoxLayout(panelFreq, BoxLayout.Y_AXIS);
 		panelFreq.setLayout(boxLayout);
-		panelFreq.add(new JCheckBox("One-Time"));
-		panelFreq.add(new JCheckBox("Daily"));
-		panelFreq.add(new JCheckBox("Weekly"));
-		panelFreq.add(new JCheckBox("Monthly"));
+		
+		ButtonGroup freqButton = new ButtonGroup();
+		JRadioButton oneTimeButton = new JRadioButton("One-Time");
+		JRadioButton dailyButton = new JRadioButton("Daily");
+		JRadioButton weeklyButton = new JRadioButton("Weekly");
+		JRadioButton monthlyButton = new JRadioButton("Monthly");
+		freqButton.add(oneTimeButton);
+		freqButton.add(dailyButton);
+		freqButton.add(weeklyButton);
+		freqButton.add(monthlyButton);
+		oneTimeButton.setSelected(true);
+		
+		panelFreq.add(oneTimeButton);
+		panelFreq.add(dailyButton);
+		panelFreq.add(weeklyButton);
+		panelFreq.add(monthlyButton);
 		
 		return panelFreq;
 		
@@ -314,10 +328,14 @@ public class AppScheduler extends JDialog implements ActionListener,
 		panelTitleAndText.add(titleL);
 		panelTitleAndText.add(titleField);
 		
+		//GUI for location list.
 		//test for location combobox.
 		Location[] locations = {};
 		
 		JLabel locationLabel = new JLabel("LOCATION");
+		
+		//need to change the parameter in the constructor
+		//to load the list of locations.
 		locationField = new JComboBox(locations);
 		panelTitleAndText.add(locationLabel);
 		panelTitleAndText.add(locationField);
@@ -352,14 +370,14 @@ public class AppScheduler extends JDialog implements ActionListener,
 	public JButton initiateSaveButton()
 	{
 		JButton tempSaveButton = new JButton("Save");
-		saveBut.addActionListener(this);
+		tempSaveButton.addActionListener(this);
 		return tempSaveButton;
 	}
 	
 	public JButton initiateRejectButton()
 	{
 		JButton tempRejButton = new JButton("Reject");
-		rejectBut.addActionListener(this);
+		tempRejButton.addActionListener(this);
 		return tempRejButton;
 		
 	}
@@ -367,7 +385,7 @@ public class AppScheduler extends JDialog implements ActionListener,
 	public JButton initiateCancelButton()
 	{
 		JButton tempCloseButton = new JButton("Cancel");
-		CancelBut.addActionListener(this);
+		tempCloseButton.addActionListener(this);
 		return tempCloseButton;
 	}
 	
@@ -519,6 +537,7 @@ public class AppScheduler extends JDialog implements ActionListener,
 	//If the input is valid, save the responses.
 	private void saveButtonResponse() {
 		
+
 
 	}
 
