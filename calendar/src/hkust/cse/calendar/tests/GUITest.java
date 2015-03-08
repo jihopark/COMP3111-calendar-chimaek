@@ -13,9 +13,9 @@ public class GUITest {
 		
 		//if location is already registered
 		
-		Location location1= new Location("RM2464");
-		Location location2= new Location("RM3002");
-		Location location3= new Location("LSK1026");
+		Location location1= new Location("RM2464",0);
+		Location location2= new Location("RM3002", 1);
+		Location location3= new Location("LSK1026", 2);
 		DefaultListModel<Location> locationlist = new DefaultListModel<Location>();
 		
 		locationlist.addElement(location1);

@@ -142,7 +142,7 @@ public class ManageLocationDialog extends JPanel
             
             //adds new location at the end of the retrievedLocationList
             // need to change later to be sorted in order
-            Location newLocation = new Location(locationName.getText());
+            Location newLocation = new Location(locationName.getText(), 0);
             retrievedLocationList.addElement(newLocation);
             
 ///////////////////////            
