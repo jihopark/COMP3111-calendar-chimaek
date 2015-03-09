@@ -17,6 +17,9 @@ public class Appt implements Serializable {
 	
 	private Appt nextRepeatedAppt = null;						
 	private Appt previousRepeatedAppt = null;
+
+	private Location location;
+	private Notification notification;
 	
 	private LinkedList<String> attend;			// The Attendant list
 	
@@ -42,6 +45,22 @@ public class Appt implements Serializable {
 		attend = appt.getAttendList();
 		reject = appt.getRejectList();
 		waiting = appt.getWaitingList();
+	}
+	
+	public void setNotification(Notification notification){
+		this.notification = notification;
+	}
+	
+	public void setLocation(Location location){
+		this.location = location;
+	}
+	
+	public Location getLocation(){
+		return location;
+	}
+	
+	public Notification getNotification(){
+		return notification;
 	}
 
 	// Getter of the mTimeSpan
