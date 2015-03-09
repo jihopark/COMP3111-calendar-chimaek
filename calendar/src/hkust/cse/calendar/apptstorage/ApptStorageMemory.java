@@ -25,7 +25,7 @@ public class ApptStorageMemory extends ApptStorage {
 	@Override
 	public boolean checkOverlaps(Appt appt){
 		for (Appt a : list){
-			if (a.TimeSpan().Overlap(appt.TimeSpan())){
+			if (!a.equals(appt) && a.TimeSpan().Overlap(appt.TimeSpan())){
 				System.out.println("\nApptStorageMemory/checkOverlaps: Overlaps!");
 				return true;
 			}
@@ -115,7 +115,7 @@ public class ApptStorageMemory extends ApptStorage {
 	@Override
 	public boolean UpdateAppt(Appt appt) {
 		for (Appt a : list){
-			if (a.equals(appt) && isNotPast(appt)){
+			if (a.equals(appt) && appt.isValid() && isNotPast(appt) && !checkOverlaps(appt)){
 				list.remove(a);
 				list.add(appt);
 				System.out.println("ApptStorageMemory/UpdateAppt : Updated Appt #"+appt.getID());
