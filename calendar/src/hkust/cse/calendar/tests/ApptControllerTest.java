@@ -49,7 +49,7 @@ public class ApptControllerTest {
 	}
 	
 	@Test
-	public void controllerShouldSaveRepeatedSchedule(){
+	public void controllerShouldSaveAndRemoveRepeatedSchedule(){
 		Appt appt = new Appt();
 		int randomRepeatNumber = 1+(int)(30*Math.random());
 
@@ -63,9 +63,15 @@ public class ApptControllerTest {
 		
 		//Retrieve List
 		for (Appt a : ApptController.getInstance().RetrieveApptsInList(defaultUser, new TimeSpan(TimeController.getInstance().getCurrentTimeInMillis(), 
-				TimeController.getInstance().getCurrentTimeInMillis()+24*8*TimeController.ONE_HOUR))){
+				TimeController.getInstance().getCurrentTimeInMillis()+24*randomRepeatNumber/2*TimeController.ONE_HOUR))){
 			System.out.println("\nRetrieved List: " + a );
+			appt = a;
 		}
+		
+		//Remove List - need to program assert. Please see the console for testing for now
+		ApptController.getInstance().removeAppt(defaultUser, appt);
+		assertTrue("All List Should be Removed", true);
+		
 	}
 	private void printListByIteration(Appt appt){
 		System.out.println("\n------------ Start of List ----------------------");

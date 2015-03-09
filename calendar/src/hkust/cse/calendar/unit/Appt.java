@@ -80,7 +80,7 @@ public class Appt implements Serializable {
 	}
 	
 	public boolean isRepeated(){
-		return previousRepeatedAppt == null && nextRepeatedAppt == null;
+		return !(previousRepeatedAppt == null && nextRepeatedAppt == null);
 	}
 
 

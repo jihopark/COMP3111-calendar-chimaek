@@ -145,6 +145,22 @@ public class ApptController {
 	
 	//Remove appt of user. Return true if successfully removed
 	public boolean removeAppt(User user, Appt appt){
+		//If repeated, then remove all repeated appts. However, past appts will not be removed
+		if (appt.isRepeated()){
+			System.out.println("\nRemove Repeated!");
+			Appt iterator = appt.getNextRepeatedAppt();
+			while (iterator!=null){
+				mApptStorage.RemoveAppt(iterator);
+				iterator = iterator.getNextRepeatedAppt();
+			}
+			iterator = appt.getPreviousRepeatedAppt();
+			while (iterator!=null){
+				mApptStorage.RemoveAppt(iterator);
+				iterator = iterator.getPreviousRepeatedAppt();
+			}
+			mApptStorage.RemoveAppt(appt);
+			return true;
+		}
 		return mApptStorage.RemoveAppt(appt);
 	}
 	
