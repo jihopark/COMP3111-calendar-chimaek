@@ -4,6 +4,9 @@ import hkust.cse.calendar.unit.Appt;
 import hkust.cse.calendar.unit.TimeSpan;
 import hkust.cse.calendar.unit.User;
 
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 
 public class ApptController {
@@ -11,7 +14,7 @@ public class ApptController {
 	/* Applying Singleton Structure */
 	private static ApptController instance = null;
 	private static int apptIDCount = 1;
-	
+	public static final int DAILY = 1, WEEKLY = 2, MONTHLY = 3;
 	@Deprecated
 	public final static int REMOVE = 1;
 	@Deprecated	
@@ -81,6 +84,51 @@ public class ApptController {
 	public boolean saveNewAppt(User user, Appt appt){
 		appt.setID(apptIDCount++);
 		return mApptStorage.SaveAppt(appt);
+	}
+	
+	public boolean saveRepeatedNewAppt(User user, Appt appt, int repeatType, Date repeatEndDate){
+		List<Appt> tmpList;
+		tmpList = getRepeatedApptList(appt, repeatType, repeatEndDate);
+		
+		return true;
+	}
+	
+	
+	public List<Appt> getRepeatedApptList(Appt appt, int repeatType, Date repeatEndDate){
+		ArrayList<Appt> list = new ArrayList<Appt>();
+		Calendar startTime = Calendar.getInstance();
+		Calendar endTime = Calendar.getInstance();
+		startTime.setTime(new Date(appt.getTimeSpan().StartTime().getTime()));
+		endTime.setTime(new Date(appt.getTimeSpan().EndTime().getTime()));
+		
+		Appt i = new Appt(appt);
+		i.setNextRepeatedAppt(null);
+		list.add(i);
+		
+		Appt j = new Appt(appt);
+		while(true){
+			if (repeatType == DAILY){
+				startTime.add(Calendar.DATE, 1);
+				endTime.add(Calendar.DATE, 1);
+			}
+			else if (repeatType == WEEKLY){
+				startTime.add(Calendar.DATE, 7);
+				endTime.add(Calendar.DATE, 7);
+			}
+			else if (repeatType == MONTHLY){
+				startTime.add(Calendar.MONTH, 1);
+				endTime.add(Calendar.MONTH, 1);
+			}
+			if (endTime.getTime().after(repeatEndDate))
+				break;
+			j.setTimeSpan(new TimeSpan(startTime.getTimeInMillis(), endTime.getTimeInMillis()));
+			j.setNextRepeatedAppt(null);
+			i.setNextRepeatedAppt(j);
+			list.add(j);
+			i = j;
+			j = new Appt(i);
+		}
+		return list;
 	}
 	
 	//Modify appt of user. Return true if successfully modified

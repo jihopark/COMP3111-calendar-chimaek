@@ -332,7 +332,7 @@ public class AppList extends JPanel implements ActionListener {
 		Color color;
 		currColor = new Color(0,240-(appt.TimeSpan().StartTime().getHours()-8)*25,255-(appt.TimeSpan().StartTime().getMinutes()*3));
 		currColorForJoint = new Color(255-(appt.TimeSpan().StartTime().getHours()-8)*25,0,190-(appt.TimeSpan().StartTime().getMinutes()*3));
-		if(!appt.isJoint())
+		if(!appt.isRepeated())
 			color = currColor;
 		else
 			color = currColorForJoint;

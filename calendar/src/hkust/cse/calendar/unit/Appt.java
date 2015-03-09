@@ -13,11 +13,10 @@ public class Appt implements Serializable {
 
 	private String mInfo;						// Store the content of the appointments description
 
-	private int mApptID;						// The appointment id
+	private int mApptID;						// The appointment id	
 	
-	private int joinApptID;						// The join appointment id
-
-	private boolean isjoint;					// The appointment is a joint appointment
+	private Appt nextRepeatedAppt = null;						
+	private boolean isRepeated = false;
 	
 	private LinkedList<String> attend;			// The Attendant list
 	
@@ -30,11 +29,21 @@ public class Appt implements Serializable {
 		mTimeSpan = null;
 		mTitle = "Untitled";
 		mInfo = "";
-		isjoint = false;
+		isRepeated = false;
 		attend = new LinkedList<String>();
 		reject = new LinkedList<String>();
 		waiting = new LinkedList<String>();
-		joinApptID = -1;
+	}
+	
+	public Appt(Appt appt){
+		mApptID = 0;
+		mTimeSpan = appt.getTimeSpan();
+		mTitle = appt.getTitle();
+		mInfo = appt.getInfo();
+		isRepeated = false;
+		attend = appt.getAttendList();
+		reject = appt.getRejectList();
+		waiting = appt.getWaitingList();
 	}
 
 	// Getter of the mTimeSpan
@@ -57,14 +66,23 @@ public class Appt implements Serializable {
 		return mApptID;
 	}
 	
-	// Getter of the join appointment id
-	public int getJoinID(){
-		return joinApptID;
+	public Appt getNextRepeatedAppt(){
+		return nextRepeatedAppt;
 	}
 
-	public void setJoinID(int joinID){
-		this.joinApptID = joinID;
+	public void setNextRepeatedAppt(Appt appt){
+		nextRepeatedAppt = appt;
+		if (appt !=null)
+			isRepeated = true;
+		else
+			isRepeated = false;
 	}
+	
+	public boolean isRepeated(){
+		return isRepeated;
+	}
+
+
 	// Getter of the attend LinkedList<String>
 	public LinkedList<String> getAttendList(){
 		return attend;
@@ -176,21 +194,16 @@ public class Appt implements Serializable {
 		}
 		return false;
 	}
+	
+	public TimeSpan getTimeSpan(){
+		return mTimeSpan;
+	}
 
 	// Setter if the appointment id
 	public void setID(int id) {
 		mApptID = id;
 	}
 	
-	// check whether this is a joint appointment
-	public boolean isJoint(){
-		return isjoint;
-	}
-
-	// setter of the isJoint
-	public void setJoint(boolean isjoint){
-		this.isjoint = isjoint;
-	}
 	
 	public boolean equals(Appt a){
 		return this.getID() == a.getID();
