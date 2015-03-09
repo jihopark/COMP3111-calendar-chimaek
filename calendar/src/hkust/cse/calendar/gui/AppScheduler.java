@@ -419,7 +419,7 @@ public class AppScheduler extends JDialog implements ActionListener,
 		tempPanelDetail.setLayout(new BorderLayout());
 		Border detailBorder = new TitledBorder(null, "Appointment Description");
 		tempPanelDetail.setBorder(detailBorder);
-		detailArea = new JTextArea(20, 30);
+		detailArea = new JTextArea(15, 30);
 
 		detailArea.setEditable(true);
 		JScrollPane detailScroll = new JScrollPane(detailArea);
