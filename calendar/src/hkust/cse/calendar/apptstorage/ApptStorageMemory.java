@@ -22,7 +22,8 @@ public class ApptStorageMemory extends ApptStorage {
 		list = new LinkedList<Appt>();
 	}
 	
-	private boolean checkOverlaps(Appt appt){
+	@Override
+	public boolean checkOverlaps(Appt appt){
 		for (Appt a : list){
 			if (a.TimeSpan().Overlap(appt.TimeSpan())){
 				System.out.println("\nApptStorageMemory/checkOverlaps: Overlaps!");
@@ -30,6 +31,15 @@ public class ApptStorageMemory extends ApptStorage {
 			}
 		}
 		
+		return false;
+	}
+	
+	@Override
+	public boolean checkOverlaps(List<Appt> appts){
+		for (Appt a : appts){
+			if (checkOverlaps(a))
+				return true;
+		}
 		return false;
 	}
 	

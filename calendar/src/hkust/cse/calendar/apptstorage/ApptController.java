@@ -89,7 +89,12 @@ public class ApptController {
 	public boolean saveRepeatedNewAppt(User user, Appt appt, int repeatType, Date repeatEndDate){
 		List<Appt> tmpList;
 		tmpList = getRepeatedApptList(appt, repeatType, repeatEndDate);
-		
+		if (mApptStorage.checkOverlaps(tmpList))
+			return false;
+		for (Appt a : tmpList){
+			if (!saveNewAppt(user, a))
+				return false;
+		}
 		return true;
 	}
 	
@@ -103,6 +108,7 @@ public class ApptController {
 		
 		Appt i = new Appt(appt);
 		i.setNextRepeatedAppt(null);
+		i.setPreviousRepeatedAppt(null);
 		list.add(i);
 		
 		Appt j = new Appt(appt);
@@ -124,6 +130,7 @@ public class ApptController {
 			j.setTimeSpan(new TimeSpan(startTime.getTimeInMillis(), endTime.getTimeInMillis()));
 			j.setNextRepeatedAppt(null);
 			i.setNextRepeatedAppt(j);
+			j.setPreviousRepeatedAppt(i);
 			list.add(j);
 			i = j;
 			j = new Appt(i);

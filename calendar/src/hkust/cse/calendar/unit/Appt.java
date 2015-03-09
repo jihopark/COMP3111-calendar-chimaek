@@ -16,7 +16,7 @@ public class Appt implements Serializable {
 	private int mApptID;						// The appointment id	
 	
 	private Appt nextRepeatedAppt = null;						
-	private boolean isRepeated = false;
+	private Appt previousRepeatedAppt = null;
 	
 	private LinkedList<String> attend;			// The Attendant list
 	
@@ -29,7 +29,6 @@ public class Appt implements Serializable {
 		mTimeSpan = null;
 		mTitle = "Untitled";
 		mInfo = "";
-		isRepeated = false;
 		attend = new LinkedList<String>();
 		reject = new LinkedList<String>();
 		waiting = new LinkedList<String>();
@@ -40,7 +39,6 @@ public class Appt implements Serializable {
 		mTimeSpan = appt.getTimeSpan();
 		mTitle = appt.getTitle();
 		mInfo = appt.getInfo();
-		isRepeated = false;
 		attend = appt.getAttendList();
 		reject = appt.getRejectList();
 		waiting = appt.getWaitingList();
@@ -69,17 +67,20 @@ public class Appt implements Serializable {
 	public Appt getNextRepeatedAppt(){
 		return nextRepeatedAppt;
 	}
-
+	
+	public Appt getPreviousRepeatedAppt(){
+		return previousRepeatedAppt;
+	}
+	
+	public void setPreviousRepeatedAppt(Appt appt){
+		previousRepeatedAppt = appt;
+	}
 	public void setNextRepeatedAppt(Appt appt){
 		nextRepeatedAppt = appt;
-		if (appt !=null)
-			isRepeated = true;
-		else
-			isRepeated = false;
 	}
 	
 	public boolean isRepeated(){
-		return isRepeated;
+		return previousRepeatedAppt == null && nextRepeatedAppt == null;
 	}
 
 

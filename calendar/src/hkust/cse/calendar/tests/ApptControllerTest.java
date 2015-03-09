@@ -1,5 +1,6 @@
 package hkust.cse.calendar.tests;
 
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import hkust.cse.calendar.apptstorage.ApptController;
 import hkust.cse.calendar.apptstorage.ApptStorageMemory;
@@ -47,12 +48,40 @@ public class ApptControllerTest {
 		assertTrue(randomRepeatNumber + " Days Monthly", tmpList.size()==randomRepeatNumber);
 	}
 	
+	@Test
+	public void controllerShouldSaveRepeatedSchedule(){
+		Appt appt = new Appt();
+		int randomRepeatNumber = 1+(int)(30*Math.random());
+
+		appt.setTitle("Repeat Save Test");
+		appt.setTimeSpan(new TimeSpan(TimeController.getInstance().getCurrentTimeInMillis()+TimeController.FIFTEEN_MINS, 
+				TimeController.getInstance().getCurrentTimeInMillis() + TimeController.ONE_HOUR));
+		assertTrue("Save Daily Repeated Appt Correctly",ApptController.getInstance().saveRepeatedNewAppt(defaultUser, appt, ApptController.DAILY, 
+				new Date(TimeController.getInstance().getCurrentTimeInMillis()+TimeController.ONE_HOUR*24*randomRepeatNumber)));
+		assertFalse("Save Weekly Repeated Appt Correctly",ApptController.getInstance().saveRepeatedNewAppt(defaultUser, appt, ApptController.WEEKLY, 
+				new Date(TimeController.getInstance().getCurrentTimeInMillis()+TimeController.ONE_HOUR*24*7*randomRepeatNumber)));
+		
+		//Retrieve List
+		for (Appt a : ApptController.getInstance().RetrieveApptsInList(defaultUser, new TimeSpan(TimeController.getInstance().getCurrentTimeInMillis(), 
+				TimeController.getInstance().getCurrentTimeInMillis()+24*8*TimeController.ONE_HOUR))){
+			System.out.println("\nRetrieved List: " + a );
+		}
+	}
 	private void printListByIteration(Appt appt){
 		System.out.println("\n------------ Start of List ----------------------");
-		while (appt!=null){
+		while (true){
 			System.out.println("\n"+appt);
+			if (appt.getNextRepeatedAppt()==null)
+				break;
 			appt = appt.getNextRepeatedAppt();
 		}
+		System.out.println("\n------------ End of List ----------------------");
+		
+		while(appt!=null){
+			System.out.println("\nReverse: "+appt);
+			appt = appt.getPreviousRepeatedAppt();
+		}
+		
 	}
 
 }
