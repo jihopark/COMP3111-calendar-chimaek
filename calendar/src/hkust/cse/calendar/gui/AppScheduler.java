@@ -72,6 +72,17 @@ public class AppScheduler extends JDialog implements ActionListener,
 	private JLabel endAtDayLabel;
 	private JTextField endAtDayField;
 
+	private ButtonGroup freqButton;
+	private JRadioButton oneTimeButton;
+	private JRadioButton dailyButton;
+	private JRadioButton weeklyButton;
+	private JRadioButton monthlyButton;
+	
+	private JCheckBox oneHourCheckBox;
+	private JCheckBox threeHourCheckBox;
+	private JCheckBox twelveHourCheckBox;
+	private JCheckBox twentyfourHourCheckBox;
+	
 	
 	private DefaultListModel model;
 	private JTextField titleField;
@@ -123,7 +134,7 @@ public class AppScheduler extends JDialog implements ActionListener,
 		JPanel panelFreqEndAt = initiateFreqEndAtPanel();
 		JPanel panelEndAtFreqAndReminder = initiateEndAtFreqAndReminderPanel();
 		
-		//Adding the panels to respective parent panels.
+		//Adding the panels to respective root panels.
 		panelBothTime.add(panelStartTime);
 		panelBothTime.add(panelEndTime);
 		panelDateAndTime.add("North", panelDate);
@@ -144,8 +155,6 @@ public class AppScheduler extends JDialog implements ActionListener,
 
 		contentPane.add("North", panelTop);
 		
-		//NOT FOR PHASE 1
-		//THIS IS FOR INVITATION PURPOSE
 		if (NewAppt != null) {
 			detailArea.setText(NewAppt.getInfo());
 
@@ -159,9 +168,9 @@ public class AppScheduler extends JDialog implements ActionListener,
 //		panelBottom.add(inviteBut);
 		
 		//initiate buttons.
-		saveBut = initiateSaveButton();
-		rejectBut = initiateRejectButton();
-		CancelBut = initiateCancelButton();
+		initiateSaveButton();
+		initiateRejectButton();
+		initiateCancelButton();
 		
 		//add them to the panel
 		panelBottom.add(saveBut);
@@ -277,16 +286,22 @@ public class AppScheduler extends JDialog implements ActionListener,
 		BoxLayout boxLayout = new BoxLayout(panelFreq, BoxLayout.Y_AXIS);
 		panelFreq.setLayout(boxLayout);
 		
-		ButtonGroup freqButton = new ButtonGroup();
-		JRadioButton oneTimeButton = new JRadioButton("One-Time");
-		JRadioButton dailyButton = new JRadioButton("Daily");
-		JRadioButton weeklyButton = new JRadioButton("Weekly");
-		JRadioButton monthlyButton = new JRadioButton("Monthly");
+		freqButton = new ButtonGroup();
+		oneTimeButton = new JRadioButton("One-Time");
+		dailyButton = new JRadioButton("Daily");
+		weeklyButton = new JRadioButton("Weekly");
+		monthlyButton = new JRadioButton("Monthly");
 		freqButton.add(oneTimeButton);
 		freqButton.add(dailyButton);
 		freqButton.add(weeklyButton);
 		freqButton.add(monthlyButton);
 		oneTimeButton.setSelected(true);
+		
+		oneTimeButton.addActionListener(this);
+		dailyButton.addActionListener(this);
+		weeklyButton.addActionListener(this);
+		monthlyButton.addActionListener(this);
+		
 		
 		panelFreq.add(oneTimeButton);
 		panelFreq.add(dailyButton);
@@ -304,10 +319,16 @@ public class AppScheduler extends JDialog implements ActionListener,
 		panelReminder.setBorder(reminderBorder);
 		BoxLayout boxLayout = new BoxLayout(panelReminder, BoxLayout.Y_AXIS);
 		panelReminder.setLayout(boxLayout);
-		panelReminder.add(new JCheckBox("1 hour"));
-		panelReminder.add(new JCheckBox("3 hours"));
-		panelReminder.add(new JCheckBox("12 hours"));
-		panelReminder.add(new JCheckBox("24 hours"));
+		
+		oneHourCheckBox = new JCheckBox("1 hour");
+		threeHourCheckBox = new JCheckBox("3 hours");
+		twelveHourCheckBox = new JCheckBox("12 hours");
+		twentyfourHourCheckBox = new JCheckBox("24 hours");
+		
+		panelReminder.add(oneHourCheckBox);
+		panelReminder.add(threeHourCheckBox);
+		panelReminder.add(twelveHourCheckBox);
+		panelReminder.add(twentyfourHourCheckBox);
 		
 		return panelReminder;
 		
@@ -341,6 +362,12 @@ public class AppScheduler extends JDialog implements ActionListener,
 		panelFreqEndAt.add(endAtDayLabel);
 		endAtDayField = new JTextField(4);
 		panelFreqEndAt.add(endAtDayField);
+		
+		endAtYearField.setEditable(false);
+		endAtMonthField.setEditable(false);
+		endAtDayField.setEditable(false);
+		
+		
 		
 		return panelFreqEndAt;
 	}
@@ -410,26 +437,24 @@ public class AppScheduler extends JDialog implements ActionListener,
 		
 	}
 	
-	public JButton initiateSaveButton()
+	public void initiateSaveButton()
 	{
-		JButton tempSaveButton = new JButton("Save");
-		tempSaveButton.addActionListener(this);
-		return tempSaveButton;
-	}
-	
-	public JButton initiateRejectButton()
-	{
-		JButton tempRejButton = new JButton("Reject");
-		tempRejButton.addActionListener(this);
-		return tempRejButton;
+		saveBut = new JButton("Save");
+		saveBut.addActionListener(this);
 		
 	}
 	
-	public JButton initiateCancelButton()
+	public void initiateRejectButton()
 	{
-		JButton tempCloseButton = new JButton("Cancel");
-		tempCloseButton.addActionListener(this);
-		return tempCloseButton;
+		rejectBut = new JButton("Reject");
+		rejectBut.addActionListener(this);
+		
+	}
+	
+	public void initiateCancelButton()
+	{
+		CancelBut = new JButton("Cancel");
+		CancelBut.addActionListener(this);
 	}
 	
 	//Constructor	
@@ -448,15 +473,21 @@ public class AppScheduler extends JDialog implements ActionListener,
 	public void actionPerformed(ActionEvent e) {
 
 		// distinguish which button is clicked and continue with require function
-		if (e.getSource() == CancelBut) {
+		if (e.getSource() == CancelBut) 
+		{
 
 			setVisible(false);
 			dispose();
-		} else if (e.getSource() == saveBut) {
+		}
+		else if (e.getSource() == saveBut) 
+		{
 			saveButtonResponse();
 
-		} else if (e.getSource() == rejectBut){
-			if (JOptionPane.showConfirmDialog(this, "Reject this joint appointment?", "Confirmation", JOptionPane.YES_NO_OPTION) == 0){
+		}
+		else if (e.getSource() == rejectBut)
+		{
+			if (JOptionPane.showConfirmDialog(this, "Reject this joint appointment?", "Confirmation", JOptionPane.YES_NO_OPTION) == 0)
+			{
 				NewAppt.addReject(getCurrentUser());
 				NewAppt.getAttendList().remove(getCurrentUser());
 				NewAppt.getWaitingList().remove(getCurrentUser());
@@ -464,6 +495,35 @@ public class AppScheduler extends JDialog implements ActionListener,
 				dispose();
 			}
 		}
+		else if(e.getSource() == oneTimeButton)
+		{
+			endAtYearField.setEditable(false);
+			endAtMonthField.setEditable(false);
+			endAtDayField.setEditable(false);
+			
+		}
+		else if(e.getSource() == dailyButton)
+		{
+			endAtYearField.setEditable(true);
+			endAtMonthField.setEditable(true);
+			endAtDayField.setEditable(true);
+			
+		}
+		else if(e.getSource() == weeklyButton)
+		{
+			endAtYearField.setEditable(true);
+			endAtMonthField.setEditable(true);
+			endAtDayField.setEditable(true);
+			
+		}
+		else if(e.getSource() == monthlyButton)
+		{
+			endAtYearField.setEditable(true);
+			endAtMonthField.setEditable(true);
+			endAtDayField.setEditable(true);
+			
+		}
+		
 		parent.getAppList().clear();
 		parent.getAppList().setTodayAppt(parent.GetTodayAppt());
 		parent.repaint();
@@ -487,11 +547,11 @@ public class AppScheduler extends JDialog implements ActionListener,
 
 	}
 
-	private int[] getValidDate() {
+	private int[] getValidDate(JTextField year, JTextField month, JTextField day) {
 
 		int[] date = new int[3];
-		date[0] = Utility.getNumber(yearField.getText());
-		date[1] = Utility.getNumber(monthField.getText());
+		date[0] = Utility.getNumber(year.getText());
+		date[1] = Utility.getNumber(month.getText());
 		if (date[0] < 1980 || date[0] > 2100) {
 			JOptionPane.showMessageDialog(this, "Please input proper year",
 					"Input Error", JOptionPane.ERROR_MESSAGE);
@@ -503,7 +563,7 @@ public class AppScheduler extends JDialog implements ActionListener,
 			return null;
 		}
 
-		date[2] = Utility.getNumber(dayField.getText());
+		date[2] = Utility.getNumber(day.getText());
 		int monthDay = CalGrid.monthDays[date[1] - 1];
 		if (date[1] == 2) {
 			GregorianCalendar c = new GregorianCalendar();
@@ -580,11 +640,97 @@ public class AppScheduler extends JDialog implements ActionListener,
 	//If the input is valid, save the responses.
 	private void saveButtonResponse() {
 		
+		//save the date and time interval of the appointment.
+		int[] validDate = getValidDate(yearField,monthField,dayField);
+		int[] validTimeInterval = getValidTimeInterval();
+		
+		Timestamp timestampForStartTime = CreateTimeStamp(validDate, validTimeInterval[0]);
+		Timestamp timestampForEndTime = CreateTimeStamp(validDate, validTimeInterval[1]);
+		TimeSpan timeSpanForAppt = new TimeSpan(timestampForStartTime,timestampForEndTime);
+		NewAppt.setTimeSpan(timeSpanForAppt);
 		
 
-
+		//save the title.
+		NewAppt.setTitle(titleField.getText());
+		
+		//save the extra information
+		NewAppt.setInfo(detailArea.getText());
+		
+		//save the status of checkboxes(reminder)
+		
+		//check if the input date for endAt is valid (check for valid date and no duplication)
+		if(!(oneTimeButton.isSelected()))
+		{
+			int[] validEndAtDate = getValidDate(endAtYearField, endAtMonthField, endAtDayField);
+			saveResponseFromApptFrequency();
+			
+			//save the status of the radio button
+			//save the detail of the endAt
+			if(validEndAtDate != null)
+			{
+				saveResponseFromEndAt();
+			}
+			
+		}
+		
+		//Save the location from the list.
+		String locationString = (String) locationField.getSelectedItem(); 
+		//NewAppt.setLocation(locationString);
+		
+		ApptController.getInstance().saveNewAppt(ApptController.getInstance().getDefaultUser(),NewAppt);
+		
 	}
 
+	private void saveResponseFromReminder()
+	{
+		if(oneHourCheckBox.isSelected())
+		{
+			
+		}
+		
+		if(threeHourCheckBox.isSelected())
+		{
+			
+		}
+		
+		if(twelveHourCheckBox.isSelected())
+		{
+			
+		}
+		
+		if(twentyfourHourCheckBox.isSelected())
+		{
+			
+			
+		}
+	}
+	
+	private void saveResponseFromApptFrequency()
+	{
+		 if(oneTimeButton.isSelected())
+		 {
+			 //save freq as one time
+		 }
+		 else if(dailyButton.isSelected())
+		 {
+			 //save freq as daily.
+		 }
+		 else if(weeklyButton.isSelected())
+		 {
+			 //save freq as weekly
+		 }
+		 else if(monthlyButton.isSelected())
+		 {
+			 //save freq as monthly
+		 }
+	}
+	
+	private void saveResponseFromEndAt()
+	{
+		
+		
+	}
+	
 	
 	//This method can be used in conjunction with getValidDate() and getValidTimeInterval()
 	//to create a Timestamp object.
@@ -598,7 +744,7 @@ public class AppScheduler extends JDialog implements ActionListener,
 		return stamp;
 	}
 
-	public void updateSetApp(Appt appt) {
+	public void updateSettingAppt(Appt appt) {
 		// Fix Me!
 	}
 

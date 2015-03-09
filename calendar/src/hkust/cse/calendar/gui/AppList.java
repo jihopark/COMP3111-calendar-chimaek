@@ -413,6 +413,7 @@ public class AppList extends JPanel implements ActionListener {
 	}
 
 	private void delete() {
+		//TO-DO
 
 	}
 
@@ -421,8 +422,7 @@ public class AppList extends JPanel implements ActionListener {
 		if (apptTitle == null)
 			return;
 		AppScheduler setAppDial = new AppScheduler("Modify", parent, apptTitle.getID());
-
-		setAppDial.updateSetApp(apptTitle);
+		setAppDial.updateSettingAppt(apptTitle);
 		setAppDial.show();
 		setAppDial.setResizable(false);
 
@@ -474,8 +474,8 @@ public class AppList extends JPanel implements ActionListener {
 		else
 			startTime = (currentRow + 20) * 15 + 480;
 		AppScheduler a = new AppScheduler("New", parent);
-		a.updateSetApp(hkust.cse.calendar.gui.Utility.createDefaultAppt(
-				parent.currentY, parent.currentM, parent.currentD,
+		a.updateSettingAppt(hkust.cse.calendar.gui.Utility.createDefaultAppt(
+				parent.currentYear, parent.currentMonth, parent.currentDay,
 				parent.mCurrUser, startTime));
 		a.setLocationRelativeTo(null);
 		a.show();
