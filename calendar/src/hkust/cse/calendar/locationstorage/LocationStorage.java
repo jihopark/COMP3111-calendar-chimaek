@@ -28,6 +28,8 @@ public abstract class LocationStorage {
 
 	public abstract Location RetrieveLocations(int LocationID);
 
+	public abstract List<Location> RetrieveLocationsInList();
+
 
 	/*
 	 * Add other methods if necessary

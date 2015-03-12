@@ -80,12 +80,25 @@ public class LocationStorageNullImpl extends LocationStorage {
 		return false;
 	}
 	
+	@Override
+	public List<Location> RetrieveLocationsInList() {
+		ArrayList<Location> retrieveList = new ArrayList<Location>();
+		
+		for (Location a : list){
+				retrieveList.add(a);
+		}
+				
+		return retrieveList;
+	}
+	
 	
 	//Additional Functions for Checking
 	private boolean checkForSameLocation(Location location) {
-	// need to implement if Location with same name exsists
+	// need to implement if Location with same name exists
 		return true;
 	}
+
+
 
 }
 

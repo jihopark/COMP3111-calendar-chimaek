@@ -60,5 +60,8 @@ public class LocationController {
 		return mLocationStorage.RemoveLocation(location);
 	}
 	
-	
+	//Retrieve List of Locations 
+	public List<Location> RetrieveLocationsInList(){
+		return mLocationStorage.RetrieveLocationsInList();
+	}
 }
