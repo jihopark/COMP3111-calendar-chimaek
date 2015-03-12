@@ -1,5 +1,6 @@
 package hkust.cse.calender.notificationstorage;
 
+import hkust.cse.calendar.locationstorage.LocationStorage;
 import hkust.cse.calendar.unit.Appt;
 import hkust.cse.calendar.unit.Location;
 import hkust.cse.calendar.unit.Notification;
@@ -23,6 +24,15 @@ public class NotificationController {
 				instance = new NotificationController();
 			}
 			return instance;
+		}
+		
+		//initialize
+		public boolean initNotificationStorage(NotificationStorage storage){
+			if (mNotificationStorage == null){
+				mNotificationStorage = storage;
+				return true;
+			}
+			return false;
 		}
 		
 		
