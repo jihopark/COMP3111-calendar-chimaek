@@ -33,5 +33,16 @@ public class Notification {
 	public void setID(int id) {
 		_notificationID = id;
 	}
-
+	
+	public String toString() {
+		return _name;
+	}
+	
+	public boolean isValid() {
+		if (getID() <= 0)
+			return false;
+		if (getName()==null || getName().equals(""))
+			return false;
+		return true;
+	}
 }
