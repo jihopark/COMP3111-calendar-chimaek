@@ -124,6 +124,7 @@ public class CalGrid extends JFrame implements ActionListener {
 
 		setJMenuBar(createMenuBar());
 
+		//Change respective to time controller
 		today = new GregorianCalendar();
 		currentYear = today.get(Calendar.YEAR);
 		currentDay = today.get(today.DAY_OF_MONTH);

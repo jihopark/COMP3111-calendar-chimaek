@@ -5,7 +5,9 @@ import hkust.cse.calendar.locationstorage.LocationController;
 import hkust.cse.calendar.locationstorage.LocationStorage;
 import hkust.cse.calendar.unit.Appt;
 import hkust.cse.calendar.unit.Location;
+import hkust.cse.calendar.unit.Notification;
 import hkust.cse.calendar.unit.TimeSpan;
+import hkust.cse.calender.notificationstorage.NotificationController;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
@@ -20,6 +22,7 @@ import java.awt.event.ComponentListener;
 import java.io.File;
 import java.io.IOException;
 import java.sql.Timestamp;
+import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -552,12 +555,16 @@ public class AppScheduler extends JDialog implements ActionListener,
 		int[] date = new int[3];
 		date[0] = Utility.getNumber(year.getText());
 		date[1] = Utility.getNumber(month.getText());
-		if (date[0] < 1980 || date[0] > 2100) {
+		
+		if (date[0] < 1980 || date[0] > 2100) 
+		{
 			JOptionPane.showMessageDialog(this, "Please input proper year",
 					"Input Error", JOptionPane.ERROR_MESSAGE);
 			return null;
 		}
-		if (date[1] <= 0 || date[1] > 12) {
+		
+		if (date[1] <= 0 || date[1] > 12) 
+		{
 			JOptionPane.showMessageDialog(this, "Please input proper month",
 					"Input Error", JOptionPane.ERROR_MESSAGE);
 			return null;
@@ -565,12 +572,16 @@ public class AppScheduler extends JDialog implements ActionListener,
 
 		date[2] = Utility.getNumber(day.getText());
 		int monthDay = CalGrid.monthDays[date[1] - 1];
-		if (date[1] == 2) {
+		
+		if (date[1] == 2) 
+		{
 			GregorianCalendar c = new GregorianCalendar();
 			if (c.isLeapYear(date[0]))
 				monthDay = 29;
 		}
-		if (date[2] <= 0 || date[2] > monthDay) {
+		
+		if (date[2] <= 0 || date[2] > monthDay) 
+		{
 			JOptionPane.showMessageDialog(this,
 			"Please input proper month day", "Input Error",
 			JOptionPane.ERROR_MESSAGE);
@@ -581,7 +592,8 @@ public class AppScheduler extends JDialog implements ActionListener,
 
 	
 	//helper function
-	private int getTime(JTextField h, JTextField min) {
+	private int getTime(JTextField h, JTextField min) 
+	{
 
 		int hour = Utility.getNumber(h.getText());
 		if (hour == -1)
@@ -640,96 +652,142 @@ public class AppScheduler extends JDialog implements ActionListener,
 	//If the input is valid, save the responses.
 	private void saveButtonResponse() {
 		
-		//save the date and time interval of the appointment.
+		//SAVE ALL THE RELEVENT INFORMATION TO THE NEWAPPT.
 		int[] validDate = getValidDate(yearField,monthField,dayField);
 		int[] validTimeInterval = getValidTimeInterval();
+		
+		if(validDate == null || validTimeInterval == null)
+		{
+			return;
+		}
 		
 		Timestamp timestampForStartTime = CreateTimeStamp(validDate, validTimeInterval[0]);
 		Timestamp timestampForEndTime = CreateTimeStamp(validDate, validTimeInterval[1]);
 		TimeSpan timeSpanForAppt = new TimeSpan(timestampForStartTime,timestampForEndTime);
 		NewAppt.setTimeSpan(timeSpanForAppt);
-		
-
-		//save the title.
 		NewAppt.setTitle(titleField.getText());
-		
-		//save the extra information
 		NewAppt.setInfo(detailArea.getText());
+
+		//SAVE LOCATION
+		String locationString = (String) locationField.getSelectedItem();
+		Location locationObject = LocationController.getInstance().RetrieveLocations(locationString);
+		NewAppt.setLocation(locationObject);
 		
-		//save the status of checkboxes(reminder)
+		//SAVE REMINDER
+		saveResponseFromReminder();
 		
-		//check if the input date for endAt is valid (check for valid date and no duplication)
+		//SAVE REPEATED APPOINTMENT
+		//CASE: DAILY, WEEKLY, MONTHLY
 		if(!(oneTimeButton.isSelected()))
 		{
 			int[] validEndAtDate = getValidDate(endAtYearField, endAtMonthField, endAtDayField);
-			saveResponseFromApptFrequency();
 			
-			//save the status of the radio button
-			//save the detail of the endAt
-			if(validEndAtDate != null)
+			Date endAtDate = intArrayToDate(validEndAtDate);
+			
+			if(saveFrequencyWithEndAt(endAtDate))
 			{
-				saveResponseFromEndAt();
+				JOptionPane.showMessageDialog(this, "Saved appointment successfully!");
+			}
+			else
+			{
+				JOptionPane.showMessageDialog(this, "Failed to save appointment!");
 			}
 			
 		}
-		
-		//Save the location from the list.
-		String locationString = (String) locationField.getSelectedItem(); 
-		//NewAppt.setLocation(locationString);
-		
-		ApptController.getInstance().saveNewAppt(ApptController.getInstance().getDefaultUser(),NewAppt);
+		//CASE: ONE-TIME
+		else
+		{
+			if(saveFrequencyWithoutEndAt())
+			{
+				JOptionPane.showMessageDialog(this, "Saved appointment successfully");
+			}
+			else
+			{
+				JOptionPane.showMessageDialog(this, "Failed to save appointment!");
+			}
+		}
 		
 	}
 
+	
+	private Date intArrayToDate(int[] intArray)
+	{
+		Date temp = new Date();
+		temp.setYear(intArray[0]);
+		temp.setMonth(intArray[1]);
+		temp.setDate(intArray[2]);
+		
+		return temp;
+	}
+	
+	
+	
 	private void saveResponseFromReminder()
 	{
-		if(oneHourCheckBox.isSelected())
+		/*if(oneHourCheckBox.isSelected())
 		{
-			
+			Notification temp = new Notification(titleField.getText(),1);
+			if(NotificationController.getInstance().saveNewNotification(temp))
+			{
+				JOptionPane.showMessageDialog(this, "Saved reminder successfully");
+			}
 		}
 		
 		if(threeHourCheckBox.isSelected())
 		{
-			
+			Notification temp = new Notification(titleField.getText(),3);
+			if(NotificationController.getInstance().saveNewNotification(temp))
+			{
+				JOptionPane.showMessageDialog(this, "Saved reminder successfully");
+			}
 		}
 		
 		if(twelveHourCheckBox.isSelected())
 		{
-			
+			Notification temp = new Notification(titleField.getText(),12);
+			if(NotificationController.getInstance().saveNewNotification(temp))
+			{
+				JOptionPane.showMessageDialog(this, "Saved reminder successfully");
+			}
 		}
 		
 		if(twentyfourHourCheckBox.isSelected())
 		{
+			Notification temp = new Notification(titleField.getText(),24);
+			if(NotificationController.getInstance().saveNewNotification(temp))
+			{
+				JOptionPane.showMessageDialog(this, "Saved reminder successfully");
+			}
 			
-			
-		}
+		}*/
 	}
 	
-	private void saveResponseFromApptFrequency()
+	private boolean saveFrequencyWithEndAt(Date endAtDate)
 	{
-		 if(oneTimeButton.isSelected())
+		
+		 ApptController tempApptController = ApptController.getInstance();
+		 
+		 if(dailyButton.isSelected())
 		 {
-			 //save freq as one time
-		 }
-		 else if(dailyButton.isSelected())
-		 {
-			 //save freq as daily.
+			 return tempApptController.saveRepeatedNewAppt(tempApptController.getDefaultUser(), NewAppt,1, endAtDate);
 		 }
 		 else if(weeklyButton.isSelected())
 		 {
-			 //save freq as weekly
+			 return tempApptController.saveRepeatedNewAppt(tempApptController.getDefaultUser(), NewAppt,2, endAtDate);
 		 }
 		 else if(monthlyButton.isSelected())
 		 {
-			 //save freq as monthly
+			 return tempApptController.saveRepeatedNewAppt(tempApptController.getDefaultUser(), NewAppt,3, endAtDate);
 		 }
+		 
+		 return false;
 	}
 	
-	private void saveResponseFromEndAt()
+	private boolean saveFrequencyWithoutEndAt()
 	{
-		
-		
+		return ApptController.getInstance().saveNewAppt(ApptController.getInstance().getDefaultUser(), NewAppt);
 	}
+	
 	
 	
 	//This method can be used in conjunction with getValidDate() and getValidTimeInterval()
