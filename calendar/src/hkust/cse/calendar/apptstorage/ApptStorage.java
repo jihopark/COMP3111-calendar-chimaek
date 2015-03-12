@@ -1,6 +1,7 @@
 package hkust.cse.calendar.apptstorage;//
 
 import hkust.cse.calendar.unit.Appt;
+import hkust.cse.calendar.unit.Notification;
 import hkust.cse.calendar.unit.TimeSpan;
 import hkust.cse.calendar.unit.User;
 
@@ -40,7 +41,11 @@ public abstract class ApptStorage {
 	public abstract boolean checkOverlaps(List<Appt> appts);
 	
 	public abstract boolean checkOverlaps(Appt appt);
-
+	
+	public abstract void saveNotification(Notification noti);
+	
+	public abstract void removeNotification(Notification noti);
+	
 	/*
 	 * Add other methods if necessary
 	 */

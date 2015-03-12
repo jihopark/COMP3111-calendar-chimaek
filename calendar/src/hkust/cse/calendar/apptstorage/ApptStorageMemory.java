@@ -1,8 +1,10 @@
 package hkust.cse.calendar.apptstorage;
 
 import hkust.cse.calendar.unit.Appt;
+import hkust.cse.calendar.unit.Notification;
 import hkust.cse.calendar.unit.TimeSpan;
 import hkust.cse.calendar.unit.User;
+import hkust.cse.calender.notificationstorage.NotificationController;
 
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -58,6 +60,10 @@ public class ApptStorageMemory extends ApptStorage {
 				list.add(appt);
 				apptNumber++;
 				System.out.println("ApptStorageMemory/SaveAppt : Saved Appt #"+appt.getID());
+				saveNotification(appt.getNotification());
+				//Save Notification if any
+				if (appt.getNotification()!=null)
+					NotificationController.getInstance().saveNewNotification(appt.getNotification());
 				return true;
 			}
 		}
@@ -117,7 +123,9 @@ public class ApptStorageMemory extends ApptStorage {
 		for (Appt a : list){
 			if (a.equals(appt) && appt.isValid() && isNotPast(appt) && !checkOverlaps(appt)){
 				list.remove(a);
+				removeNotification(a.getNotification());
 				list.add(appt);
+				saveNotification(appt.getNotification());
 				System.out.println("ApptStorageMemory/UpdateAppt : Updated Appt #"+appt.getID());
 				return true;
 			}
@@ -133,11 +141,26 @@ public class ApptStorageMemory extends ApptStorage {
 				list.remove(a);
 				apptNumber--;
 				System.out.println("ApptStorageMemory/RemoveAppt : Removed Appt #"+appt.getID());
+				removeNotification(a.getNotification());
 				return true;
 			}
 		}
 		System.out.println("ApptStorageMemory/RemoveAppt : Fail to remove Appt #"+appt.getID());
 		return false;
+	}
+	
+	@Override
+	public void removeNotification(Notification noti){
+		if (noti!=null){
+			NotificationController.getInstance().removeNotification(noti);
+		}
+	}
+	
+	@Override
+	public void saveNotification(Notification noti){
+		if (noti!=null){
+			NotificationController.getInstance().saveNewNotification(noti);
+		}
 	}
 
 	@Override
