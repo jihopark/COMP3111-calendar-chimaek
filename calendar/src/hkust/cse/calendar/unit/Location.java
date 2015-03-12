@@ -4,7 +4,7 @@ public class Location {
 	//private Appt _appointment;
 	private String _name;
 	private int _locationID;
-	
+		
 	public Location(String name, int locationID) {
 		//_appointment = appointment;
 		_name = name;
@@ -32,5 +32,17 @@ public class Location {
 	}
 	public int getID() {
 		return _locationID;
+	}
+	
+	public boolean isValid() {
+		if (getID() <= 0)
+			return false;
+		if (getName()==null || getName().equals(""))
+			return false;
+		return true;
+	}
+	
+	public String toString() {
+		return _name;
 	}
 }
