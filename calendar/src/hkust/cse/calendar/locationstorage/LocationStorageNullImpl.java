@@ -32,6 +32,20 @@ public class LocationStorageNullImpl extends LocationStorage {
 		//if can't find location in the list
 		return null;
 	}
+	
+	@Override
+	public Location RetrieveLocations(String locationString)
+	{
+		for (Location a : list){
+			if (a.getName() == locationString){
+				return a;
+			}
+		}
+		//if can't find location in the list
+		return null;
+		
+	}
+	
 	@Override
 	public boolean SaveLocation(Location location) {
 		// TODO Auto-generated method stub

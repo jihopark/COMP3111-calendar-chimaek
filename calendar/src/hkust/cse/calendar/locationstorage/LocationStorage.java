@@ -29,7 +29,7 @@ public abstract class LocationStorage {
 
 	public abstract Location RetrieveLocations(int LocationID);
 
-
+	public abstract Location RetrieveLocations(String locationString);
 	/*
 	 * Add other methods if necessary
 	 */

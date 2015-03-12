@@ -45,6 +45,11 @@ public class LocationController {
 		return mLocationStorage.RetrieveLocations(LocationID);
 	}
 	
+	public Location RetrieveLocations(String locationString)
+	{
+		return mLocationStorage.RetrieveLocations(locationString);
+	}
+	
 	//save new location
 	public boolean saveNewLocation(Location location){
 		location.setID(locationIDCount++);
