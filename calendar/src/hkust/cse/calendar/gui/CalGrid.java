@@ -93,7 +93,7 @@ public class CalGrid extends JFrame implements ActionListener {
 			"President's Day (US)\n",
 			"",
 			"Ching Ming Festival\nGood Friday\nThe day following Good Friday\nEaster Monday\n",
-			"Labour Day\nThe Buddha�셲 Birthday\nTuen Ng Festival\n",
+			"Labour Day\nThe Buddha's Birthday\nTuen Ng Festival\n",
 			"",
 			"Hong Kong Special Administrative Region Establishment Day\n",
 			"Civic Holiday(CAN)\n",
@@ -342,7 +342,7 @@ public class CalGrid extends JFrame implements ActionListener {
 		mi.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				int n = JOptionPane.showConfirmDialog(null, "Logout?",
-						"Comfirm", JOptionPane.YES_NO_OPTION);
+						"Confirm", JOptionPane.YES_NO_OPTION);
 				if (n == JOptionPane.YES_OPTION){
 					//ApptController.getInstance().dumpStorageToFile();
 					//System.out.println("closed");
@@ -359,7 +359,7 @@ public class CalGrid extends JFrame implements ActionListener {
 		mi.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				int n = JOptionPane.showConfirmDialog(null, "Exit Program ?",
-						"Comfirm", JOptionPane.YES_NO_OPTION);
+						"Confirm", JOptionPane.YES_NO_OPTION);
 				if (n == JOptionPane.YES_OPTION)
 					System.exit(0);
 
@@ -389,7 +389,18 @@ public class CalGrid extends JFrame implements ActionListener {
 			}	
 		});	
 		Appmenu.add(mi);
-
+		
+		//////////////////////////
+		JMenu TimeMachine = (JMenu) menuBar.add(new JMenu("TimeMachine"));
+		TimeMachine.setMnemonic('T');
+		TimeMachine.getAccessibleContext().setAccessibleDescription(
+				"Time Travel");
+		mi = (JMenuItem) TimeMachine.add(new JMenuItem("Time Controller"));
+		mi.setMnemonic('T');
+		mi.getAccessibleContext().setAccessibleDescription("For Time Travel");	
+		mi.addActionListener(listener);
+		
+		
 		return menuBar;
 	}
 
