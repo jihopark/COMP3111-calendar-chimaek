@@ -9,7 +9,7 @@ public class Notification {
 	private LinkedList<Date> _alarmTime;
 	private LinkedList<Boolean> _alarmFlag;
 	
-	private Date _savedTime;
+	private Date _appointmentTime;
 	private int _notificationID;
 	
 	// A default constructor
@@ -18,8 +18,7 @@ public class Notification {
 		_notificationID = 0;
 		_alarmTime = new LinkedList<Date>();
 		_alarmFlag = new LinkedList<Boolean>();
-		_savedTime = Calendar.getInstance().getTime();
-
+		_appointmentTime = Calendar.getInstance().getTime();
 	}
 	
 	public Notification(Notification notification ) {
@@ -29,12 +28,15 @@ public class Notification {
 		_alarmTime = notification.getAlarms();
 	}
 
+	public Date getAppointmentTime() {
+		return _appointmentTime;
+	}
 
-	private LinkedList<Date> getAlarms() {
+	public LinkedList<Date> getAlarms() {
 		return _alarmTime;
 	}
 
-	private LinkedList<Boolean> getFlags() {
+	public LinkedList<Boolean> getFlags() {
 		return _alarmFlag;
 	}
 
@@ -45,7 +47,9 @@ public class Notification {
 	public int getID() {
 		return _notificationID;
 	}
-	
+	public void setAppointmentTime(Date date) {
+		_appointmentTime = date;
+	}
 	public void setName(String name) {
 		_name = name;
 	}
@@ -54,14 +58,72 @@ public class Notification {
 		_notificationID = id;
 	}
 	
-	private void setAlarms(LinkedList<Boolean> flags) {
-		//check flag1, set alarm1 repeat 4 times
-	}
-	
-	private void setFlags(boolean firstFlag, boolean secondFlag, boolean thirdFlag, boolean fourthFlag) {
+	public void setFlags(boolean firstFlag, boolean secondFlag, boolean thirdFlag, boolean fourthFlag) {
 		//if flag1 2 3 4.. set _alarmFlag
+		if(firstFlag == true) {
+			_alarmFlag.add(0, true);
+		} else {
+			_alarmFlag.add(0, false);
+		} 
+		if(secondFlag == true) {
+			_alarmFlag.add(1, true);
+		} else {
+			_alarmFlag.add(1, false);
+		}
+		if(thirdFlag == true) {
+			_alarmFlag.add(2, true);
+		} else {
+			_alarmFlag.add(2, false);
+		}
+		if(fourthFlag == true) {
+			_alarmFlag.add(3, true);
+		} else {
+			_alarmFlag.add(3, false);
+		}
 	}
 	
+	public void setAlarms() {
+		//check flag1, set alarm1 repeat 4 times
+		Calendar cal = Calendar.getInstance();
+		
+		if(_alarmFlag.get(0) == true) {
+			cal.setTime(_appointmentTime);
+			cal.add(Calendar.HOUR, -1);
+			Date oneHourBack = cal.getTime();
+			_alarmTime.add(0,oneHourBack);
+		} else {
+			cal.clear();
+			_alarmTime.add(0,cal.getTime());
+		}
+		if(_alarmFlag.get(1) == true) {
+			cal.setTime(_appointmentTime);
+			cal.add(Calendar.HOUR, -3);
+			Date threeHourBack = cal.getTime();
+			_alarmTime.add(1,threeHourBack);
+		} else {
+			cal.clear();
+			_alarmTime.add(1,cal.getTime());
+		}
+		if(_alarmFlag.get(2) == true) {
+			cal.setTime(_appointmentTime);
+			cal.add(Calendar.HOUR, -12);
+			Date twelveHourBack = cal.getTime();
+			_alarmTime.add(2,twelveHourBack);
+		} else {
+			cal.clear();
+			_alarmTime.add(2,cal.getTime());
+		}
+		if(_alarmFlag.get(3) == true) {
+			cal.setTime(_appointmentTime);
+			cal.add(Calendar.HOUR, -24);
+			Date twentyFourHourBack = cal.getTime();
+			_alarmTime.add(3,twentyFourHourBack);
+		} else {
+			cal.clear();
+			_alarmTime.add(3,cal.getTime());
+		}
+	}
+
 	
 	
 	public String toString() {
@@ -75,4 +137,5 @@ public class Notification {
 			return false;
 		return true;
 	}
+	
 }
