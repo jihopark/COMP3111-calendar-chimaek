@@ -8,7 +8,11 @@ import java.util.LinkedList;
 
 import javax.swing.UIManager;
 
+import hkust.cse.calendar.apptstorage.ApptController;
+import hkust.cse.calendar.apptstorage.ApptStorageMemory;
 import hkust.cse.calendar.gui.LoginDialog;
+import hkust.cse.calendar.locationstorage.LocationController;
+import hkust.cse.calendar.locationstorage.LocationStorageNullImpl;
 import hkust.cse.calendar.unit.Notification;
 import hkust.cse.calendar.unit.User;
 import hkust.cse.calender.notificationstorage.NotificationController;
@@ -35,6 +39,13 @@ public class CalendarMain {
 					currentTime = Calendar.getInstance().getTime();
 					
 					//System.out.println(currentTime);
+					
+					//////TEMPORARY STATEMENTS//////
+					ApptController.getInstance().initApptStorage(new ApptStorageMemory(new User("HELLO","1234")));
+					LocationController.getInstance().initLocationStorage(new LocationStorageNullImpl(ApptController.getInstance().getDefaultUser()));
+					NotificationController.getInstance().initNotificationStorage(new NotificationStorageNullImpl(ApptController.getInstance().getDefaultUser()));
+					////////////////////////////////
+					
 					if(NotificationController.getInstance().checkForNotificationTime(currentTime)) {
 						Notification notification = NotificationController.getInstance().retrieveNotification(currentTime);
 						System.out.println("Yes we have an notification at: " + currentTime);

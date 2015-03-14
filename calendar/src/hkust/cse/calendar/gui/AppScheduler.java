@@ -3,11 +3,14 @@ package hkust.cse.calendar.gui;
 import hkust.cse.calendar.apptstorage.ApptController;
 import hkust.cse.calendar.locationstorage.LocationController;
 import hkust.cse.calendar.locationstorage.LocationStorage;
+import hkust.cse.calendar.locationstorage.LocationStorageNullImpl;
 import hkust.cse.calendar.unit.Appt;
 import hkust.cse.calendar.unit.Location;
 import hkust.cse.calendar.unit.Notification;
 import hkust.cse.calendar.unit.TimeSpan;
+import hkust.cse.calendar.unit.User;
 import hkust.cse.calender.notificationstorage.NotificationController;
+import hkust.cse.calender.notificationstorage.NotificationStorageNullImpl;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
@@ -132,10 +135,10 @@ public class AppScheduler extends JDialog implements ActionListener,
 		JPanel panelBothTime = initiateBothTimePanel();
 		JPanel panelDateAndTime = initiateDateAndTimePanel();
 		JPanel panelFreq = initiateFreqPanel();
-		JPanel panelReminder = initiateReminderPanel();
-		JPanel panelFreqAndReminder = initiateFreqAndReminderPanel();
+		JPanel panelNotification = initiateNotificationPanel();
+		JPanel panelFreqAndNotification = initiateFreqAndNotificationPanel();
 		JPanel panelFreqEndAt = initiateFreqEndAtPanel();
-		JPanel panelEndAtFreqAndReminder = initiateEndAtFreqAndReminderPanel();
+		JPanel panelEndAtFreqAndNotification = initiateEndAtFreqAndNotificationPanel();
 		
 		//Adding the panels to respective root panels.
 		panelBothTime.add(panelStartTime);
@@ -144,11 +147,11 @@ public class AppScheduler extends JDialog implements ActionListener,
 		panelDateAndTime.add("South", panelBothTime);
 		panelTop.add(panelDateAndTime, BorderLayout.NORTH);
 		
-		panelFreqAndReminder.add(panelFreq);
-		panelFreqAndReminder.add(panelReminder);
-		panelEndAtFreqAndReminder.add("North",panelFreqAndReminder);
-		panelEndAtFreqAndReminder.add("South",panelFreqEndAt);
-		panelTop.add(panelEndAtFreqAndReminder, BorderLayout.CENTER);
+		panelFreqAndNotification.add(panelFreq);
+		panelFreqAndNotification.add(panelNotification);
+		panelEndAtFreqAndNotification.add("North",panelFreqAndNotification);
+		panelEndAtFreqAndNotification.add("South",panelFreqEndAt);
+		panelTop.add(panelEndAtFreqAndNotification, BorderLayout.CENTER);
 		
 		JPanel panelTitleAndText = initiateTitleAndTextPanel();
 		panelDetail = initiateDetailPanel();
@@ -315,36 +318,36 @@ public class AppScheduler extends JDialog implements ActionListener,
 		
 	}
 	
-	public JPanel initiateReminderPanel()
+	public JPanel initiateNotificationPanel()
 	{
-		JPanel panelReminder = new JPanel();
-		Border reminderBorder = new TitledBorder(null, "Reminder");
-		panelReminder.setBorder(reminderBorder);
-		BoxLayout boxLayout = new BoxLayout(panelReminder, BoxLayout.Y_AXIS);
-		panelReminder.setLayout(boxLayout);
+		JPanel panelNotification = new JPanel();
+		Border notificationBorder = new TitledBorder(null, "Notification");
+		panelNotification.setBorder(notificationBorder);
+		BoxLayout boxLayout = new BoxLayout(panelNotification, BoxLayout.Y_AXIS);
+		panelNotification.setLayout(boxLayout);
 		
 		oneHourCheckBox = new JCheckBox("1 hour");
 		threeHourCheckBox = new JCheckBox("3 hours");
 		twelveHourCheckBox = new JCheckBox("12 hours");
 		twentyfourHourCheckBox = new JCheckBox("24 hours");
 		
-		panelReminder.add(oneHourCheckBox);
-		panelReminder.add(threeHourCheckBox);
-		panelReminder.add(twelveHourCheckBox);
-		panelReminder.add(twentyfourHourCheckBox);
+		panelNotification.add(oneHourCheckBox);
+		panelNotification.add(threeHourCheckBox);
+		panelNotification.add(twelveHourCheckBox);
+		panelNotification.add(twentyfourHourCheckBox);
 		
-		return panelReminder;
+		return panelNotification;
 		
 	}
 	
-	public JPanel initiateFreqAndReminderPanel()
+	public JPanel initiateFreqAndNotificationPanel()
 	{
 		final int ROWS = 1;
 		final int COLUMNS = 2;
-		JPanel panelFreqAndReminder = new JPanel();
-		panelFreqAndReminder.setLayout(new GridLayout(ROWS,COLUMNS));
+		JPanel panelFreqAndNotification = new JPanel();
+		panelFreqAndNotification.setLayout(new GridLayout(ROWS,COLUMNS));
 		
-		return panelFreqAndReminder;
+		return panelFreqAndNotification;
 	}
 	
 	public JPanel initiateFreqEndAtPanel()
@@ -375,13 +378,13 @@ public class AppScheduler extends JDialog implements ActionListener,
 		return panelFreqEndAt;
 	}
 	
-	public JPanel initiateEndAtFreqAndReminderPanel()
+	public JPanel initiateEndAtFreqAndNotificationPanel()
 	{
 	
-		JPanel panelEndAtFreqAndReminder = new JPanel();
-		panelEndAtFreqAndReminder.setLayout(new BorderLayout());
+		JPanel panelEndAtFreqAndNotification = new JPanel();
+		panelEndAtFreqAndNotification.setLayout(new BorderLayout());
 		
-		return panelEndAtFreqAndReminder;
+		return panelEndAtFreqAndNotification;
 	}
 	
 	public JPanel initiateTopPanel()
@@ -668,13 +671,11 @@ public class AppScheduler extends JDialog implements ActionListener,
 		NewAppt.setTitle(titleField.getText());
 		NewAppt.setInfo(detailArea.getText());
 
+		
 		//SAVE LOCATION
 		String locationString = (String) locationField.getSelectedItem();
 		Location locationObject = LocationController.getInstance().RetrieveLocations(locationString);
 		NewAppt.setLocation(locationObject);
-		
-		//SAVE REMINDER
-		saveResponseFromReminder();
 		
 		//SAVE REPEATED APPOINTMENT
 		//CASE: DAILY, WEEKLY, MONTHLY
@@ -686,6 +687,8 @@ public class AppScheduler extends JDialog implements ActionListener,
 			
 			if(saveFrequencyWithEndAt(endAtDate))
 			{
+				//SAVE NOTIFICATION
+				saveResponseFromNotification();
 				JOptionPane.showMessageDialog(this, "Saved appointment successfully!");
 			}
 			else
@@ -699,6 +702,8 @@ public class AppScheduler extends JDialog implements ActionListener,
 		{
 			if(saveFrequencyWithoutEndAt())
 			{
+				//SAVE NOTIFICATION
+				saveResponseFromNotification();
 				JOptionPane.showMessageDialog(this, "Saved appointment successfully");
 			}
 			else
@@ -709,7 +714,6 @@ public class AppScheduler extends JDialog implements ActionListener,
 		
 	}
 
-	
 	private Date intArrayToDate(int[] intArray)
 	{
 		Date temp = new Date();
@@ -720,46 +724,45 @@ public class AppScheduler extends JDialog implements ActionListener,
 		return temp;
 	}
 	
-	
-	
-	private void saveResponseFromReminder()
+	private void saveResponseFromNotification()
 	{
-		/*if(oneHourCheckBox.isSelected())
+				
+		boolean flagOne = false;
+		boolean flagTwo = false;
+		boolean flagThree = false;
+		boolean flagFour = false;
+		
+		if(oneHourCheckBox.isSelected())
 		{
-			Notification temp = new Notification(titleField.getText(),1);
-			if(NotificationController.getInstance().saveNewNotification(temp))
-			{
-				JOptionPane.showMessageDialog(this, "Saved reminder successfully");
-			}
+			flagOne = true;
 		}
 		
 		if(threeHourCheckBox.isSelected())
 		{
-			Notification temp = new Notification(titleField.getText(),3);
-			if(NotificationController.getInstance().saveNewNotification(temp))
-			{
-				JOptionPane.showMessageDialog(this, "Saved reminder successfully");
-			}
+			flagTwo = true;
 		}
 		
 		if(twelveHourCheckBox.isSelected())
 		{
-			Notification temp = new Notification(titleField.getText(),12);
-			if(NotificationController.getInstance().saveNewNotification(temp))
-			{
-				JOptionPane.showMessageDialog(this, "Saved reminder successfully");
-			}
+			flagThree = true;
 		}
 		
 		if(twentyfourHourCheckBox.isSelected())
 		{
-			Notification temp = new Notification(titleField.getText(),24);
-			if(NotificationController.getInstance().saveNewNotification(temp))
-			{
-				JOptionPane.showMessageDialog(this, "Saved reminder successfully");
-			}
-			
-		}*/
+			flagFour = true;
+		}
+		
+		Notification tempNotification = new Notification();
+		tempNotification.setName(titleField.getText());
+		tempNotification.setFlags(flagOne, flagTwo, flagThree, flagFour);
+		if(NotificationController.getInstance().saveNewNotification(tempNotification))
+		{
+			JOptionPane.showMessageDialog(this, "Saved notification successfully");
+		}
+		else
+		{
+			JOptionPane.showMessageDialog(this, "Failed to save notification");
+		}
 	}
 	
 	private boolean saveFrequencyWithEndAt(Date endAtDate)

@@ -26,7 +26,7 @@ public class NotificationStorageNullImpl extends NotificationStorage {
 		if(notificationIsValid(notification)) {
 			list.add(notification);
 			notificationNumber++;
-			return false;
+			return true;
 		}
 		else {
 			return false;
