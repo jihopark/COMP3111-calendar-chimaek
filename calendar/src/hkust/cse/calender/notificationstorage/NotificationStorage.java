@@ -4,7 +4,9 @@ import hkust.cse.calendar.unit.Location;
 import hkust.cse.calendar.unit.Notification;
 import hkust.cse.calendar.unit.User;
 
+import java.util.Date;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 
 public abstract class NotificationStorage {
@@ -21,5 +23,11 @@ public abstract class NotificationStorage {
 	public abstract boolean UpdateNotification(Notification notification);
 
 	public abstract Notification RetrieveNotification(int notificationID);
+	
+	public abstract Notification RetrieveNotification(Date currentTime);
+
+	public abstract Boolean CheckForNotificationTime(Date currentTime);
+
+	public abstract LinkedList<Date> RetrieveAllNotificationTimes(Notification notification);
 
 }

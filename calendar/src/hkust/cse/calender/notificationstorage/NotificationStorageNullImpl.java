@@ -1,5 +1,7 @@
 package hkust.cse.calender.notificationstorage;
 
+import java.util.Calendar;
+import java.util.Date;
 import java.util.LinkedList;
 
 import hkust.cse.calendar.unit.Appt;
@@ -56,12 +58,68 @@ public class NotificationStorageNullImpl extends NotificationStorage {
 	}
 	
 	@Override
+	public Notification RetrieveNotification(Date currentTime) {
+		for (Notification a : list){ //for each notification
+			for(Date date : a.getAlarms()) { //check each alarm
+				Calendar cal1 = Calendar.getInstance();
+				Calendar cal2 = Calendar.getInstance();
+				cal1.setTime(date);
+				cal2.setTime(currentTime);
+				if(	cal1.get(Calendar.YEAR) == cal2.get(Calendar.YEAR) &&
+						cal1.get(Calendar.DAY_OF_YEAR) == cal2.get(Calendar.DAY_OF_YEAR) &&
+						cal1.get(Calendar.HOUR_OF_DAY) == cal2.get(Calendar.HOUR_OF_DAY) &&
+						cal1.get(Calendar.MINUTE) == cal2.get(Calendar.MINUTE) &&
+						cal1.get(Calendar.SECOND) == cal2.get(Calendar.SECOND))
+					{
+					return a;
+				}
+			}
+		}
+		return null;
+	}
+
+	@Override
+	public LinkedList<Date> RetrieveAllNotificationTimes(Notification notification) {
+		LinkedList<Date> valueToReturn = new LinkedList<Date>();
+		for (Date d : notification.getAlarms()){
+			valueToReturn.add(d);
+		}
+		return valueToReturn;
+	}
+		
+	@Override
 	public boolean UpdateNotification(Notification notification) {
 		for (Notification a : list){
 			if (a.equals(notification)){
 				list.remove(a);
 				list.add(notification);
 				return true;
+			}
+		}
+		return false;
+	}
+	
+	@Override
+	public Boolean CheckForNotificationTime(Date currentTime) {
+		for (Notification a : list){ //for each notification
+			//System.out.println(a);
+			for(Date date : a.getAlarms()) { //check each alarm
+				//System.out.println(date);
+				//System.out.println("current Time is: " + currentTime);
+				//System.out.println("difference are:  " + date.compareTo(currentTime));
+				Calendar cal1 = Calendar.getInstance();
+				Calendar cal2 = Calendar.getInstance();
+				cal1.setTime(date);
+				cal2.setTime(currentTime);
+				if(	cal1.get(Calendar.YEAR) == cal2.get(Calendar.YEAR) &&
+					cal1.get(Calendar.DAY_OF_YEAR) == cal2.get(Calendar.DAY_OF_YEAR) &&
+					cal1.get(Calendar.HOUR_OF_DAY) == cal2.get(Calendar.HOUR_OF_DAY) &&
+					cal1.get(Calendar.MINUTE) == cal2.get(Calendar.MINUTE) &&
+					cal1.get(Calendar.SECOND) == cal2.get(Calendar.SECOND))
+				{
+					//System.out.println("date and Current time equals and returns true at: " + currentTime);
+					return true;
+				}
 			}
 		}
 		return false;
