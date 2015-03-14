@@ -7,6 +7,8 @@ import hkust.cse.calendar.tests.GUITest;
 import java.awt.*;
 import java.awt.event.*;
 import java.util.ArrayList;
+import java.util.List;
+import java.util.Vector;
 
 import javax.swing.*;
 import javax.swing.event.*;
@@ -16,42 +18,38 @@ public class ManageLocationDialog extends JPanel
 								implements ListSelectionListener {
 
 	private static final long serialVersionUID = 1L;
-	//add Controller for location
-	//private LocationController _controller;
 	
     private static final String AddButtonString = "Add";
     private static final String DeleteButtonString = "Delete";
     
-    private DefaultListModel<Location> retrievedLocationList;
-    private DefaultListModel<String> retrievedLocationStringList;
+    private ArrayList <Location> retrievedLocationList;
 	private JList displayList;
     private JButton deleteButton;
     private JTextField locationName;
 
     public ManageLocationDialog() {
         super(new BorderLayout());
-        // _controller = controller;
-
-        //implement after locationlist implementation is complete.
-        //retrievedlocationList = LocationController.getInstance().getLocationList();
-        retrievedLocationList = new DefaultListModel<Location>();
-        retrievedLocationList = GUITest.getLocationListTest();
         
-        //copy only the name(String) of the locations to another list for display
-        retrievedLocationStringList = new DefaultListModel<String>();
-        updateRetrievedLocationStringListfromRetrievedLocationList(retrievedLocationList);
-        
-        
+        retrievedLocationList = LocationController.getInstance().getLocationList();
+       
         //Create the list and put it in a scroll pane.
-        displayList = new JList<String>(retrievedLocationStringList);
-        
-        //displayList.setModel(retrievedLocationStringList);
-        ////////////////////////////////setmodel********************************
+        displayList = new JList(new Vector<Location>(retrievedLocationList));
         
         displayList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         displayList.setSelectedIndex(0);
         displayList.addListSelectionListener(this);
         displayList.setVisibleRowCount(5);
+        displayList.setCellRenderer(new DefaultListCellRenderer() {
+        	public Component getListCellRendererComponent(JList<?> list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
+        			Component renderer = super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
+        			if (renderer instanceof JLabel && value instanceof Location) {
+        				// value is of type 'Location'
+        				((JLabel) renderer).setText(((Location) value).getName());
+        			}
+        			return renderer;
+        	}
+        });
+        
         JScrollPane listScrollPane = new JScrollPane(displayList);
 
         JButton addButton = new JButton(AddButtonString);
@@ -92,15 +90,15 @@ public class ManageLocationDialog extends JPanel
             //there's a valid selection	
             //so go ahead and remove whatever's selected.
             int index = displayList.getSelectedIndex();
-            retrievedLocationList.removeElementAt(index);
+            retrievedLocationList.remove(index);
          
             
-            int size = retrievedLocationList.getSize();
+            int size = retrievedLocationList.size();
             if (size == 0) { //None's left, disable delete button.
                 deleteButton.setEnabled(false);
             } 
             else { //Select an index.
-                if (index == retrievedLocationList.getSize()	) {
+                if (index == retrievedLocationList.size()	) {
                     //removed item in last position
                     index--;
                 }
@@ -143,7 +141,7 @@ public class ManageLocationDialog extends JPanel
             //adds new location at the end of the retrievedLocationList
             // need to change later to be sorted in order
             Location newLocation = new Location(locationName.getText(), 0);
-            retrievedLocationList.addElement(newLocation);
+            retrievedLocationList.add(newLocation);
             
 ///////////////////////            
             //retrievedLocationStringList;
@@ -160,9 +158,9 @@ public class ManageLocationDialog extends JPanel
         //This method tests for string equality. 
         //further implement to test more rigorously (ignore whitespace, capital, etc)
         protected boolean alreadyInList(String name) {
-        	for(int i=0; i<retrievedLocationList.getSize();i++)
+        	for(int i=0; i<retrievedLocationList.size();i++)
         	{
-        		if(retrievedLocationList.getElementAt(i).getName().equals(name))
+        		if(retrievedLocationList.get(i).getName().equals(name))
         			return true;
         	}
             return false;
@@ -236,10 +234,5 @@ public class ManageLocationDialog extends JPanel
         frame.setVisible(true);
     }
     
-    public void updateRetrievedLocationStringListfromRetrievedLocationList(DefaultListModel<Location> retrievedList) {
-    	for(int i =0; i<retrievedLocationList.getSize();i++) {
-        	retrievedLocationStringList.addElement(retrievedLocationList.getElementAt(i).getName());	
-        }
-    }
 	
 }
