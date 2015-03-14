@@ -1,7 +1,9 @@
 package hkust.cse.calendar.gui;
 
 import hkust.cse.calendar.apptstorage.ApptController;
+import hkust.cse.calendar.time.TimeController;
 import hkust.cse.calendar.unit.Appt;
+import hkust.cse.calendar.unit.TimeSpan;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
@@ -13,6 +15,10 @@ import java.awt.event.InputEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.sql.Timestamp;
+import java.util.Date;
+import java.util.Iterator;
+import java.util.List;
+
 import javax.swing.BorderFactory;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
@@ -31,7 +37,8 @@ import javax.swing.table.TableColumn;
 import javax.swing.table.TableModel;
 
 
-class AppCellRenderer extends DefaultTableCellRenderer {
+class AppCellRenderer extends DefaultTableCellRenderer 
+{
 	private int r;
 	private int c;
 
@@ -44,7 +51,8 @@ class AppCellRenderer extends DefaultTableCellRenderer {
 	// 31, 30, 31 };
 
 	public AppCellRenderer(Object value, boolean override, int row, int col,
-			int colorCMD, Color currColor) {
+			int colorCMD, Color currColor) 
+	{
 
 		Font f1 = new Font("Helvetica", Font.ITALIC, 11);
 		if (override) {
@@ -62,10 +70,13 @@ class AppCellRenderer extends DefaultTableCellRenderer {
 		else
 			setHorizontalAlignment(SwingConstants.RIGHT);
 		if (col == 1 || col == 4) {
-			if (colorCMD == AppList.COLORED_TITLE) {
+			if (colorCMD == AppList.COLORED_TITLE) 
+			{
 				setBackground(currColor);
 				setForeground(Color.black);
-			} else if (colorCMD == AppList.COLORED) {
+			}
+			else if (colorCMD == AppList.COLORED) 
+			{
 				setBackground(currColor);
 				setForeground(currColor);
 			}
@@ -74,16 +85,21 @@ class AppCellRenderer extends DefaultTableCellRenderer {
 		setVerticalAlignment(SwingConstants.TOP);
 	}
 
-	public int row() {
+	public int row() 
+	{
 		return r;
 	}
 
-	public int col() {
+	public int col() 
+	{
 		return c;
 	}
 }
 
-public class AppList extends JPanel implements ActionListener {
+public class AppList extends JPanel implements ActionListener 
+{
+	
+	
 	public static int SMALLEST_DURATION = 15;
 	private static final long serialVersionUID = 1L;
 	public static int OFFSET = 8;
@@ -112,69 +128,108 @@ public class AppList extends JPanel implements ActionListener {
 	private Color[][] cellColor = new Color[20][2];
 	public Appt selectedAppt=null;
 	private MouseEvent tempe;
-	public AppList() {
+	
+	//CONSTRUCTOR
+	public AppList() 
+	{
+		//initialize the Applist panel layout
 		setLayout(new BorderLayout());
 		currentRow = 0;
 		currentCol = 0;
-		
-		TitledBorder b = BorderFactory
-				.createTitledBorder("Appointment Contents");
+		TitledBorder b = BorderFactory.createTitledBorder("Appointment Contents");
 		b.setTitleColor(new Color(102, 0, 51));
 		Font f = new Font("Helvetica", Font.BOLD + Font.ITALIC, 11);
 		b.setTitleFont(f);
 		setBorder(b);
+
+		//initialize the PopUpMenu
+		pop = initializePopupMenu();
+		
+		//Initialize the table model
+		getDataArray(data);
+		TableModel dataModel = prepareTableModel();
+		tableView = initializeTableView(dataModel);
+		
+		//Initialize the scrollpane
+		JScrollPane scrollpane = initializeScrollPane(tableView); 
+		add(scrollpane, BorderLayout.CENTER);
+		
+		
+		setVisible(true);
+		setSize(600, 300);
+		//this.
+	}
+	
+	private JPopupMenu initializePopupMenu()
+	{
+		JPopupMenu tempPopupMenu = new JPopupMenu();
 		Font f1 = new Font("Helvetica", Font.ITALIC, 11);
+		tempPopupMenu.setFont(f1);
 
-		pop = new JPopupMenu();
-		pop.setFont(f1);
+		JMenuItem popupMenuList_NEW = (JMenuItem) tempPopupMenu.add(new JMenuItem("New"));
 
-		JMenuItem mi;
-		mi = (JMenuItem) pop.add(new JMenuItem("New"));
-
-		mi.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {				
+		popupMenuList_NEW.addActionListener(new ActionListener() 
+		{
+			public void actionPerformed(ActionEvent e) 
+			{				
 				NewAppt();
 			}
 		});
 
-		mi = (JMenuItem) pop.add(new JMenuItem("Delete"));
+		JMenuItem popupMenuList_DELETE = (JMenuItem) tempPopupMenu.add(new JMenuItem("Delete"));
 
-		mi.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
+		popupMenuList_DELETE.addActionListener(new ActionListener() 
+		{
+			public void actionPerformed(ActionEvent e) 
+			{
 				delete();
 			}
 		});
 
-		mi = (JMenuItem) pop.add(new JMenuItem("Modify"));
-		mi.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
+		JMenuItem popupMenuList_MODIFY = (JMenuItem) tempPopupMenu.add(new JMenuItem("Modify"));
+		popupMenuList_MODIFY.addActionListener(new ActionListener() 
+		{
+			public void actionPerformed(ActionEvent e) 
+			{
 				modify();
 			}
 		});
-		pop.add(new JPopupMenu.Separator());
-		JMenuItem j = new JMenuItem("Details");
-		j.setFont(f);
-		pop.add(j);
+		
+		tempPopupMenu.add(new JPopupMenu.Separator());
+		JMenuItem popupMenuList_DETAILS = new JMenuItem("Details");
+		
+		Font f2 = new Font("Helvetica", Font.BOLD + Font.ITALIC, 11);
+		popupMenuList_DETAILS.setFont(f2);
+		tempPopupMenu.add(popupMenuList_DETAILS);
 
-		j.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
+		popupMenuList_DETAILS.addActionListener(new ActionListener() 
+		{
+			public void actionPerformed(ActionEvent e) 
+			{
 				getDetail();
 			}
 		});
 
-		getDataArray(data);
-		TableModel dataModel = prepareTableModel();
-		tableView = new JTable(dataModel) {
-			public TableCellRenderer getCellRenderer(int row, int col) {
+		return tempPopupMenu;
+	}
+	
+	private JTable initializeTableView(TableModel dataModel)
+	{
+		JTable tempTableView = new JTable(dataModel) 
+		{
+			public TableCellRenderer getCellRenderer(int row, int col) 
+			{
 				if (col == 0 || col == 3)
 					return new AppCellRenderer(new Object(), true, row, col, 1,
 							null);
-				else if (col == 1) {
+				else if (col == 1) 
+				{
 
 					return new AppCellRenderer(new Object(), false, row, col,
 							cellCMD[row][0], cellColor[row][0]);
 
-				} else if (col == 4) {
+				} else if (col == 4) 
+				{
 					return new AppCellRenderer(new Object(), false, row, col,
 							cellCMD[row][1], cellColor[row][1]);
 				} else
@@ -184,83 +239,98 @@ public class AppList extends JPanel implements ActionListener {
 			}
 		};
 
-		tableView.setAutoResizeMode(tableView.AUTO_RESIZE_ALL_COLUMNS);
-		tableView.setRowHeight(20);
-		tableView.setRowSelectionAllowed(false);
+		tempTableView.setAutoResizeMode(tempTableView.AUTO_RESIZE_ALL_COLUMNS);
+		tempTableView.setRowHeight(20);
+		tempTableView.setRowSelectionAllowed(false);
 		TableColumn c = null;
-		c = tableView.getColumnModel().getColumn(0);
+		c = tempTableView.getColumnModel().getColumn(0);
 		c.setPreferredWidth(60);
-		c = tableView.getColumnModel().getColumn(3);
+		c = tempTableView.getColumnModel().getColumn(3);
 		c.setPreferredWidth(60);
-		c = tableView.getColumnModel().getColumn(1);
+		c = tempTableView.getColumnModel().getColumn(1);
 		c.setPreferredWidth(215);
-		c = tableView.getColumnModel().getColumn(4);
+		c = tempTableView.getColumnModel().getColumn(4);
 		c.setPreferredWidth(215);
-		c = tableView.getColumnModel().getColumn(2);
+		c = tempTableView.getColumnModel().getColumn(2);
 		c.setPreferredWidth(60);
-		c = tableView.getColumnModel().getColumn(5);
+		c = tempTableView.getColumnModel().getColumn(5);
 		c.setPreferredWidth(60);
-		JTableHeader h = tableView.getTableHeader();
-		h.setResizingAllowed(true);
-		h.setReorderingAllowed(false);
-
-		tableView.addMouseListener(new MouseAdapter() {
-			public void mousePressed(MouseEvent e) {
+		JTableHeader tableViewHeader = tempTableView.getTableHeader();
+		tableViewHeader.setResizingAllowed(true);
+		tableViewHeader.setReorderingAllowed(false);
+		
+		tempTableView.addMouseListener(new MouseAdapter() 
+		{
+			public void mousePressed(MouseEvent e) 
+			{
 				pressResponse(e);
 			}
 
-			public void mouseReleased(MouseEvent e) {
+			public void mouseReleased(MouseEvent e) 
+			{
 				releaseResponse(e);
 				if(e.getButton()==1)
 				calculateDrag(e);
 			}
 		});
-
-		JScrollPane scrollpane = new JScrollPane(tableView);
-		scrollpane.setBorder(new BevelBorder(BevelBorder.LOWERED));
-		scrollpane.setPreferredSize(new Dimension(695, 300));
-		add(scrollpane, BorderLayout.CENTER);
-		setVisible(true);
-		setSize(600, 300);
-		//this.
+		
+		return tempTableView;
 	}
+	
+	public JScrollPane initializeScrollPane(JTable tableView)
+	{
+		JScrollPane tempScrollPane = new JScrollPane(tableView);
+		tempScrollPane.setBorder(new BevelBorder(BevelBorder.LOWERED));
+		tempScrollPane.setPreferredSize(new Dimension(695, 300));
+		return tempScrollPane;
+	}
+	
+	public TableModel prepareTableModel() 
+	{
 
-	public TableModel prepareTableModel() {
+		TableModel dataModel = new AbstractTableModel() 
+		{
 
-		TableModel dataModel = new AbstractTableModel() {
-
-			public int getColumnCount() {
+			public int getColumnCount() 
+			{
 				return names.length;
 			}
 
-			public int getRowCount() {
+			public int getRowCount() 
+			{
 				return 20;
 			}
 
-			public Object getValueAt(int row, int col) {
+			public Object getValueAt(int row, int col) 
+			{
 				return data[row][col];
 			}
 
-			public String getColumnName(int column) {
+			public String getColumnName(int column) 
+			{
 				return names[column];
 			}
 
-			public Class getColumnClass(int c) {
+			public Class getColumnClass(int c) 
+			{
 				return getValueAt(0, c).getClass();
 			}
 
-			public boolean isCellEditable(int row, int col) {
+			public boolean isCellEditable(int row, int col) 
+			{
 				return false;
 			}
 
-			public void setValueAt(Object aValue, int row, int column) {
+			public void setValueAt(Object aValue, int row, int column) 
+			{
 				data[row][column] = aValue;
 			}
 		};
 		return dataModel;
 	}
 
-	public void getDataArray(Object[][] data) {
+	public void getDataArray(Object[][] data) 
+	{
 		int tam = 480;
 		int tpm = 60;
 		String s;
@@ -268,7 +338,8 @@ public class AppList extends JPanel implements ActionListener {
 		String pm = new String("PM");
 
 		int i;
-		for (i = 0; i < ROWNUM; i++) {
+		for (i = 0; i < ROWNUM; i++) 
+		{
 			if (tam % 60 == 0)
 				data[i][0] = (tam / 60) + ":" + "00" + am;
 			else
@@ -279,7 +350,8 @@ public class AppList extends JPanel implements ActionListener {
 			cellColor[i][0] = Color.white;
 			cellColor[i][1] = Color.white;
 		}
-		for (i = 0; i < ROWNUM; i++) {
+		for (i = 0; i < ROWNUM; i++) 
+		{
 			if (tpm % 60 == 0)
 				data[i][3] = (tpm / 60) + ":" + "00" + pm;
 			else
@@ -290,8 +362,10 @@ public class AppList extends JPanel implements ActionListener {
 	}
 
 	// clear the appointment list on the gui
-	public void clear() {
-		for (int i = 0; i < 20; i++) {
+	public void clear() 
+	{
+		for (int i = 0; i < 20; i++) 
+		{
 			setTextAt(" ", i, 1);
 
 			setTextAt(" ", i, 4);
@@ -303,32 +377,37 @@ public class AppList extends JPanel implements ActionListener {
 		}
 	}
 
-	public void setTextAt(String text, int row, int col) {
+	public void setTextAt(String text, int row, int col) 
+	{
 		TableModel t = tableView.getModel();
 		t.setValueAt(text, row, col);
 	}
 
-	public String getTextAt(int row, int col) {
+	public String getTextAt(int row, int col) 
+	{
 		TableModel t = tableView.getModel();
 		return (String) t.getValueAt(row, col);
 	}
 
-	public String getCurrentText() {
+	public String getCurrentText() 
+	{
 		TableModel t = tableView.getModel();
 		return (String) t.getValueAt(currentRow, currentCol);
 	}
 	
-	public void setTodayAppt(Appt[] list) {
+	public void setTodayAppt(Appt[] list) 
+	{
 		if (list == null)
 			return;
-		for (int i = 0; i < list.length; i++)
-			addAppt(list[i]);
+		for (Appt a : list)
+			addAppt(a);
 		repaint();
 
 	}
 
 	// colouring the appointment list
-	public void addAppt(Appt appt) {
+	public void addAppt(Appt appt) 
+	{
 		Color color;
 		currColor = new Color(0,240-(appt.TimeSpan().StartTime().getHours()-8)*25,255-(appt.TimeSpan().StartTime().getMinutes()*3));
 		currColorForJoint = new Color(255-(appt.TimeSpan().StartTime().getHours()-8)*25,0,190-(appt.TimeSpan().StartTime().getMinutes()*3));
@@ -351,19 +430,26 @@ public class AppList extends JPanel implements ActionListener {
 		endMin = endMin - OFFSET * 60;
 
 		int[] pos = new int[2];
-		for (int i = startMin; i < endMin; i = i + SMALLEST_DURATION) {
+		for (int i = startMin; i < endMin; i = i + SMALLEST_DURATION) 
+		{
 			pos = calRowColNum(i);
-			if (i == startMin) {
+			if (i == startMin) 
+			{
 				tableView.getModel().setValueAt(appt, pos[0], pos[1]);
 
-				if (pos[1] == 1) {
+				if (pos[1] == 1) 
+				{
 					cellCMD[pos[0]][0] = COLORED_TITLE;
 					cellColor[pos[0]][0] = color;
-				} else {
+				} 
+				else 
+				{
 					cellCMD[pos[0]][1] = COLORED_TITLE;
 					cellColor[pos[0]][1] = color;
 				}
-			} else {
+			} 
+			else 
+			{
 				tableView.getModel().setValueAt(appt, pos[0], pos[1]);
 
 				if (pos[1] == 1) {
@@ -386,7 +472,8 @@ public class AppList extends JPanel implements ActionListener {
 
 	}
 
-	public int[] calRowColNum(int total) {
+	public int[] calRowColNum(int total) 
+	{
 		int[] position = new int[2];
 		position[0] = total / SMALLEST_DURATION;
 
@@ -400,7 +487,8 @@ public class AppList extends JPanel implements ActionListener {
 		return position;
 	}
 
-	private void getDetail() {
+	private void getDetail() 
+	{
 
 		Appt apptTitle = getSelectedAppTitle();
 		if (apptTitle == null)
@@ -412,12 +500,14 @@ public class AppList extends JPanel implements ActionListener {
 
 	}
 
-	private void delete() {
+	private void delete() 
+	{
 		//TO-DO
 
 	}
 
-	private void modify() {
+	private void modify() 
+	{
 		Appt apptTitle = getSelectedAppTitle();
 		if (apptTitle == null)
 			return;
@@ -428,17 +518,20 @@ public class AppList extends JPanel implements ActionListener {
 
 	}
 
-	public Appt getSelectedAppTitle() {
+	public Appt getSelectedAppTitle() 
+	{
 		
 		Object apptTitle;
-		if (currentRow < 0 || currentRow > ROWNUM - 1) {
+		if (currentRow < 0 || currentRow > ROWNUM - 1) 
+		{
 			JOptionPane.showMessageDialog(parent, "Please Select Again !",
 					"Error", JOptionPane.ERROR_MESSAGE);
 			
 			selectedAppt=null;
 			return selectedAppt;
 		}
-		if (currentCol < 3) {
+		if (currentCol < 3) 
+		{
 			apptTitle = tableView.getModel().getValueAt(currentRow, 1);
 		} else
 			apptTitle = tableView.getModel().getValueAt(currentRow, 4);
@@ -458,11 +551,13 @@ public class AppList extends JPanel implements ActionListener {
 
 	}
 	
-	private void NewAppt() {
+	private void NewAppt() 
+	{
 		
 		if (parent.mCurrUser == null)
 			return;
-		if (currentRow < 0 || currentRow > ROWNUM - 1) {
+		if (currentRow < 0 || currentRow > ROWNUM - 1) 
+		{
 			JOptionPane.showMessageDialog(parent, "Please Select Again !",
 					"Error", JOptionPane.ERROR_MESSAGE);
 			return;
@@ -482,42 +577,56 @@ public class AppList extends JPanel implements ActionListener {
 		
 	}
 
-	private void pressResponse(MouseEvent e) {
+	private void pressResponse(MouseEvent e) 
+	{
 		tempe = e;
 		pressRow = tableView.getSelectedRow();
 		pressCol = tableView.getSelectedColumn();
 		if ((e.getModifiers() & InputEvent.BUTTON3_MASK) != 0)
 			pop.show(e.getComponent(), e.getX(), e.getY());
 	}
-	private void releaseResponse(MouseEvent e) {
+	
+	private void releaseResponse(MouseEvent e) 
+	{
 		
 		releaseRow = tableView.getSelectedRow();
 		releaseCol = tableView.getSelectedColumn();
 		if ((e.getModifiers() & InputEvent.BUTTON3_MASK) != 0)
 			pop.show(e.getComponent(), e.getX(), e.getY());
 	}
-	private void calculateDrag(MouseEvent e){
+	
+	private void calculateDrag(MouseEvent e)
+	{
 		
-		if(releaseRow==pressRow){		
+		if(releaseRow==pressRow)
+		{		
 			currentRow = tableView.getSelectedRow()+tableView.getSelectedRowCount()-1;			
-		}else{
+		}
+		else
+		{
 			currentRow = releaseRow;
 			
 		}
 		
-		if(releaseCol==pressCol){			
+		if(releaseCol==pressCol)
+		{			
 			currentCol = tableView.getSelectedColumn()+tableView.getSelectedColumnCount()-1;
-		}else{
+		}
+		else
+		{
 			currentCol = releaseCol;
 		}
 		
 	}
-	public void setParent(CalGrid grid) {
+	public void setParent(CalGrid grid) 
+	{
 		parent = grid;
 	}
 
-	public void actionPerformed(ActionEvent e) {
-		if (e.getSource() == tableView) {
+	public void actionPerformed(ActionEvent e) 
+	{
+		if (e.getSource() == tableView) 
+		{
 			pop.show(tableView, currentRow * 20, currentRow * 20);
 
 		}
