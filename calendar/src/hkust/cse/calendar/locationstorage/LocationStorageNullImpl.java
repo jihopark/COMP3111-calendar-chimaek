@@ -45,7 +45,7 @@ public class LocationStorageNullImpl extends LocationStorage {
 	}
 
 	@Override
-	public List<Location> getLocationList() {
+	public ArrayList<Location> getLocationList() {
 		ArrayList<Location> retrieveList = new ArrayList<Location>();
 		
 		for (Location a : list) {
@@ -78,17 +78,6 @@ public class LocationStorageNullImpl extends LocationStorage {
 			}
 		}
 		return false;
-	}
-	
-	@Override
-	public List<Location> RetrieveLocationsInList() {
-		ArrayList<Location> retrieveList = new ArrayList<Location>();
-		
-		for (Location a : list){
-				retrieveList.add(a);
-		}
-				
-		return retrieveList;
 	}
 	
 	

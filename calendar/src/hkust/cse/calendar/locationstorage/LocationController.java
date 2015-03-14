@@ -1,5 +1,6 @@
 package hkust.cse.calendar.locationstorage;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import hkust.cse.calendar.apptstorage.ApptController;
@@ -60,8 +61,7 @@ public class LocationController {
 		return mLocationStorage.RemoveLocation(location);
 	}
 	
-	//Retrieve List of Locations 
-	public List<Location> RetrieveLocationsInList(){
-		return mLocationStorage.RetrieveLocationsInList();
+	public ArrayList<Location> getLocationList(){
+		return mLocationStorage.getLocationList();
 	}
 }
