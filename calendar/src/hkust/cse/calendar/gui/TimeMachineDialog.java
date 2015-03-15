@@ -51,12 +51,12 @@ public class TimeMachineDialog extends JFrame implements ActionListener
 	{
 		
 		setTitle("Time Machine");
-		
+		/*
 		addWindowListener(new WindowAdapter() {
 			public void windowClosing(WindowEvent e) {
 				System.exit(0);
 			}
-		});
+		});*/
 		
 		Container contentPane;
 		contentPane = getContentPane();
@@ -128,7 +128,7 @@ public class TimeMachineDialog extends JFrame implements ActionListener
 			int Day = Integer.parseInt(dayField.getText());
 			int hour = Integer.parseInt(startTimeHourField.getText());
 			int minute = Integer.parseInt(startTimeMinuteField.getText());
-			Timestamp changedTime = new Timestamp(year, month, Day, hour, minute, 0, 0);
+			Timestamp changedTime = new Timestamp(year-1900, month-1, Day, hour, minute, 0, 0);
 			Date date = new Date(changedTime.getTime());
 			timeController.getInstance().setTimeMachine(date);
 			

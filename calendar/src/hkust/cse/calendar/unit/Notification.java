@@ -10,7 +10,9 @@ public class Notification {
 	private LinkedList<Boolean> _alarmFlag;
 	
 	private Date _appointmentTime;
+	private Appt _appt;
 	private int _notificationID;
+	private boolean delivered = false;
 	
 	// A default constructor
 	public Notification() {
@@ -21,8 +23,9 @@ public class Notification {
 		_appointmentTime = Calendar.getInstance().getTime();
 	}
 	
-	public Notification(String name, Date time, 
+	public Notification(Appt appt, String name, Date time, 
 			boolean flagOne, boolean flagTwo, boolean flagThree, boolean flagFour){
+		_appt = appt;
 		_name = name;
 		_alarmTime = new LinkedList<Date>();
 		_alarmFlag = new LinkedList<Boolean>();
@@ -36,6 +39,10 @@ public class Notification {
 		_notificationID = 0;
 		_alarmFlag = notification.getFlags();
 		_alarmTime = notification.getAlarms();
+	}
+	
+	public Appt getAppt(){
+		return _appt;
 	}
 
 	public Date getAppointmentTime() {
@@ -62,6 +69,14 @@ public class Notification {
 	}
 	public void setName(String name) {
 		_name = name;
+	}
+	
+	public void hasDelivered(){
+		delivered = true;
+	}
+	
+	public boolean isDelivered(){
+		return delivered;
 	}
 		
 	public void setID(int id) {
