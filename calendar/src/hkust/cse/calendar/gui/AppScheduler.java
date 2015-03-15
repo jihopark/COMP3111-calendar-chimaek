@@ -751,9 +751,11 @@ public class AppScheduler extends JDialog implements ActionListener,
 	private Date intArrayToDate(int[] intArray)
 	{
 		Date temp = new Date();
-		temp.setYear(intArray[0]);
-		temp.setMonth(intArray[1]);
+		temp.setYear(intArray[0]-1900);
+		temp.setMonth(intArray[1]-1);
 		temp.setDate(intArray[2]);
+		temp.setHours(23);
+		temp.setMinutes(59);
 		
 		return temp;
 	}
