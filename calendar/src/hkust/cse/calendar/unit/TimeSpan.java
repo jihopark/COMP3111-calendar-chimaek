@@ -16,6 +16,12 @@ public class TimeSpan implements Serializable {
 
 	/* Create a new TimeSpan object with the specific starting time and ending time */
 	public TimeSpan(Timestamp start, Timestamp end) {
+		int startYear = start.getYear() - 1900;
+		start.setYear(startYear);
+		
+		int endYear = end.getYear() - 1900;
+		end.setYear(endYear);
+		
 		mStartTime = start;
 		mEndTime = end;
 	}

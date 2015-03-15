@@ -22,6 +22,7 @@ import java.sql.Timestamp;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
+import java.util.List;
 
 import javax.swing.JComboBox;
 import javax.swing.JFrame;
@@ -508,7 +509,7 @@ public class CalGrid extends JFrame implements ActionListener {
 //		applist.clear();
 //	}
 
-	private Appt[] GetMonthAppts() {
+	private List<Appt> GetMonthAppts() {
 		Timestamp start = new Timestamp(0);
 		start.setYear(currentYear);
 		start.setMonth(currentMonth - 1);
@@ -521,7 +522,7 @@ public class CalGrid extends JFrame implements ActionListener {
 		end.setDate(g.getActualMaximum(GregorianCalendar.DAY_OF_MONTH));
 		end.setHours(23);
 		TimeSpan period = new TimeSpan(start, end);
-		return ApptController.getInstance().RetrieveAppts(mCurrUser, period);
+		return ApptController.getInstance().RetrieveApptsInList(mCurrUser, period);
 	}
 
 	private void mousePressResponse() {
@@ -585,7 +586,7 @@ public class CalGrid extends JFrame implements ActionListener {
 		return true;
 	}
 
-	public Appt[] GetTodayAppt() {
+	public List<Appt> GetTodayAppt() {
 		Integer temp;
 		temp = new Integer(currentDay);
 		Timestamp start = new Timestamp(0);
@@ -605,10 +606,10 @@ public class CalGrid extends JFrame implements ActionListener {
 		end.setSeconds(59);
 		
 		TimeSpan period = new TimeSpan(start, end);
-		return ApptController.getInstance().RetrieveAppts(mCurrUser, period);
+		return ApptController.getInstance().RetrieveApptsInList(mCurrUser, period);
 	}
 
-	public AppList getAppList() {
+	public AppList getAppListPanel() {
 		return applistPanel;
 	}
 

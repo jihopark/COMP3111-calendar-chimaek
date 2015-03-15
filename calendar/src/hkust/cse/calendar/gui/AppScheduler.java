@@ -25,6 +25,7 @@ import java.awt.event.ComponentListener;
 import java.io.File;
 import java.io.IOException;
 import java.sql.Timestamp;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.Iterator;
@@ -405,13 +406,20 @@ public class AppScheduler extends JDialog implements ActionListener,
 		
 		//GUI for location list.
 		//test for location combobox.
-		Location[] locations = {};
+		ArrayList<Location> locationList = LocationController.getInstance().getLocationList();
+		String[] locationStringArray = new String[locationList.size()];
+		int i = 0;
+		for(Location l: locationList)
+		{
+			locationStringArray[i] = l.getName();
+			i++;
+		}
 		
 		JLabel locationLabel = new JLabel("LOCATION");
 		
 		//need to change the parameter in the constructor
 		//to load the list of locations.
-		locationField = new JComboBox(locations);
+		locationField = new JComboBox(locationStringArray);
 		panelTitleAndText.add(locationLabel);
 		panelTitleAndText.add(locationField);
 		
@@ -529,8 +537,8 @@ public class AppScheduler extends JDialog implements ActionListener,
 			
 		}
 		
-		parent.getAppList().clear();
-		parent.getAppList().setTodayAppt(parent.GetTodayAppt());
+		parent.getAppListPanel().clear();
+		parent.getAppListPanel().setTodayAppt(parent.GetTodayAppt());
 		parent.repaint();
 	}
 

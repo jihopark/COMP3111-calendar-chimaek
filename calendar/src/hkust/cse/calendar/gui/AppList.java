@@ -413,10 +413,12 @@ public class AppList extends JPanel implements ActionListener
 		return (String) t.getValueAt(currentRow, currentCol);
 	}
 	
-	public void setTodayAppt(Appt[] list) 
+	public void setTodayAppt(List<Appt> list) 
 	{
 		if (list == null)
+		{
 			return;
+		}
 		for (Appt a : list)
 			addAppt(a);
 		repaint();
@@ -583,9 +585,9 @@ public class AppList extends JPanel implements ActionListener
 		int startTime;
 		
 		if (currentCol < 3)
-			startTime = currentRow * 15 + 480;
+			startTime = currentRow * 15;
 		else
-			startTime = (currentRow + ROWNUM) * 15 + 480;
+			startTime = (currentRow + ROWNUM) * 15;
 		AppScheduler a = new AppScheduler("New", parent);
 		a.updateSettingAppt(hkust.cse.calendar.gui.Utility.createDefaultAppt(
 				parent.currentYear, parent.currentMonth, parent.currentDay,
