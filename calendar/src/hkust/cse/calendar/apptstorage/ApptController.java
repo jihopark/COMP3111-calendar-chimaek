@@ -1,8 +1,10 @@
 package hkust.cse.calendar.apptstorage;
 
 import hkust.cse.calendar.unit.Appt;
+import hkust.cse.calendar.unit.Notification;
 import hkust.cse.calendar.unit.TimeSpan;
 import hkust.cse.calendar.unit.User;
+import hkust.cse.calender.notificationstorage.NotificationController;
 
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -162,6 +164,15 @@ public class ApptController {
 			return true;
 		}
 		return mApptStorage.RemoveAppt(appt);
+	}
+	
+	public boolean setNotificationForAppt(Appt appt, 
+			boolean flagOne, boolean flagTwo, boolean flagThree, boolean flagFour){
+		
+		Notification noti = new Notification(appt.getTitle(), appt.getTimeSpan().StartTime(),
+				flagOne, flagTwo, flagThree, flagFour);
+		appt.setNotification(noti);
+		return NotificationController.getInstance().saveNewNotification(noti);
 	}
 	
 	/* Get the defaultUser of mApptStorage */

@@ -21,6 +21,16 @@ public class Notification {
 		_appointmentTime = Calendar.getInstance().getTime();
 	}
 	
+	public Notification(String name, Date time, 
+			boolean flagOne, boolean flagTwo, boolean flagThree, boolean flagFour){
+		_name = name;
+		_alarmTime = new LinkedList<Date>();
+		_alarmFlag = new LinkedList<Boolean>();
+		_appointmentTime = time;
+		setFlags(flagOne, flagTwo, flagThree, flagFour);
+		setAlarms();
+	}
+	
 	public Notification(Notification notification ) {
 		_name = notification.getName();
 		_notificationID = 0;

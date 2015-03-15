@@ -759,12 +759,9 @@ public class AppScheduler extends JDialog implements ActionListener,
 			flagFour = true;
 		}
 		
-		Notification tempNotification = new Notification();
-		tempNotification.setName(titleField.getText());
-		tempNotification.setFlags(flagOne, flagTwo, flagThree, flagFour);
-		if(NotificationController.getInstance().saveNewNotification(tempNotification))
+		
+		if(ApptController.getInstance().setNotificationForAppt(NewAppt, flagOne, flagTwo, flagThree, flagFour))
 		{
-			NewAppt.setNotification(tempNotification);
 			JOptionPane.showMessageDialog(this, "Saved notification successfully");
 		}
 		else
