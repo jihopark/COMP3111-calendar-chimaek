@@ -1,10 +1,10 @@
 package hkust.cse.calendar.apptstorage;
 
+import hkust.cse.calendar.notification.NotificationController;
 import hkust.cse.calendar.unit.Appt;
 import hkust.cse.calendar.unit.Notification;
 import hkust.cse.calendar.unit.TimeSpan;
 import hkust.cse.calendar.unit.User;
-import hkust.cse.calender.notificationstorage.NotificationController;
 
 import java.util.ArrayList;
 import java.util.Calendar;
