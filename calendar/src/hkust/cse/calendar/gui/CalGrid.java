@@ -3,6 +3,7 @@ package hkust.cse.calendar.gui;
 import hkust.cse.calendar.Main.CalendarMain;
 import hkust.cse.calendar.apptstorage.ApptController;
 import hkust.cse.calendar.apptstorage.ApptStorageMemory;
+import hkust.cse.calendar.notification.NotificationCheckThread;
 import hkust.cse.calendar.unit.Appt;
 import hkust.cse.calendar.unit.TimeSpan;
 import hkust.cse.calendar.unit.User;
@@ -66,7 +67,8 @@ public class CalGrid extends JFrame implements ActionListener {
 	private BasicArrowButton monthLeftArrowButton;
 	private JLabel yearLabel;
 	private JComboBox monthComboBox;
-
+	private NotificationCheckThread notificationCheckThread = new NotificationCheckThread();
+	
 	private final Object[][] data = new Object[6][7];
 	//private final Vector[][] apptMarker = new Vector[6][7];
 	private final String[] names = { "Sunday", "Monday", "Tuesday",
@@ -105,7 +107,7 @@ public class CalGrid extends JFrame implements ActionListener {
 
 	public CalGrid() {
 		super();
-
+		
 		addWindowListener(new WindowAdapter() {
 			public void windowClosing(WindowEvent e) {
 				System.exit(0);
@@ -409,6 +411,7 @@ public class CalGrid extends JFrame implements ActionListener {
 
 		mCurrUser = ApptController.getInstance().getDefaultUser();	//get User from ApptController.getInstance().
 		ApptController.getInstance().LoadApptFromXml();
+		notificationCheckThread.start();
 		// Fix Me !
 		// Load the saved appointments from disk
 		checkUpdateJoinAppt();
