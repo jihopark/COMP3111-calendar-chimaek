@@ -3,6 +3,7 @@ package hkust.cse.calendar.gui;
 import hkust.cse.calendar.apptstorage.ApptController;
 import hkust.cse.calendar.apptstorage.ApptStorageMemory;
 import hkust.cse.calendar.unit.User;
+import hkust.cse.calendar.user.UserController;
 
 import java.awt.Container;
 import java.awt.FlowLayout;
@@ -75,7 +76,7 @@ public class LoginDialog extends JFrame implements ActionListener
 		JPanel butPanel = new JPanel();
 		butPanel.setLayout(new FlowLayout(FlowLayout.RIGHT));
 
-		button = new JButton("Log in (No user name and password required)");
+		button = new JButton("Log in (Use Default User)");
 		button.addActionListener(this);
 		butPanel.add(button);
 		
@@ -98,11 +99,11 @@ public class LoginDialog extends JFrame implements ActionListener
 		{
 			// When the button is clicked, check the user name and password, and try to log the user in
 			
-			//login();
-			User user = new User( "noname", "nopass");
-			ApptController.getInstance().initApptStorage(new ApptStorageMemory(user));
-			CalGrid grid = new CalGrid();
-			setVisible( false );
+			if (!attemptLogin(userName.getText(), password.getPassword())){
+				JOptionPane.showMessageDialog(this, "Incorrect Credential",
+						"Input Error", JOptionPane.ERROR_MESSAGE);
+			}
+			
 		}
 		else if(e.getSource() == signupButton)
 		{
@@ -115,6 +116,18 @@ public class LoginDialog extends JFrame implements ActionListener
 			if (n == JOptionPane.YES_OPTION)
 				System.exit(0);			
 		}
+	}
+	
+	private boolean attemptLogin(String id, char[] pw){
+		User user = UserController.getInstance().getUserFromCredential(id, pw);
+		if (user == null)
+			return false;
+		
+		ApptController.getInstance().initApptStorage(new ApptStorageMemory(user));
+		CalGrid grid = new CalGrid();
+		setVisible( false );
+		
+		return true;
 	}
 	
 	// This method checks whether a string is a valid user name or password, as they can contains only letters and numbers

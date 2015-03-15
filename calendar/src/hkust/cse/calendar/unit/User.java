@@ -32,4 +32,23 @@ public class User implements Serializable {
 	public void Password(String pass) {
 		mPassword = pass;
 	}
+	
+	public boolean checkCredentials(String id, char[] pw){
+		return mID.equals(id) && checkPassword(pw);
+	}
+	
+	private boolean checkPassword(char[] pw){
+		char[] correctPW = mPassword.toCharArray();
+		int n = mPassword.length();
+		
+		if (n!= pw.length)
+			return false;
+		
+		for (int i = 0; i < n ; i++){
+			if (pw[i]!= correctPW[i])
+				return false;
+		}
+		
+		return true;
+	}
 }
