@@ -1,6 +1,7 @@
 package hkust.cse.calendar.gui;
 
 import java.awt.Color;
+import java.awt.Font;
 
 import javax.swing.SwingConstants;
 import javax.swing.table.DefaultTableCellRenderer;
@@ -15,7 +16,8 @@ class CalCellRenderer extends DefaultTableCellRenderer
 
 	public CalCellRenderer(Object value) {
 		if (value != null) {
-			setForeground(Color.red);
+			setForeground(Color.blue);
+			setBackground(Color.black);
 		} else
 			setForeground(Color.black);
 		setBackground(Color.white);

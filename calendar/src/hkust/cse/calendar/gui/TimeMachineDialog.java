@@ -51,12 +51,12 @@ public class TimeMachineDialog extends JFrame implements ActionListener
 	{
 		
 		setTitle("Time Machine");
-		
+		/*
 		addWindowListener(new WindowAdapter() {
 			public void windowClosing(WindowEvent e) {
 				System.exit(0);
 			}
-		});
+		});*/
 		
 		Container contentPane;
 		contentPane = getContentPane();
