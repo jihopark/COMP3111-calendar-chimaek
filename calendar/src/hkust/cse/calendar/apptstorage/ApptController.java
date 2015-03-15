@@ -169,7 +169,7 @@ public class ApptController {
 	public boolean setNotificationForAppt(Appt appt, 
 			boolean flagOne, boolean flagTwo, boolean flagThree, boolean flagFour){
 		
-		Notification noti = new Notification(appt.getTitle(), appt.getTimeSpan().StartTime(),
+		Notification noti = new Notification(appt, appt.getTitle(), appt.getTimeSpan().StartTime(),
 				flagOne, flagTwo, flagThree, flagFour);
 		appt.setNotification(noti);
 		return NotificationController.getInstance().saveNewNotification(noti);
