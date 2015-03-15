@@ -3,6 +3,8 @@ package hkust.cse.calendar.notification;
 import java.util.Calendar;
 import java.util.Date;
 
+import javax.swing.JOptionPane;
+
 import hkust.cse.calendar.apptstorage.ApptController;
 import hkust.cse.calendar.apptstorage.ApptStorageMemory;
 import hkust.cse.calendar.locationstorage.LocationController;
@@ -23,8 +25,9 @@ public class NotificationCheckThread extends Thread {
 				
 				if(NotificationController.getInstance().checkForNotificationTime(currentTime)) {
 					Notification notification = NotificationController.getInstance().retrieveNotification(currentTime);
-					System.out.println("Yes we have an notification at: " + currentTime);
-					System.out.println("Notification name is: " + notification.getName());
+					//System.out.println("Yes we have an notification at: " + currentTime);
+					//System.out.println("Notification name is: " + notification.getName());
+					JOptionPane.showMessageDialog(null, "You have an appointment! Alarm Time set at: " + currentTime);
 				}
 				
 			} catch (InterruptedException e) {
