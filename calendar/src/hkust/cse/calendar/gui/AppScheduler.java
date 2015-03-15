@@ -4,13 +4,13 @@ import hkust.cse.calendar.apptstorage.ApptController;
 import hkust.cse.calendar.locationstorage.LocationController;
 import hkust.cse.calendar.locationstorage.LocationStorage;
 import hkust.cse.calendar.locationstorage.LocationStorageNullImpl;
+import hkust.cse.calendar.notification.NotificationController;
+import hkust.cse.calendar.notification.NotificationStorageNullImpl;
 import hkust.cse.calendar.unit.Appt;
 import hkust.cse.calendar.unit.Location;
 import hkust.cse.calendar.unit.Notification;
 import hkust.cse.calendar.unit.TimeSpan;
 import hkust.cse.calendar.unit.User;
-import hkust.cse.calender.notificationstorage.NotificationController;
-import hkust.cse.calender.notificationstorage.NotificationStorageNullImpl;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
