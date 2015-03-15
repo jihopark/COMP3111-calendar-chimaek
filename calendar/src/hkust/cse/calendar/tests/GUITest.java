@@ -36,7 +36,8 @@ public class GUITest {
 	        javax.swing.SwingUtilities.invokeLater(new Runnable() {
 	            public void run() {
 	                ManageLocationDialog.createAndShowManageLocationDialogGUI();
-	            }	
+	                TimeControllerTest.createAndShowGUI();
+	            }
 	        });
 	}
 }

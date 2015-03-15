@@ -681,6 +681,8 @@ public class AppScheduler extends JDialog implements ActionListener,
 		
 		//SAVE LOCATION
 		String locationString = (String) locationField.getSelectedItem();
+		
+		//Temporary Location for Testing
 		Location locationObject = LocationController.getInstance().RetrieveLocations(locationString);
 		NewAppt.setLocation(locationObject);
 		

@@ -403,7 +403,12 @@ public class CalGrid extends JFrame implements ActionListener {
 		mi.setMnemonic('T');
 		mi.getAccessibleContext().setAccessibleDescription("For Time Travel");	
 		mi.addActionListener(listener);
-		
+		mi.addActionListener(new ActionListener() {	
+			public void actionPerformed(ActionEvent arg0) {
+				TimeMachineDialog TimeMachineTest = new TimeMachineDialog();
+				TimeMachineTest.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+			}
+		});
 		
 		return menuBar;
 	}

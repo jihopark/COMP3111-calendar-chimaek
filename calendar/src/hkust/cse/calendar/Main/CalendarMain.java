@@ -11,6 +11,7 @@ import javax.swing.UIManager;
 import hkust.cse.calendar.apptstorage.ApptController;
 import hkust.cse.calendar.apptstorage.ApptStorageMemory;
 import hkust.cse.calendar.gui.LoginDialog;
+import hkust.cse.calendar.gui.TimeMachineDialog;
 import hkust.cse.calendar.locationstorage.LocationController;
 import hkust.cse.calendar.locationstorage.LocationStorageNullImpl;
 import hkust.cse.calendar.notification.NotificationController;
@@ -31,6 +32,7 @@ public class CalendarMain {
 				
 			}
 			LoginDialog loginDialog = new LoginDialog();
+			
 			while(logOut == false){
 				try {
 					Thread.sleep(300);
@@ -57,7 +59,7 @@ public class CalendarMain {
 		//future notification for testing
 		Calendar cal = Calendar.getInstance();
 		cal.setTime(Calendar.getInstance().getTime());
-		cal.add(Calendar.SECOND, 5);
+		cal.add(Calendar.SECOND, 20);
 		cal.add(Calendar.HOUR, 1);
 		Date Future = cal.getTime();
 		
