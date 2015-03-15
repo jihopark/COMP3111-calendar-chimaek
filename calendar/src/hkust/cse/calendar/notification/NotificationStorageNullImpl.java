@@ -1,4 +1,4 @@
-package hkust.cse.calender.notificationstorage;
+package hkust.cse.calendar.notification;
 
 import java.util.Calendar;
 import java.util.Date;

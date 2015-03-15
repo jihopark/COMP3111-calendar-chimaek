@@ -13,20 +13,18 @@ import hkust.cse.calendar.apptstorage.ApptStorageMemory;
 import hkust.cse.calendar.gui.LoginDialog;
 import hkust.cse.calendar.locationstorage.LocationController;
 import hkust.cse.calendar.locationstorage.LocationStorageNullImpl;
+import hkust.cse.calendar.notification.NotificationController;
+import hkust.cse.calendar.notification.NotificationStorageNullImpl;
 import hkust.cse.calendar.unit.Notification;
 import hkust.cse.calendar.unit.User;
-import hkust.cse.calender.notificationstorage.NotificationController;
-import hkust.cse.calender.notificationstorage.NotificationStorageNullImpl;
 
 
 public class CalendarMain {
 	public static boolean logOut = false;
-	public static Date currentTime = new Date();
-	public static User user = new User( "noname", "nopass");
 	public static void main(String[] args) {
 		while(true){
 			logOut = false;
-			//testForNotification();
+			testForNotification();
 			try{
 		//	UIManager.setLookAndFeel(UIManager.getCrossPlatformLookAndFeelClassName());
 			}catch(Exception e){
@@ -36,22 +34,10 @@ public class CalendarMain {
 			while(logOut == false){
 				try {
 					Thread.sleep(300);
-					currentTime = Calendar.getInstance().getTime();
-					
+
 					//System.out.println(currentTime);
 					
-					//////TEMPORARY STATEMENTS//////
-					ApptController.getInstance().initApptStorage(new ApptStorageMemory(new User("HELLO","1234")));
-					LocationController.getInstance().initLocationStorage(new LocationStorageNullImpl(ApptController.getInstance().getDefaultUser()));
-					NotificationController.getInstance().initNotificationStorage(new NotificationStorageNullImpl(ApptController.getInstance().getDefaultUser()));
-					////////////////////////////////
 					
-					if(NotificationController.getInstance().checkForNotificationTime(currentTime)) {
-						Notification notification = NotificationController.getInstance().retrieveNotification(currentTime);
-						System.out.println("Yes we have an notification at: " + currentTime);
-						System.out.println("Notification name is: " + notification.getName());
-						
-					}
 				} catch (InterruptedException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
@@ -63,7 +49,7 @@ public class CalendarMain {
 	
 	private static void testForNotification() {
 		// only for testing
-		NotificationController.getInstance().initNotificationStorage(new NotificationStorageNullImpl(user));
+		NotificationController.getInstance().initNotificationStorage(new NotificationStorageNullImpl(new User("HELLO","1234")));
 		Notification notification = new Notification();
 		notification.setName("Test");
 		notification.setID(0);
@@ -83,10 +69,6 @@ public class CalendarMain {
 		NotificationController.getInstance().saveNewNotification(notification);
 		for(Date d : NotificationController.getInstance().retrieveAllNotificationTimes(notification)) {
 			System.out.println("Saved Notification Times are : " + d);
-		}
-		LinkedList<Date> alarms = notification.getAlarms();
-		for(Date d : alarms) {
-			System.out.println("Alarm is set at: " + d);
 		}
 	}
 

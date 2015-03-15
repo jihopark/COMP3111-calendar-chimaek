@@ -1,4 +1,4 @@
-package hkust.cse.calender.notificationstorage;
+package hkust.cse.calendar.notification;
 
 import hkust.cse.calendar.unit.Location;
 import hkust.cse.calendar.unit.Notification;
