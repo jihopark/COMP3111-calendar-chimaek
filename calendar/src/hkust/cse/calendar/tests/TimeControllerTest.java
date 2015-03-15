@@ -63,4 +63,9 @@ public class TimeControllerTest {
 		return false;
 	}
 
+	public static void createAndShowGUI() {
+		// TODO Auto-generated method stub
+		
+	}
+
 }

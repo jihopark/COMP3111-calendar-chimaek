@@ -44,6 +44,9 @@ public class TimeController {
 	public void disableTimeMachineMode(){		
 		onTimeMachineMode = false;
 	}
+	public void enableTimeMachineMode(){		
+		onTimeMachineMode = true;
+	}
 	
 	public long getCurrentTimeInMillis(){
 		if (onTimeMachineMode)
