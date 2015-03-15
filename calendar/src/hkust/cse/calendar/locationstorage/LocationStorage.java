@@ -9,6 +9,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+import javax.swing.DefaultListModel;
+
 
 public abstract class LocationStorage {
 
@@ -19,17 +21,21 @@ public abstract class LocationStorage {
 	public LocationStorage() {	//default constructor
 	}
 	
-	public abstract ArrayList<Location> getLocationList();
+	public abstract DefaultListModel<Location> getLocationList();
 
 	public abstract boolean UpdateLocation(Location location);
 
-	public abstract boolean RemoveLocation(Location location);
+	public abstract boolean RemoveLocation(int index);
 
 	public abstract boolean SaveLocation(Location location);
 
 	public abstract Location RetrieveLocations(int LocationID);
 
 	public abstract Location RetrieveLocations(String locationString);
+
+	public abstract int getListSize();
+
+
 	/*
 	 * Add other methods if necessary
 	 */

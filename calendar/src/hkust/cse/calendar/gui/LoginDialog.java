@@ -2,6 +2,8 @@ package hkust.cse.calendar.gui;
 
 import hkust.cse.calendar.apptstorage.ApptController;
 import hkust.cse.calendar.apptstorage.ApptStorageMemory;
+import hkust.cse.calendar.locationstorage.LocationController;
+import hkust.cse.calendar.locationstorage.LocationStorageNullImpl;
 import hkust.cse.calendar.unit.User;
 import hkust.cse.calendar.user.UserController;
 
@@ -99,6 +101,7 @@ public class LoginDialog extends JFrame implements ActionListener
 		{
 			// When the button is clicked, check the user name and password, and try to log the user in
 			
+
 			if (!attemptLogin(userName.getText(), password.getPassword())){
 				JOptionPane.showMessageDialog(this, "Incorrect Credential",
 						"Input Error", JOptionPane.ERROR_MESSAGE);
@@ -124,6 +127,7 @@ public class LoginDialog extends JFrame implements ActionListener
 			return false;
 		
 		ApptController.getInstance().initApptStorage(new ApptStorageMemory(user));
+		LocationController.getInstance().initLocationStorage(new LocationStorageNullImpl(user));
 		CalGrid grid = new CalGrid();
 		setVisible( false );
 		

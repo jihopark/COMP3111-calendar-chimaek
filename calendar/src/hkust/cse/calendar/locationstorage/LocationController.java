@@ -3,6 +3,8 @@ package hkust.cse.calendar.locationstorage;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.swing.DefaultListModel;
+
 import hkust.cse.calendar.apptstorage.ApptController;
 import hkust.cse.calendar.apptstorage.ApptStorage;
 import hkust.cse.calendar.unit.Appt;
@@ -15,7 +17,7 @@ public class LocationController {
 	/* Applying Singleton Structure */
 	private static LocationController instance = null;
 
-	private static int locationIDCount = 1;
+	private static int locationIDCount = 0;
 		
 	/* The Location storage */
 	private static LocationStorage mLocationStorage;
@@ -62,11 +64,22 @@ public class LocationController {
 	}
 	
 	//Remove location. Return true if successfully removed
-	public boolean removeLocation(Location location){
-		return mLocationStorage.RemoveLocation(location);
+	public boolean removeLocation(int index){
+		return mLocationStorage.RemoveLocation(index);
 	}
 	
-	public ArrayList<Location> getLocationList(){
+	public DefaultListModel<Location> getLocationList(){
 		return mLocationStorage.getLocationList();
+	}
+	
+	public int getListSize(){
+		return mLocationStorage.getListSize();
+	}
+	
+	public void printList(){
+		System.out.println("===Current List===: "+mLocationStorage.getListSize());
+		for(int i=0; i<mLocationStorage.getListSize(); i++){
+			System.out.println(mLocationStorage.getLocationList().getElementAt(i));
+		}
 	}
 }

@@ -406,7 +406,11 @@ public class AppScheduler extends JDialog implements ActionListener,
 		
 		//GUI for location list.
 		//test for location combobox.
-		ArrayList<Location> locationList = LocationController.getInstance().getLocationList();
+		ArrayList<Location> locationList = new ArrayList<Location>();
+		for(int i=0; i<LocationController.getInstance().getLocationList().getSize(); i++){
+			locationList.add(LocationController.getInstance().getLocationList().getElementAt(i));
+		}
+
 		String[] locationStringArray = new String[locationList.size()];
 		int i = 0;
 		for(Location l: locationList)

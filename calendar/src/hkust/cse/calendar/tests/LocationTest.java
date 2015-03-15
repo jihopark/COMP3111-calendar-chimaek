@@ -9,8 +9,8 @@ public class LocationTest {
 	
 	@Test
 	public void locationShouldHaveRequiredFields() {
-		Location location = new Location("location",0);
-		assertFalse("locatoin does not have required fields", location.isValid());
+		Location location = new Location();
+		assertFalse("location does not have required fields", location.isValid());
 	}
 	
 	@Test

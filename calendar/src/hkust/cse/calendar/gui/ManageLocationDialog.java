@@ -1,7 +1,11 @@
 package hkust.cse.calendar.gui;
 
 import hkust.cse.calendar.unit.Location;
+import hkust.cse.calendar.unit.User;
+import hkust.cse.calendar.apptstorage.ApptController;
+import hkust.cse.calendar.apptstorage.ApptStorageMemory;
 import hkust.cse.calendar.locationstorage.LocationController;
+import hkust.cse.calendar.locationstorage.LocationStorageNullImpl;
 import hkust.cse.calendar.tests.GUITest;
 
 import java.awt.*;
@@ -22,34 +26,23 @@ public class ManageLocationDialog extends JPanel
     private static final String AddButtonString = "Add";
     private static final String DeleteButtonString = "Delete";
     
-    private ArrayList <Location> retrievedLocationList;
+    private DefaultListModel<Location> retrievedLocationList;
 	private JList displayList;
     private JButton deleteButton;
     private JTextField locationName;
 
     public ManageLocationDialog() {
         super(new BorderLayout());
-        
+        /////////////////////delete when ¿¬µ¿/////////////////
+        /*
+        User user = new User( "noname", "nopass");
+		LocationController.getInstance().initLocationStorage(new LocationStorageNullImpl(user));
+        retrievedLocationList = GUITest.getLocationListTest();
+        */
         retrievedLocationList = LocationController.getInstance().getLocationList();
+        displayList = new JList <Location>(retrievedLocationList);
        
-        //Create the list and put it in a scroll pane.
-        displayList = new JList(new Vector<Location>(retrievedLocationList));
-        
-        displayList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-        displayList.setSelectedIndex(0);
-        displayList.addListSelectionListener(this);
-        displayList.setVisibleRowCount(5);
-        displayList.setCellRenderer(new DefaultListCellRenderer() {
-        	public Component getListCellRendererComponent(JList<?> list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
-        			Component renderer = super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
-        			if (renderer instanceof JLabel && value instanceof Location) {
-        				// value is of type 'Location'
-        				((JLabel) renderer).setText(((Location) value).getName());
-        			}
-        			return renderer;
-        	}
-        });
-        
+        //Create the list and put it in a scroll pane//
         JScrollPane listScrollPane = new JScrollPane(displayList);
 
         JButton addButton = new JButton(AddButtonString);
@@ -91,18 +84,21 @@ public class ManageLocationDialog extends JPanel
             //so go ahead and remove whatever's selected.
             int index = displayList.getSelectedIndex();
             retrievedLocationList.remove(index);
-         
+            LocationController.getInstance().removeLocation(index);
             
-            int size = retrievedLocationList.size();
+            int size = LocationController.getInstance().getListSize();
+     
             if (size == 0) { //None's left, disable delete button.
                 deleteButton.setEnabled(false);
             } 
             else { //Select an index.
-                if (index == retrievedLocationList.size()	) {
+            	if (index == retrievedLocationList.size()	) {
                     //removed item in last position
                     index--;
                 }
-
+                
+                //LocationController.getInstance().printList();
+                
                 displayList.setSelectedIndex(index);
                 displayList.ensureIndexIsVisible(index);
             }
@@ -131,25 +127,26 @@ public class ManageLocationDialog extends JPanel
                 return;
             }
 
-            int index = displayList.getSelectedIndex(); //get selected index
-            if (index == -1) { //no selection, so insert at beginning
-                index = 0;
-            } else {           //add after the selected item
-                index++;
-            }
             
+
             //adds new location at the end of the retrievedLocationList
             // need to change later to be sorted in order
-            Location newLocation = new Location(locationName.getText(), 0);
-            retrievedLocationList.add(newLocation);
+            Location newLocation = new Location();
+            newLocation.setName(name);
+
+            retrievedLocationList.addElement(newLocation);
+            LocationController.getInstance().saveNewLocation(newLocation);
             
-///////////////////////            
-            //retrievedLocationStringList;
+            //LocationController.getInstance().printList();
+           
             
             //Reset the text field.
             locationName.requestFocusInWindow();
             locationName.setText("");
 
+            int index = LocationController.getInstance().getListSize()-1; //get selected index
+            
+            deleteButton.setEnabled(true);
             //Select the new item and make it visible.
             displayList.setSelectedIndex(index);
             displayList.ensureIndexIsVisible(index);

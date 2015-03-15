@@ -1,14 +1,19 @@
 package hkust.cse.calendar.unit;
 
+import hkust.cse.calendar.locationstorage.LocationController;
+
 public class Location {
-	//private Appt _appointment;
 	private String _name;
 	private int _locationID;
 		
-	public Location(String name, int locationID) {
-		//_appointment = appointment;
-		_name = name;
-		_locationID = locationID;
+	public Location() {
+		_name = "";
+		_locationID = 0;
+	}
+	
+	public Location(Location location) {
+		_name = location.getName();
+		_locationID = location.getID();
 	}
 	
 	public String getName() {
