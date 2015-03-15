@@ -18,6 +18,7 @@ import java.sql.Timestamp;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Random;
 
 import javax.swing.BorderFactory;
 import javax.swing.JMenuItem;
@@ -102,7 +103,7 @@ public class AppList extends JPanel implements ActionListener
 	
 	public static int SMALLEST_DURATION = 15;
 	private static final long serialVersionUID = 1L;
-	public static int OFFSET = 8;
+	public static int OFFSET = 0;
 	public static int ROWNUM = 48;
 	public Appt[] todaylist;
 	private final String[] names = { "Time", "Appointments", "Status", "Time",
@@ -429,8 +430,17 @@ public class AppList extends JPanel implements ActionListener
 	public void addAppt(Appt appt) 
 	{
 		Color color;
-		currColor = new Color(0,240-(appt.TimeSpan().StartTime().getHours()-8)*25,255-(appt.TimeSpan().StartTime().getMinutes()*3));
-		currColorForJoint = new Color(255-(appt.TimeSpan().StartTime().getHours()-8)*25,0,190-(appt.TimeSpan().StartTime().getMinutes()*3));
+		//currColor = new Color(0,240-(appt.TimeSpan().StartTime().getHours())*10,255-(appt.TimeSpan().StartTime().getMinutes()*3));
+		//currColorForJoint = new Color(255-(appt.TimeSpan().StartTime().getHours())*10,0,190-(appt.TimeSpan().StartTime().getMinutes()*3));
+		
+		Random random = new Random();
+		final float hue = random.nextFloat();
+		final float saturation = 0.9f;//1.0 for brilliant, 0.0 for dull
+		final float luminance = 1.0f; //1.0 for brighter, 0.0 for black
+		currColor = Color.getHSBColor(hue, saturation, luminance);	
+		currColorForJoint = Color.getHSBColor(hue, saturation, luminance);
+		
+		
 		if(!appt.isRepeated())
 			color = currColor;
 		else
@@ -455,7 +465,7 @@ public class AppList extends JPanel implements ActionListener
 			pos = calRowColNum(i);
 			if (i == startMin) 
 			{
-				tableView.getModel().setValueAt(appt, pos[0], pos[1]);
+				tableView.getModel().setValueAt(appt.getTitle(), pos[0], pos[1]);
 
 				if (pos[1] == 1) 
 				{
@@ -470,7 +480,7 @@ public class AppList extends JPanel implements ActionListener
 			} 
 			else 
 			{
-				tableView.getModel().setValueAt(appt, pos[0], pos[1]);
+				tableView.getModel().setValueAt(appt.getTitle(), pos[0], pos[1]);
 
 				if (pos[1] == 1) {
 					cellCMD[pos[0]][0] = COLORED;
@@ -492,18 +502,26 @@ public class AppList extends JPanel implements ActionListener
 
 	}
 
-	public int[] calRowColNum(int total) 
+	public int[] calRowColNum(int startTime) 
 	{
 		int[] position = new int[2];
-		position[0] = total / SMALLEST_DURATION;
+		position[0] = startTime / SMALLEST_DURATION;
 
-		if (position[0] > (ROWNUM - 1)) {
+		if (position[0] > (ROWNUM - 1)) 
+		{
 			position[0] = position[0] - ROWNUM;
 			position[1] = 4;
-		} else
+		} 
+		else
+		{
 			position[1] = 1;
-		if (position[1] == 4 && position[0] > ROWNUM - 1)
+		}
+		
+		/*if (position[1] == 4 && position[0] > ROWNUM - 1)
+		{
 			position[0] = ROWNUM - 1;
+		}*/
+		
 		return position;
 	}
 

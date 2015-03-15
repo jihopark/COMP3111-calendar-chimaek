@@ -6,11 +6,13 @@ import hkust.cse.calendar.locationstorage.LocationStorage;
 import hkust.cse.calendar.locationstorage.LocationStorageNullImpl;
 import hkust.cse.calendar.notification.NotificationController;
 import hkust.cse.calendar.notification.NotificationStorageNullImpl;
+import hkust.cse.calendar.time.TimeController;
 import hkust.cse.calendar.unit.Appt;
 import hkust.cse.calendar.unit.Location;
 import hkust.cse.calendar.unit.Notification;
 import hkust.cse.calendar.unit.TimeSpan;
 import hkust.cse.calendar.unit.User;
+import hkust.cse.calendar.user.UserController;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
@@ -120,6 +122,7 @@ public class AppScheduler extends JDialog implements ActionListener,
 	
 
 	private void commonConstructor(String title, CalGrid cal) {
+		
 		parent = cal;
 		this.setAlwaysOnTop(true);
 		setTitle(title);
@@ -217,14 +220,22 @@ public class AppScheduler extends JDialog implements ActionListener,
 		yearLabel = new JLabel("YEAR: ");
 		panelDate.add(yearLabel);
 		yearField = new JTextField(6);
+		String defaultYearString = Integer.toString(TimeController.getInstance().getCurrentTimeInDate().getYear()+1900);
+		yearField.setText(defaultYearString);
 		panelDate.add(yearField);
+		
 		monthLabel = new JLabel("MONTH: ");
 		panelDate.add(monthLabel);
 		monthField = new JTextField(4);
+		String defaultMonthString = Integer.toString(TimeController.getInstance().getCurrentTimeInDate().getMonth()+1);
+		monthField.setText(defaultMonthString);
 		panelDate.add(monthField);
+		
 		dayLabel = new JLabel("DAY: ");
 		panelDate.add(dayLabel);
 		dayField = new JTextField(4);
+		String defaultDayString = Integer.toString(TimeController.getInstance().getCurrentTimeInDate().getDate());
+		dayField.setText(defaultDayString);
 		panelDate.add(dayField);
 		
 		return panelDate;
@@ -406,6 +417,8 @@ public class AppScheduler extends JDialog implements ActionListener,
 		
 		//GUI for location list.
 		//test for location combobox.
+
+		LocationController.getInstance().initLocationStorage(new LocationStorageNullImpl(UserController.getInstance().getDefaultUser()));
 		ArrayList<Location> locationList = new ArrayList<Location>();
 		for(int i=0; i<LocationController.getInstance().getLocationList().getSize(); i++){
 			locationList.add(LocationController.getInstance().getLocationList().getElementAt(i));
@@ -799,19 +812,20 @@ public class AppScheduler extends JDialog implements ActionListener,
 	private boolean saveFrequencyWithEndAt(Date endAtDate)
 	{
 		
+		 UserController tempUserController = UserController.getInstance();
 		 ApptController tempApptController = ApptController.getInstance();
 		 
 		 if(dailyButton.isSelected())
 		 {
-			 return tempApptController.saveRepeatedNewAppt(tempApptController.getDefaultUser(), NewAppt,1, endAtDate);
+			 return tempApptController.saveRepeatedNewAppt(tempUserController.getDefaultUser(),NewAppt,1, endAtDate);
 		 }
 		 else if(weeklyButton.isSelected())
 		 {
-			 return tempApptController.saveRepeatedNewAppt(tempApptController.getDefaultUser(), NewAppt,2, endAtDate);
+			 return tempApptController.saveRepeatedNewAppt(tempUserController.getDefaultUser(), NewAppt,2, endAtDate);
 		 }
 		 else if(monthlyButton.isSelected())
 		 {
-			 return tempApptController.saveRepeatedNewAppt(tempApptController.getDefaultUser(), NewAppt,3, endAtDate);
+			 return tempApptController.saveRepeatedNewAppt(tempUserController.getDefaultUser(), NewAppt,3, endAtDate);
 		 }
 		 
 		 return false;
@@ -819,7 +833,7 @@ public class AppScheduler extends JDialog implements ActionListener,
 	
 	private boolean saveFrequencyWithoutEndAt()
 	{
-		return ApptController.getInstance().saveNewAppt(ApptController.getInstance().getDefaultUser(), NewAppt);
+		return ApptController.getInstance().saveNewAppt(UserController.getInstance().getDefaultUser(), NewAppt);
 	}
 	
 	
