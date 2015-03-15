@@ -62,8 +62,8 @@ public class CalGrid extends JFrame implements ActionListener {
 	public int previousCol;
 	public int currentRow;
 	public int currentCol;
-	private BasicArrowButton eButton;
-	private BasicArrowButton wButton;
+	private BasicArrowButton monthRightArrowButton;
+	private BasicArrowButton monthLeftArrowButton;
 	private JLabel yearLabel;
 	private JComboBox monthComboBox;
 
@@ -75,18 +75,18 @@ public class CalGrid extends JFrame implements ActionListener {
 			"May", "June", "July", "August", "September", "October",
 			"November", "December" };
 	private JTable tableView;
-	private AppList applist;
+	private AppList applistPanel;
 	public static final int[] monthDays = { 31, 28, 31, 30, 31, 30, 31, 31, 30,
 			31, 30, 31 };
-	private JTextPane note;
+	private JTextPane textPaneImportantDays;
 
-	private JSplitPane upper;
-	private JSplitPane whole;
-	private JScrollPane scrollpane;
-	private StyledDocument mem_doc = null;
-	private SimpleAttributeSet sab = null;
+	private JSplitPane panelUpper;
+	private JSplitPane panelWhole;
+	private JScrollPane scrollPaneMonthView;
+	private StyledDocument styledDocImportantDays = null;
+	private SimpleAttributeSet sabImportantDays = null;
 	// private boolean isLogin = false;
-	private JMenu Appmenu = new JMenu("Appointment");;
+	private JMenu Appmenu = new JMenu("Appointment");
 
 	private final String[] holidays = {
 			"New Years Day\nSpring Festival\n",
@@ -119,8 +119,8 @@ public class CalGrid extends JFrame implements ActionListener {
 		currentRow = 0;
 		currentCol = 0;
 
-		applist = new AppList();
-		applist.setParent(this);
+		applistPanel = new AppList();
+		applistPanel.setParent(this);
 
 		setJMenuBar(createMenuBar());
 
@@ -133,34 +133,34 @@ public class CalGrid extends JFrame implements ActionListener {
 
 		getDateArray(data);
 
-		JPanel leftP = new JPanel();
-		leftP.setLayout(new BorderLayout());
-		leftP.setPreferredSize(new Dimension(500, 300));
+		JPanel panelMonthYearAndImportantDays = new JPanel();
+		panelMonthYearAndImportantDays.setLayout(new BorderLayout());
+		panelMonthYearAndImportantDays.setPreferredSize(new Dimension(500, 300));
 
-		JLabel textL = new JLabel("Important Days");
-		textL.setForeground(Color.red);
+		JLabel labelImportantDays = new JLabel("Important Days");
+		labelImportantDays.setForeground(Color.red);
 
-		note = new JTextPane();
-		note.setEditable(false);
-		note.setBorder(new Flush3DBorder());
-		mem_doc = note.getStyledDocument();
-		sab = new SimpleAttributeSet();
-		StyleConstants.setBold(sab, true);
-		StyleConstants.setFontSize(sab, 30);
+		textPaneImportantDays = new JTextPane();
+		textPaneImportantDays.setEditable(false);
+		textPaneImportantDays.setBorder(new Flush3DBorder());
+		styledDocImportantDays = textPaneImportantDays.getStyledDocument();
+		sabImportantDays = new SimpleAttributeSet();
+		StyleConstants.setBold(sabImportantDays, true);
+		StyleConstants.setFontSize(sabImportantDays, 30);
 
-		JPanel noteP = new JPanel();
-		noteP.setLayout(new BorderLayout());
-		noteP.add(textL, BorderLayout.NORTH);
-		noteP.add(note, BorderLayout.CENTER);
+		JPanel panelImportantDays = new JPanel();
+		panelImportantDays.setLayout(new BorderLayout());
+		panelImportantDays.add(labelImportantDays, BorderLayout.NORTH);
+		panelImportantDays.add(textPaneImportantDays, BorderLayout.CENTER);
 
-		leftP.add(noteP, BorderLayout.CENTER);
+		panelMonthYearAndImportantDays.add(panelImportantDays, BorderLayout.CENTER);
 
-		eButton = new BasicArrowButton(SwingConstants.EAST);
-		eButton.setEnabled(true);
-		eButton.addActionListener(this);
-		wButton = new BasicArrowButton(SwingConstants.WEST);
-		wButton.setEnabled(true);
-		wButton.addActionListener(this);
+		monthRightArrowButton = new BasicArrowButton(SwingConstants.EAST);
+		monthRightArrowButton.setEnabled(true);
+		monthRightArrowButton.addActionListener(this);
+		monthLeftArrowButton = new BasicArrowButton(SwingConstants.WEST);
+		monthLeftArrowButton.setEnabled(true);
+		monthLeftArrowButton.addActionListener(this);
 
 		yearLabel = new JLabel(new Integer(currentYear).toString());
 		monthComboBox = new JComboBox();
@@ -173,12 +173,12 @@ public class CalGrid extends JFrame implements ActionListener {
 		JPanel yearGroup = new JPanel();
 		yearGroup.setLayout(new FlowLayout());
 		yearGroup.setBorder(new Flush3DBorder());
-		yearGroup.add(wButton);
+		yearGroup.add(monthLeftArrowButton);
 		yearGroup.add(yearLabel);
-		yearGroup.add(eButton);
+		yearGroup.add(monthRightArrowButton);
 		yearGroup.add(monthComboBox);
 
-		leftP.add(yearGroup, BorderLayout.NORTH);
+		panelMonthYearAndImportantDays.add(yearGroup, BorderLayout.NORTH);
 
 		TableModel dataModel = prepareTableModel();
 		
@@ -221,14 +221,14 @@ public class CalGrid extends JFrame implements ActionListener {
 		head.setReorderingAllowed(false);
 		head.setResizingAllowed(true);
 
-		scrollpane = new JScrollPane(tableView);
-		scrollpane.setBorder(new BevelBorder(BevelBorder.RAISED));
-		scrollpane.setPreferredSize(new Dimension(536, 260));
+		scrollPaneMonthView = new JScrollPane(tableView);
+		scrollPaneMonthView.setBorder(new BevelBorder(BevelBorder.RAISED));
+		scrollPaneMonthView.setPreferredSize(new Dimension(536, 260));
 
-		upper = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, leftP, scrollpane);
+		panelUpper = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, panelMonthYearAndImportantDays, scrollPaneMonthView);
 
-		whole = new JSplitPane(JSplitPane.VERTICAL_SPLIT, upper, applist);
-		getContentPane().add(whole);
+		panelWhole = new JSplitPane(JSplitPane.VERTICAL_SPLIT, panelUpper, applistPanel);
+		getContentPane().add(panelWhole);
 
 		
 		initializeSystem(); // for you to add.
@@ -415,7 +415,7 @@ public class CalGrid extends JFrame implements ActionListener {
 	}
 
 	public void actionPerformed(ActionEvent e) {
-		if (e.getSource() == eButton) {
+		if (e.getSource() == monthRightArrowButton) {
 			if (yearLabel == null)
 				return;
 			currentYear = currentYear + 1;
@@ -430,7 +430,7 @@ public class CalGrid extends JFrame implements ActionListener {
 
 			}
 			UpdateCal();
-		} else if (e.getSource() == wButton) {
+		} else if (e.getSource() == monthLeftArrowButton) {
 			if (yearLabel == null)
 				return;
 			currentYear = currentYear - 1;
@@ -449,8 +449,8 @@ public class CalGrid extends JFrame implements ActionListener {
 			if (monthComboBox.getSelectedItem() != null) {
 				currentMonth = monthComboBox.getSelectedIndex() + 1;
 				try {
-					mem_doc.remove(0, mem_doc.getLength());
-					mem_doc.insertString(0, holidays[currentMonth - 1], sab);
+					styledDocImportantDays.remove(0, styledDocImportantDays.getLength());
+					styledDocImportantDays.insertString(0, holidays[currentMonth - 1], sabImportantDays);
 				} catch (BadLocationException e1) {
 
 					e1.printStackTrace();
@@ -471,9 +471,9 @@ public class CalGrid extends JFrame implements ActionListener {
 
 	// update the appointment list on gui
 	public void updateAppList() {
-		applist.clear();
-		applist.repaint();
-		applist.setTodayAppt(GetTodayAppt());
+		applistPanel.clear();
+		applistPanel.repaint();
+		applistPanel.setTodayAppt(GetTodayAppt());
 	}
 
 	public void UpdateCal() {
@@ -606,7 +606,7 @@ public class CalGrid extends JFrame implements ActionListener {
 	}
 
 	public AppList getAppList() {
-		return applist;
+		return applistPanel;
 	}
 
 	public User getCurrUser() {

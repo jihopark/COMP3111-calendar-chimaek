@@ -185,7 +185,6 @@ public class AppScheduler extends JDialog implements ActionListener,
 		panelBottom.add(CancelBut);
 		contentPane.add("South", panelBottom);
 		
-		
 		NewAppt = new Appt();
 
 		if (this.getTitle().equals("Join Appointment Content Change") || this.getTitle().equals("Join Appointment Invitation")){
@@ -688,8 +687,12 @@ public class AppScheduler extends JDialog implements ActionListener,
 			if(saveFrequencyWithEndAt(endAtDate))
 			{
 				//SAVE NOTIFICATION
-				saveResponseFromNotification();
+				if(checkForNotification())
+				{
+					saveResponseFromNotification();
+				}
 				JOptionPane.showMessageDialog(this, "Saved appointment successfully!");
+				dispose();
 			}
 			else
 			{
@@ -703,8 +706,12 @@ public class AppScheduler extends JDialog implements ActionListener,
 			if(saveFrequencyWithoutEndAt())
 			{
 				//SAVE NOTIFICATION
-				saveResponseFromNotification();
+				if(checkForNotification())
+				{
+					saveResponseFromNotification();
+				}
 				JOptionPane.showMessageDialog(this, "Saved appointment successfully");
+				dispose();
 			}
 			else
 			{
@@ -764,6 +771,18 @@ public class AppScheduler extends JDialog implements ActionListener,
 		{
 			JOptionPane.showMessageDialog(this, "Failed to save notification");
 		}
+	}
+	
+	
+	private boolean checkForNotification()
+	{
+		if(oneHourCheckBox.isSelected() || threeHourCheckBox.isSelected() || 
+				twelveHourCheckBox.isSelected() || twentyfourHourCheckBox.isSelected())
+		{
+			return true;
+		}
+		
+		return false;
 	}
 	
 	private boolean saveFrequencyWithEndAt(Date endAtDate)

@@ -103,14 +103,14 @@ public class AppList extends JPanel implements ActionListener
 	public static int SMALLEST_DURATION = 15;
 	private static final long serialVersionUID = 1L;
 	public static int OFFSET = 8;
-	public static int ROWNUM = 20;
+	public static int ROWNUM = 48;
 	public Appt[] todaylist;
 	private final String[] names = { "Time", "Appointments", "Status", "Time",
 			"Appointments", "Status" };
 	private final int[] monthDays = { 31, 28, 31, 30, 31, 30, 31, 30, 31, 30,
 			31, 30, 31 };
 	private JTable tableView;
-	private final Object[][] data = new Object[20][6];
+	private final Object[][] apptContentData = new Object[ROWNUM][6];
 	private JPopupMenu pop;
 	private int currentRow;
 	private int currentCol;
@@ -124,8 +124,8 @@ public class AppList extends JPanel implements ActionListener
 	public final static int COLORED_TITLE = 1;
 	public final static int COLORED = 2;
 	public final static int NOT_COLORED = 0;
-	private int[][] cellCMD = new int[20][2];
-	private Color[][] cellColor = new Color[20][2];
+	private int[][] cellCMD = new int[ROWNUM][2];
+	private Color[][] cellColor = new Color[ROWNUM][2];
 	public Appt selectedAppt=null;
 	private MouseEvent tempe;
 	
@@ -146,7 +146,7 @@ public class AppList extends JPanel implements ActionListener
 		pop = initializePopupMenu();
 		
 		//Initialize the table model
-		getDataArray(data);
+		getDataArray(apptContentData);
 		TableModel dataModel = prepareTableModel();
 		tableView = initializeTableView(dataModel);
 		
@@ -298,12 +298,12 @@ public class AppList extends JPanel implements ActionListener
 
 			public int getRowCount() 
 			{
-				return 20;
+				return ROWNUM;
 			}
 
 			public Object getValueAt(int row, int col) 
 			{
-				return data[row][col];
+				return apptContentData[row][col];
 			}
 
 			public String getColumnName(int column) 
@@ -323,7 +323,7 @@ public class AppList extends JPanel implements ActionListener
 
 			public void setValueAt(Object aValue, int row, int column) 
 			{
-				data[row][column] = aValue;
+				apptContentData[row][column] = aValue;
 			}
 		};
 		return dataModel;
@@ -331,20 +331,20 @@ public class AppList extends JPanel implements ActionListener
 
 	public void getDataArray(Object[][] data) 
 	{
-		int tam = 480;
-		int tpm = 60;
+		int startingTimeAM = 0;
+		int startingTimePM = 0;
 		String s;
-		String am = new String("AM");
-		String pm = new String("PM");
+		String stringAM = new String("AM");
+		String stringPM = new String("PM");
 
 		int i;
 		for (i = 0; i < ROWNUM; i++) 
 		{
-			if (tam % 60 == 0)
-				data[i][0] = (tam / 60) + ":" + "00" + am;
+			if (startingTimeAM % 60 == 0)
+				data[i][0] = (startingTimeAM / 60) + ":" + "00" + stringAM;
 			else
-				data[i][0] = (tam / 60) + ":" + (tam % 60) + am;
-			tam = tam + SMALLEST_DURATION;
+				data[i][0] = (startingTimeAM / 60) + ":" + (startingTimeAM % 60) + stringAM;
+			startingTimeAM = startingTimeAM + SMALLEST_DURATION;
 			cellCMD[i][0] = NOT_COLORED;
 			cellCMD[i][1] = NOT_COLORED;
 			cellColor[i][0] = Color.white;
@@ -352,11 +352,29 @@ public class AppList extends JPanel implements ActionListener
 		}
 		for (i = 0; i < ROWNUM; i++) 
 		{
-			if (tpm % 60 == 0)
-				data[i][3] = (tpm / 60) + ":" + "00" + pm;
+			if (startingTimePM % 60 == 0)
+			{
+				if(startingTimePM == 0)
+				{
+					data[i][3] = "12" + ":" + "00" + stringPM;
+				}
+				else
+				{
+					data[i][3] = (startingTimePM / 60) + ":" + "00" + stringPM;
+				}
+			}
 			else
-				data[i][3] = (tpm / 60) + ":" + (tpm % 60) + pm;
-			tpm = tpm + SMALLEST_DURATION;
+			{
+				if(startingTimePM / 60 == 0)
+				{
+					data[i][3] = "12" + ":" + (startingTimePM % 60) + stringPM;
+				}
+				else
+				{
+					data[i][3] = (startingTimePM / 60) + ":" + (startingTimePM % 60) + stringPM;
+				}
+			}
+			startingTimePM = startingTimePM + SMALLEST_DURATION;
 		}
 
 	}
@@ -364,7 +382,7 @@ public class AppList extends JPanel implements ActionListener
 	// clear the appointment list on the gui
 	public void clear() 
 	{
-		for (int i = 0; i < 20; i++) 
+		for (int i = 0; i < ROWNUM; i++) 
 		{
 			setTextAt(" ", i, 1);
 
@@ -567,7 +585,7 @@ public class AppList extends JPanel implements ActionListener
 		if (currentCol < 3)
 			startTime = currentRow * 15 + 480;
 		else
-			startTime = (currentRow + 20) * 15 + 480;
+			startTime = (currentRow + ROWNUM) * 15 + 480;
 		AppScheduler a = new AppScheduler("New", parent);
 		a.updateSettingAppt(hkust.cse.calendar.gui.Utility.createDefaultAppt(
 				parent.currentYear, parent.currentMonth, parent.currentDay,
