@@ -25,6 +25,8 @@ import javax.swing.JPanel;
 import javax.swing.JPasswordField;
 import javax.swing.JTextField;
 
+import com.sun.glass.events.KeyEvent;
+
 
 public class LoginDialog extends JFrame implements ActionListener
 {
@@ -68,6 +70,11 @@ public class LoginDialog extends JFrame implements ActionListener
 		pwPanel.add(password);
 		top.add(pwPanel);
 		
+		////////////////set default id&pw /////////////////
+		userName.setText("huamin");
+		password.setText("comp3111");
+
+		
 		JPanel signupPanel = new JPanel();
 		signupPanel.add(new JLabel("If you don't have an account, please sign up:"));
 		signupButton = new JButton("Sign up now");
@@ -83,6 +90,9 @@ public class LoginDialog extends JFrame implements ActionListener
 		button = new JButton("Log in (Use Default User)");
 		button.addActionListener(this);
 		butPanel.add(button);
+		
+		//Need to press Alt+Enter//
+		button.setMnemonic(KeyEvent.VK_ENTER);
 		
 		closeButton = new JButton("Close program");
 		closeButton.addActionListener(this);
