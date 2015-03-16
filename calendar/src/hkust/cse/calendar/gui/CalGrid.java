@@ -22,6 +22,7 @@ import java.awt.event.WindowEvent;
 import java.sql.Timestamp;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.List;
 
 import javax.swing.JComboBox;
@@ -280,15 +281,19 @@ public class CalGrid extends JFrame implements ActionListener {
 	}
 
 	public void getDateArray(Object[][] data) {
-		TimeController timeController = TimeController.getInstance();
+		GregorianCalendar c = new GregorianCalendar(currentYear, currentMonth - 1, 1);
 		int day;
 		int date;
-		Date d = timeController.getCurrentTimeInDate();
-		//c.setTime(d);
+		Date d = c.getTime();
+		c.setTime(d);
 		day = d.getDay();
 		date = d.getDate();
 
-		if (timeController.isLeapYear(currentYear)) {
+		System.out.println("Day is: " + day);
+		System.out.println("Date is: " + date);
+		
+		
+		if (c.isLeapYear(currentYear)) {
 
 			monthDays[1] = 29;
 		} else

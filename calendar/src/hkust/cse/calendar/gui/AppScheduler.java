@@ -166,7 +166,6 @@ public class AppScheduler extends JDialog implements ActionListener,
 		contentPane.add("North", panelTop);
 		
 		currentAppt = new Appt();
-		initializeDefaultDateSetting();
 		
 		JPanel panelBottom = new JPanel();
 		panelBottom.setLayout(new FlowLayout(FlowLayout.RIGHT));
@@ -206,75 +205,6 @@ public class AppScheduler extends JDialog implements ActionListener,
 
 	}
 	
-	
-	public void loadDataFromExistingAppt()
-	{
-		//Load data on date and time field.
-		yearField.setText(Integer.toString(currentAppt.getTimeSpan().StartTime().getYear()));
-		monthField.setText(Integer.toString(currentAppt.getTimeSpan().StartTime().getMonth()));
-		dayField.setText(Integer.toString(currentAppt.getTimeSpan().StartTime().getDate()));
-		startTimeHourField.setText(Integer.toString(currentAppt.getTimeSpan().StartTime().getHours()));
-		startTimeMinuteField.setText(Integer.toString(currentAppt.getTimeSpan().StartTime().getMinutes()));
-		endTimeHourField.setText(Integer.toString(currentAppt.getTimeSpan().EndTime().getHours()));
-		endTimeMinuteField.setText(Integer.toString(currentAppt.getTimeSpan().EndTime().getMinutes()));
-		
-		//Load data on location.
-		if(currentAppt.getLocation() != null)
-		{
-			locationField.setSelectedItem(currentAppt.getLocation());
-		}
-		
-		//NEED TO LOAD DATA ON REMINDER.
-		
-		
-		
-		//Load data on notification.
-		LinkedList<Boolean> flagList = currentAppt.getNotification().getFlags();
-		if(flagList.get(0).booleanValue() == true)
-		{
-			oneHourCheckBox.setSelected(true);
-		}
-		else
-		{
-			oneHourCheckBox.setSelected(false);
-		}
-		
-		if(flagList.get(1).booleanValue() == true)
-		{
-			threeHourCheckBox.setSelected(true);
-		}
-		else
-		{
-			threeHourCheckBox.setSelected(false);
-		}
-		
-		if(flagList.get(2).booleanValue() == true)
-		{
-			twelveHourCheckBox.setSelected(true);
-		}
-		else
-		{
-			twelveHourCheckBox.setSelected(false);
-		}
-		
-		if(flagList.get(3).booleanValue() == true)
-		{
-			twentyfourHourCheckBox.setSelected(true);
-		}
-		else
-		{
-			twentyfourHourCheckBox.setSelected(false);
-		}
-		
-		//endAtYearField.setText(Integer.toString(NewAppt.getEndAtTime));
-		//endAtMonthField.setText(Integer.toString(NewAppt.getEndAtTime));
-		//endAtDayField.setText(Integer.toString(NewAppt.getEndAtTime));
-		
-		titleField.setText(currentAppt.getTitle());
-		detailArea.setText(currentAppt.getInfo());
-	}
-	
-	
 	public JPanel initiateDatePanel()
 	{
 		JPanel panelDate = new JPanel();
@@ -299,7 +229,7 @@ public class AppScheduler extends JDialog implements ActionListener,
 		return panelDate;
 	}
 	
-	public void initializeDefaultDateSetting()
+	/*public void initializeDefaultDateSetting()
 	{
 		String defaultYearString = Integer.toString(TimeController.getInstance().getCurrentTimeInDate().getYear()+1900);
 		yearField.setText(defaultYearString);
@@ -310,7 +240,7 @@ public class AppScheduler extends JDialog implements ActionListener,
 		String defaultDayString = Integer.toString(TimeController.getInstance().getCurrentTimeInDate().getDate());
 		dayField.setText(defaultDayString);
 		
-	}
+	}*/
 	
 	public JPanel initiateStartTimePanel()
 	{
