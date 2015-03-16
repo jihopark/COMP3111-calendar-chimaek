@@ -65,4 +65,56 @@ public class TimeController {
 			return timeMachine.getTime();
 		return Calendar.getInstance().getTime();
 	}
+	
+	public boolean isLeapYear(int year)
+	{
+		if ((year % 400 == 0) || ((year % 4 == 0) && (year % 100 != 0))) 
+		{
+			return true;
+		}
+		else 
+		{
+			return false;
+		}
+	}
+	
+	public int numOfDaysInMonth()
+	{
+		int[] monthDays = {31,28,31,30,31,30,31,31,30,31,30,31};
+		int currentMonth;
+		int currentYear;
+		
+		
+		if(onTimeMachineMode)
+		{
+			currentMonth = timeMachine.getTime().getMonth()+1;
+			currentYear = timeMachine.getTime().getYear()+1900;
+		}
+		else
+		{
+			currentMonth = Calendar.getInstance().getTime().getMonth()+1;
+			currentYear = Calendar.getInstance().getTime().getYear()+1900;
+		}
+		
+		System.out.println("Function numOfDaysInMonth(): currentMonth: " + currentMonth);
+		System.out.println("Function numOfDaysInMonth(): currentYear: " + currentYear);
+		
+		if(this.isLeapYear(currentYear))
+		{
+			if(currentMonth == 2)
+			{	
+				return 29;
+			}
+			else
+			{
+				return monthDays[currentMonth];
+			}
+		}
+		else
+		{
+			return monthDays[currentMonth];
+		}
+		
+	}
+	
 }

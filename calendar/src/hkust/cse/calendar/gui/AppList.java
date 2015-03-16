@@ -4,6 +4,7 @@ import hkust.cse.calendar.apptstorage.ApptController;
 import hkust.cse.calendar.time.TimeController;
 import hkust.cse.calendar.unit.Appt;
 import hkust.cse.calendar.unit.TimeSpan;
+import hkust.cse.calendar.user.UserController;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
@@ -129,6 +130,7 @@ public class AppList extends JPanel implements ActionListener
 	private Color[][] cellColor = new Color[ROWNUM][2];
 	public Appt selectedAppt=null;
 	private MouseEvent tempe;
+	private Random random = new Random();
 	
 	//CONSTRUCTOR
 	public AppList() 
@@ -433,7 +435,6 @@ public class AppList extends JPanel implements ActionListener
 		//currColor = new Color(0,240-(appt.TimeSpan().StartTime().getHours())*10,255-(appt.TimeSpan().StartTime().getMinutes()*3));
 		//currColorForJoint = new Color(255-(appt.TimeSpan().StartTime().getHours())*10,0,190-(appt.TimeSpan().StartTime().getMinutes()*3));
 		
-		Random random = new Random();
 		final float hue = random.nextFloat();
 		final float saturation = 0.9f;//1.0 for brilliant, 0.0 for dull
 		final float luminance = 1.0f; //1.0 for brighter, 0.0 for black
@@ -465,7 +466,7 @@ public class AppList extends JPanel implements ActionListener
 			pos = calRowColNum(i);
 			if (i == startMin) 
 			{
-				tableView.getModel().setValueAt(appt.getTitle(), pos[0], pos[1]);
+				tableView.getModel().setValueAt(appt, pos[0], pos[1]);
 
 				if (pos[1] == 1) 
 				{
@@ -480,7 +481,7 @@ public class AppList extends JPanel implements ActionListener
 			} 
 			else 
 			{
-				tableView.getModel().setValueAt(appt.getTitle(), pos[0], pos[1]);
+				tableView.getModel().setValueAt(appt, pos[0], pos[1]);
 
 				if (pos[1] == 1) {
 					cellCMD[pos[0]][0] = COLORED;
@@ -528,7 +529,7 @@ public class AppList extends JPanel implements ActionListener
 	private void getDetail() 
 	{
 
-		Appt apptTitle = getSelectedAppTitle();
+		Appt apptTitle = getSelectedApptTitle();
 		if (apptTitle == null)
 			return;
 
@@ -540,23 +541,41 @@ public class AppList extends JPanel implements ActionListener
 
 	private void delete() 
 	{
-		//TO-DO
-
+		Appt selectedAppt = getSelectedApptTitle();
+		
+		if(selectedAppt == null)
+		{
+			return;
+		}
+		else
+		{
+			ApptController.getInstance().removeAppt(UserController.getInstance().getDefaultUser(), selectedAppt);
+			parent.getAppListPanel().clear();
+			parent.getAppListPanel().setTodayAppt(parent.GetTodayAppt());
+			parent.repaint();
+			JOptionPane.showMessageDialog(parent, "Deleted successfully!");
+		}
+		
+		
 	}
 
 	private void modify() 
 	{
-		Appt apptTitle = getSelectedAppTitle();
+		Appt apptTitle = getSelectedApptTitle();
+		
 		if (apptTitle == null)
+		{
 			return;
-		AppScheduler setAppDial = new AppScheduler("Modify", parent, apptTitle.getID());
+		}
+		
+		AppScheduler setAppDial = new AppScheduler("Modify", parent, apptTitle);
 		setAppDial.updateSettingAppt(apptTitle);
 		setAppDial.show();
 		setAppDial.setResizable(false);
 
 	}
 
-	public Appt getSelectedAppTitle() 
+	public Appt getSelectedApptTitle() 
 	{
 		
 		Object apptTitle;
@@ -571,8 +590,11 @@ public class AppList extends JPanel implements ActionListener
 		if (currentCol < 3) 
 		{
 			apptTitle = tableView.getModel().getValueAt(currentRow, 1);
-		} else
+		}
+		else
+		{
 			apptTitle = tableView.getModel().getValueAt(currentRow, 4);
+		}
 		
 
 		if (apptTitle instanceof Appt)
@@ -620,6 +642,7 @@ public class AppList extends JPanel implements ActionListener
 		tempe = e;
 		pressRow = tableView.getSelectedRow();
 		pressCol = tableView.getSelectedColumn();
+	
 		if ((e.getModifiers() & InputEvent.BUTTON3_MASK) != 0)
 			pop.show(e.getComponent(), e.getX(), e.getY());
 	}
@@ -629,6 +652,7 @@ public class AppList extends JPanel implements ActionListener
 		
 		releaseRow = tableView.getSelectedRow();
 		releaseCol = tableView.getSelectedColumn();
+	
 		if ((e.getModifiers() & InputEvent.BUTTON3_MASK) != 0)
 			pop.show(e.getComponent(), e.getX(), e.getY());
 	}

@@ -101,7 +101,7 @@ public class AppScheduler extends JDialog implements ActionListener,
 	private JButton inviteBut;
 	private JButton rejectBut;
 	
-	private Appt NewAppt;
+	private Appt currentAppt;
 	private CalGrid parent;
 	private boolean isNew = true;
 	private boolean isChanged = true;
@@ -165,10 +165,8 @@ public class AppScheduler extends JDialog implements ActionListener,
 
 		contentPane.add("North", panelTop);
 		
-		if (NewAppt != null) {
-			detailArea.setText(NewAppt.getInfo());
-
-		}
+		currentAppt = new Appt();
+		initializeDefaultDateSetting();
 		
 		JPanel panelBottom = new JPanel();
 		panelBottom.setLayout(new FlowLayout(FlowLayout.RIGHT));
@@ -188,8 +186,6 @@ public class AppScheduler extends JDialog implements ActionListener,
 		rejectBut.show(false);
 		panelBottom.add(CancelBut);
 		contentPane.add("South", panelBottom);
-		
-		NewAppt = new Appt();
 
 		if (this.getTitle().equals("Join Appointment Content Change") || this.getTitle().equals("Join Appointment Invitation")){
 			inviteBut.show(false);
@@ -211,6 +207,74 @@ public class AppScheduler extends JDialog implements ActionListener,
 	}
 	
 	
+	public void loadDataFromExistingAppt()
+	{
+		//Load data on date and time field.
+		yearField.setText(Integer.toString(currentAppt.getTimeSpan().StartTime().getYear()));
+		monthField.setText(Integer.toString(currentAppt.getTimeSpan().StartTime().getMonth()));
+		dayField.setText(Integer.toString(currentAppt.getTimeSpan().StartTime().getDate()));
+		startTimeHourField.setText(Integer.toString(currentAppt.getTimeSpan().StartTime().getHours()));
+		startTimeMinuteField.setText(Integer.toString(currentAppt.getTimeSpan().StartTime().getMinutes()));
+		endTimeHourField.setText(Integer.toString(currentAppt.getTimeSpan().EndTime().getHours()));
+		endTimeMinuteField.setText(Integer.toString(currentAppt.getTimeSpan().EndTime().getMinutes()));
+		
+		//Load data on location.
+		if(currentAppt.getLocation() != null)
+		{
+			locationField.setSelectedItem(currentAppt.getLocation());
+		}
+		
+		//NEED TO LOAD DATA ON REMINDER.
+		
+		
+		
+		//Load data on notification.
+		LinkedList<Boolean> flagList = currentAppt.getNotification().getFlags();
+		if(flagList.get(0).booleanValue() == true)
+		{
+			oneHourCheckBox.setSelected(true);
+		}
+		else
+		{
+			oneHourCheckBox.setSelected(false);
+		}
+		
+		if(flagList.get(1).booleanValue() == true)
+		{
+			threeHourCheckBox.setSelected(true);
+		}
+		else
+		{
+			threeHourCheckBox.setSelected(false);
+		}
+		
+		if(flagList.get(2).booleanValue() == true)
+		{
+			twelveHourCheckBox.setSelected(true);
+		}
+		else
+		{
+			twelveHourCheckBox.setSelected(false);
+		}
+		
+		if(flagList.get(3).booleanValue() == true)
+		{
+			twentyfourHourCheckBox.setSelected(true);
+		}
+		else
+		{
+			twentyfourHourCheckBox.setSelected(false);
+		}
+		
+		//endAtYearField.setText(Integer.toString(NewAppt.getEndAtTime));
+		//endAtMonthField.setText(Integer.toString(NewAppt.getEndAtTime));
+		//endAtDayField.setText(Integer.toString(NewAppt.getEndAtTime));
+		
+		titleField.setText(currentAppt.getTitle());
+		detailArea.setText(currentAppt.getInfo());
+	}
+	
+	
 	public JPanel initiateDatePanel()
 	{
 		JPanel panelDate = new JPanel();
@@ -220,25 +284,32 @@ public class AppScheduler extends JDialog implements ActionListener,
 		yearLabel = new JLabel("YEAR: ");
 		panelDate.add(yearLabel);
 		yearField = new JTextField(6);
-		String defaultYearString = Integer.toString(TimeController.getInstance().getCurrentTimeInDate().getYear()+1900);
-		yearField.setText(defaultYearString);
 		panelDate.add(yearField);
 		
 		monthLabel = new JLabel("MONTH: ");
 		panelDate.add(monthLabel);
 		monthField = new JTextField(4);
-		String defaultMonthString = Integer.toString(TimeController.getInstance().getCurrentTimeInDate().getMonth()+1);
-		monthField.setText(defaultMonthString);
 		panelDate.add(monthField);
 		
 		dayLabel = new JLabel("DAY: ");
 		panelDate.add(dayLabel);
 		dayField = new JTextField(4);
-		String defaultDayString = Integer.toString(TimeController.getInstance().getCurrentTimeInDate().getDate());
-		dayField.setText(defaultDayString);
 		panelDate.add(dayField);
 		
 		return panelDate;
+	}
+	
+	public void initializeDefaultDateSetting()
+	{
+		String defaultYearString = Integer.toString(TimeController.getInstance().getCurrentTimeInDate().getYear()+1900);
+		yearField.setText(defaultYearString);
+		
+		String defaultMonthString = Integer.toString(TimeController.getInstance().getCurrentTimeInDate().getMonth()+1);
+		monthField.setText(defaultMonthString);
+		
+		String defaultDayString = Integer.toString(TimeController.getInstance().getCurrentTimeInDate().getDate());
+		dayField.setText(defaultDayString);
+		
 	}
 	
 	public JPanel initiateStartTimePanel()
@@ -488,8 +559,8 @@ public class AppScheduler extends JDialog implements ActionListener,
 	}
 	
 	//Constructor	
-	AppScheduler(String title, CalGrid cal, int selectedApptId) {
-		this.selectedApptId = selectedApptId;
+	AppScheduler(String title, CalGrid cal, Appt appt) {
+		this.currentAppt = appt;
 		commonConstructor(title, cal);
 	}
 
@@ -518,9 +589,9 @@ public class AppScheduler extends JDialog implements ActionListener,
 		{
 			if (JOptionPane.showConfirmDialog(this, "Reject this joint appointment?", "Confirmation", JOptionPane.YES_NO_OPTION) == 0)
 			{
-				NewAppt.addReject(getCurrentUser());
-				NewAppt.getAttendList().remove(getCurrentUser());
-				NewAppt.getWaitingList().remove(getCurrentUser());
+				currentAppt.addReject(getCurrentUser());
+				currentAppt.getAttendList().remove(getCurrentUser());
+				currentAppt.getWaitingList().remove(getCurrentUser());
 				this.setVisible(false);
 				dispose();
 			}
@@ -691,9 +762,9 @@ public class AppScheduler extends JDialog implements ActionListener,
 		Timestamp timestampForStartTime = CreateTimeStamp(validDate, validTimeInterval[0]);
 		Timestamp timestampForEndTime = CreateTimeStamp(validDate, validTimeInterval[1]);
 		TimeSpan timeSpanForAppt = new TimeSpan(timestampForStartTime,timestampForEndTime);
-		NewAppt.setTimeSpan(timeSpanForAppt);
-		NewAppt.setTitle(titleField.getText());
-		NewAppt.setInfo(detailArea.getText());
+		currentAppt.setTimeSpan(timeSpanForAppt);
+		currentAppt.setTitle(titleField.getText());
+		currentAppt.setInfo(detailArea.getText());
 
 		
 		//SAVE LOCATION
@@ -701,7 +772,7 @@ public class AppScheduler extends JDialog implements ActionListener,
 		
 		//Temporary Location for Testing
 		Location locationObject = LocationController.getInstance().RetrieveLocations(locationString);
-		NewAppt.setLocation(locationObject);
+		currentAppt.setLocation(locationObject);
 		
 		//SAVE REPEATED APPOINTMENT
 		//CASE: DAILY, WEEKLY, MONTHLY
@@ -789,7 +860,7 @@ public class AppScheduler extends JDialog implements ActionListener,
 		}
 		
 		
-		if(ApptController.getInstance().setNotificationForAppt(NewAppt, flagOne, flagTwo, flagThree, flagFour))
+		if(ApptController.getInstance().setNotificationForAppt(currentAppt, flagOne, flagTwo, flagThree, flagFour))
 		{
 			JOptionPane.showMessageDialog(this, "Saved notification successfully");
 		}
@@ -819,15 +890,15 @@ public class AppScheduler extends JDialog implements ActionListener,
 		 
 		 if(dailyButton.isSelected())
 		 {
-			 return tempApptController.saveRepeatedNewAppt(tempUserController.getDefaultUser(),NewAppt,1, endAtDate);
+			 return tempApptController.saveRepeatedNewAppt(tempUserController.getDefaultUser(),currentAppt,1, endAtDate);
 		 }
 		 else if(weeklyButton.isSelected())
 		 {
-			 return tempApptController.saveRepeatedNewAppt(tempUserController.getDefaultUser(), NewAppt,2, endAtDate);
+			 return tempApptController.saveRepeatedNewAppt(tempUserController.getDefaultUser(), currentAppt,2, endAtDate);
 		 }
 		 else if(monthlyButton.isSelected())
 		 {
-			 return tempApptController.saveRepeatedNewAppt(tempUserController.getDefaultUser(), NewAppt,3, endAtDate);
+			 return tempApptController.saveRepeatedNewAppt(tempUserController.getDefaultUser(), currentAppt,3, endAtDate);
 		 }
 		 
 		 return false;
@@ -835,7 +906,7 @@ public class AppScheduler extends JDialog implements ActionListener,
 	
 	private boolean saveFrequencyWithoutEndAt()
 	{
-		return ApptController.getInstance().saveNewAppt(UserController.getInstance().getDefaultUser(), NewAppt);
+		return ApptController.getInstance().saveNewAppt(UserController.getInstance().getDefaultUser(), currentAppt);
 	}
 	
 	
@@ -853,7 +924,74 @@ public class AppScheduler extends JDialog implements ActionListener,
 	}
 
 	public void updateSettingAppt(Appt appt) {
-		// Fix Me!
+		currentAppt = appt;
+		
+		//Load data on date and time field.
+		yearField.setText(Integer.toString(currentAppt.getTimeSpan().StartTime().getYear()+1900));
+		monthField.setText(Integer.toString(currentAppt.getTimeSpan().StartTime().getMonth()+1));
+		dayField.setText(Integer.toString(currentAppt.getTimeSpan().StartTime().getDate()));
+		startTimeHourField.setText(Integer.toString(currentAppt.getTimeSpan().StartTime().getHours()));
+		startTimeMinuteField.setText(Integer.toString(currentAppt.getTimeSpan().StartTime().getMinutes()));
+		endTimeHourField.setText(Integer.toString(currentAppt.getTimeSpan().EndTime().getHours()));
+		endTimeMinuteField.setText(Integer.toString(currentAppt.getTimeSpan().EndTime().getMinutes()));
+		
+		//Load data on location.
+		if(currentAppt.getLocation() != null)
+		{
+			locationField.setSelectedItem(currentAppt.getLocation());
+		}
+		
+		//NEED TO LOAD DATA ON REMINDER.
+		
+		
+		
+		//Load data on notification.
+		if(currentAppt.getNotification() != null)
+		{
+			LinkedList<Boolean> flagList = currentAppt.getNotification().getFlags();
+			if(flagList.get(0).booleanValue() == true)
+			{
+				oneHourCheckBox.setSelected(true);
+			}
+			else
+			{
+				oneHourCheckBox.setSelected(false);
+			}
+			
+			if(flagList.get(1).booleanValue() == true)
+			{
+				threeHourCheckBox.setSelected(true);
+			}
+			else
+			{
+				threeHourCheckBox.setSelected(false);
+			}
+			
+			if(flagList.get(2).booleanValue() == true)
+			{
+				twelveHourCheckBox.setSelected(true);
+			}
+			else
+			{
+				twelveHourCheckBox.setSelected(false);
+			}
+			
+			if(flagList.get(3).booleanValue() == true)
+			{
+				twentyfourHourCheckBox.setSelected(true);
+			}
+			else
+			{
+				twentyfourHourCheckBox.setSelected(false);
+			}
+		}
+		
+		//endAtYearField.setText(Integer.toString(NewAppt.getEndAtTime));
+		//endAtMonthField.setText(Integer.toString(NewAppt.getEndAtTime));
+		//endAtDayField.setText(Integer.toString(NewAppt.getEndAtTime));
+		
+		titleField.setText(currentAppt.getTitle());
+		detailArea.setText(currentAppt.getInfo());
 	}
 
 	public void componentHidden(ComponentEvent e) {
@@ -881,6 +1019,12 @@ public class AppScheduler extends JDialog implements ActionListener,
 	{
 		return this.parent.mCurrUser.ID();
 	}
+	
+	public void setAppt(Appt appt)
+	{
+		currentAppt = appt;
+	}
+	
 	
 	private void allDisableEdit(){
 		yearField.setEditable(false);

@@ -187,7 +187,7 @@ public class Appt implements Serializable {
 	}
 	// Getter of the appointment title
 	public String toString() {
-		return mTitle + " " + TimeSpan();
+		return mTitle;
 	}
 
 	// Setter of the appointment title
