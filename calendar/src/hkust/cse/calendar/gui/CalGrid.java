@@ -308,6 +308,7 @@ public class CalGrid extends JFrame implements ActionListener {
 			day = date % 7;
 		day %= 7;
 		for (int i = 0; i < 6; i++)
+		
 			for (int j = 0; j < 7; j++) {
 				int temp1 = i * 7 + j - day + 1;
 				if (temp1 > 0 && temp1 <= monthDays[currentMonth - 1])
