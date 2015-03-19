@@ -1,6 +1,7 @@
 package hkust.cse.calendar.apptstorage;
 
 import hkust.cse.calendar.notification.NotificationController;
+import hkust.cse.calendar.time.TimeController;
 import hkust.cse.calendar.unit.Appt;
 import hkust.cse.calendar.unit.Notification;
 import hkust.cse.calendar.unit.TimeSpan;
@@ -148,6 +149,9 @@ public class ApptController {
 	//Remove appt of user. Return true if successfully removed
 	public boolean removeAppt(User user, Appt appt){
 		//If repeated, then remove all repeated appts. However, past appts will not be removed
+		if (!TimeController.getInstance().isNotPast(appt)){
+			return false;
+		}
 		if (appt.isRepeated()){
 			System.out.println("\nRemove Repeated!");
 			Appt iterator = appt.getNextRepeatedAppt();
@@ -157,6 +161,8 @@ public class ApptController {
 			}
 			iterator = appt.getPreviousRepeatedAppt();
 			while (iterator!=null){
+				if (!TimeController.getInstance().isNotPast(iterator))
+					break;
 				mApptStorage.RemoveAppt(iterator);
 				iterator = iterator.getPreviousRepeatedAppt();
 			}

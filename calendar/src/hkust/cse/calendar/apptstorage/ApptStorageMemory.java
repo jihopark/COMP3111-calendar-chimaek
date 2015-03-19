@@ -1,5 +1,6 @@
 package hkust.cse.calendar.apptstorage;
 
+import hkust.cse.calendar.time.TimeController;
 import hkust.cse.calendar.unit.Appt;
 import hkust.cse.calendar.unit.Notification;
 import hkust.cse.calendar.unit.TimeSpan;
@@ -44,19 +45,11 @@ public class ApptStorageMemory extends ApptStorage {
 		}
 		return false;
 	}
-	
-	private boolean isNotPast(Appt appt){
-		long currentTime = Calendar.getInstance().getTimeInMillis(); 
-		if (currentTime <= appt.TimeSpan().StartTime().getTime())
-			return true;
-		System.out.println("\nApptStorageMemory/isNotPast: Past Time!");
-		return false;
-	}
-	
+		
 	@Override
 	public boolean SaveAppt(Appt appt) {
 		if (appt!=null && appt.isValid()){
-			if (!checkOverlaps(appt) && isNotPast(appt)){
+			if (!checkOverlaps(appt) && TimeController.getInstance().isNotPast(appt)){
 				list.add(appt);
 				apptNumber++;
 				System.out.println("ApptStorageMemory/SaveAppt : Saved Appt #"+appt.getID());
@@ -121,7 +114,7 @@ public class ApptStorageMemory extends ApptStorage {
 	@Override
 	public boolean UpdateAppt(Appt appt) {
 		for (Appt a : list){
-			if (a.equals(appt) && appt.isValid() && isNotPast(appt) && !checkOverlaps(appt)){
+			if (a.equals(appt) && appt.isValid() && TimeController.getInstance().isNotPast(appt) && !checkOverlaps(appt)){
 				list.remove(a);
 				removeNotification(a.getNotification());
 				list.add(appt);
@@ -137,7 +130,7 @@ public class ApptStorageMemory extends ApptStorage {
 	@Override
 	public boolean RemoveAppt(Appt appt) {
 		for (Appt a : list){
-			if (a.equals(appt) && isNotPast(appt)){
+			if (a.equals(appt) && TimeController.getInstance().isNotPast(appt)){
 				list.remove(a);
 				apptNumber--;
 				System.out.println("ApptStorageMemory/RemoveAppt : Removed Appt #"+appt.getID());

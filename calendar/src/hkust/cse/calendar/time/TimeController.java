@@ -1,5 +1,7 @@
 package hkust.cse.calendar.time;
 
+import hkust.cse.calendar.unit.Appt;
+
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -65,6 +67,15 @@ public class TimeController {
 			return timeMachine.getTime();
 		return Calendar.getInstance().getTime();
 	}
+	
+	public boolean isNotPast(Appt appt){
+		long currentTime = getCurrentTimeInMillis(); 
+		if (currentTime <= appt.TimeSpan().StartTime().getTime())
+			return true;
+		System.out.println("\nTimeController/isNotPast: Past Time!");
+		return false;
+	}
+
 	
 	public boolean isLeapYear(int year)
 	{
