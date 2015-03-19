@@ -22,7 +22,7 @@ public class NotificationCheckThread extends Thread {
 				Thread.sleep(1000);
 				currentTime = TimeController.getInstance().getCurrentTimeInDate();
 				
-				System.out.println("Current Time is: " + currentTime);
+				//System.out.println("Current Time is: " + currentTime);
 				//System.out.println("Current User Name is: " + ApptController.getInstance().gettUser());
 				
 				if(NotificationController.getInstance().checkForNotificationTime(currentTime)) {

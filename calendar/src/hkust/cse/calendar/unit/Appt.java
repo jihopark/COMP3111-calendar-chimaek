@@ -1,9 +1,9 @@
 package hkust.cse.calendar.unit;
 
 import java.io.Serializable;
-import java.util.LinkedList;
-
 import java.sql.Timestamp;
+import java.util.Date;
+import java.util.LinkedList;
 
 public class Appt implements Serializable {
 
@@ -81,6 +81,17 @@ public class Appt implements Serializable {
 	// Getter of the appointment id
 	public int getID() {
 		return mApptID;
+	}
+	
+	//Returns Repeat End Date
+	public Timestamp getRepeateEndDate(){
+		if (isRepeated()){
+			Appt temp = this;
+			while (temp.nextRepeatedAppt!=null)
+				temp = temp.nextRepeatedAppt;
+			return temp.getTimeSpan().EndTime();
+		}
+		return null;
 	}
 	
 	public Appt getNextRepeatedAppt(){

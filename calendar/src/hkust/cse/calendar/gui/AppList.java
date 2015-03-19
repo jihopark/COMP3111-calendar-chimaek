@@ -572,7 +572,11 @@ public class AppList extends JPanel implements ActionListener
 		{
 			return;
 		}
-		
+		if (apptTitle.isRepeated()){
+			int reply = JOptionPane.showConfirmDialog(parent, "This will modify future repeated schedule");
+			if (reply != JOptionPane.YES_OPTION)
+				return ;
+		}
 		AppScheduler setAppDial = new AppScheduler("Modify", parent, apptTitle);
 		setAppDial.updateSettingAppt(apptTitle);
 		setAppDial.show();
