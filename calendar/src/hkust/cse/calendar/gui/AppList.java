@@ -554,6 +554,11 @@ public class AppList extends JPanel implements ActionListener
 		}
 		else
 		{
+			if (selectedAppt.isRepeated()){
+				int reply = JOptionPane.showConfirmDialog(parent, "This will delete future repeated schedule");
+				if (reply != JOptionPane.YES_OPTION)
+					return ;
+			}
 			ApptController.getInstance().removeAppt(UserController.getInstance().getDefaultUser(), selectedAppt);
 			parent.getAppListPanel().clear();
 			parent.getAppListPanel().setTodayAppt(parent.GetTodayAppt());
