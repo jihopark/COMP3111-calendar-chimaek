@@ -871,8 +871,13 @@ public class AppScheduler extends JDialog implements ActionListener,
 			locationField.setSelectedItem(currentAppt.getLocation());
 		}
 		
-		//NEED TO LOAD DATA ON REMINDER.
-		
+		//If Current Appt is Repeated
+		if (currentAppt.isRepeated()){
+			Timestamp endAtTime = currentAppt.getRepeateEndDate();
+			endAtYearField.setText(""+(endAtTime.getYear()+1900));
+			endAtMonthField.setText(""+(endAtTime.getMonth()+1));
+			endAtDayField.setText(""+endAtTime.getDate());
+		}
 		
 		
 		//Load data on notification.

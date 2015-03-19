@@ -555,7 +555,7 @@ public class AppList extends JPanel implements ActionListener
 		else
 		{
 			if (selectedAppt.isRepeated()){
-				int reply = JOptionPane.showConfirmDialog(parent, "This will delete future repeated schedule");
+				int reply = JOptionPane.showConfirmDialog(parent, "This will delete all repeated schedule");
 				if (reply != JOptionPane.YES_OPTION)
 					return ;
 			}
@@ -571,19 +571,19 @@ public class AppList extends JPanel implements ActionListener
 
 	private void modify() 
 	{
-		Appt apptTitle = getSelectedApptTitle();
+		Appt selectedAppt = getSelectedApptTitle();
 		
-		if (apptTitle == null)
+		if (selectedAppt == null)
 		{
 			return;
 		}
-		if (apptTitle.isRepeated()){
-			int reply = JOptionPane.showConfirmDialog(parent, "This will modify future repeated schedule");
+		if (selectedAppt.isRepeated()){
+			int reply = JOptionPane.showConfirmDialog(parent, "This will modify all repeated schedule");
 			if (reply != JOptionPane.YES_OPTION)
 				return ;
 		}
-		AppScheduler setAppDial = new AppScheduler("Modify", parent, apptTitle);
-		setAppDial.updateSettingAppt(apptTitle);
+		AppScheduler setAppDial = new AppScheduler("Modify", parent, selectedAppt);
+		setAppDial.updateSettingAppt(selectedAppt);
 		setAppDial.show();
 		setAppDial.setResizable(false);
 
