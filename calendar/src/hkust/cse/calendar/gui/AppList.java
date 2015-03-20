@@ -132,6 +132,11 @@ public class AppList extends JPanel implements ActionListener
 	private MouseEvent tempe;
 	private Random random = new Random();
 	
+	JMenuItem popupMenuList_NEW;
+	JMenuItem popupMenuList_DELETE;
+	JMenuItem popupMenuList_MODIFY;
+	JMenuItem popupMenuList_DETAILS;
+	
 	//CONSTRUCTOR
 	public AppList() 
 	{
@@ -169,8 +174,8 @@ public class AppList extends JPanel implements ActionListener
 		Font f1 = new Font("Helvetica", Font.ITALIC, 11);
 		tempPopupMenu.setFont(f1);
 
-		JMenuItem popupMenuList_NEW = (JMenuItem) tempPopupMenu.add(new JMenuItem("New"));
-
+		popupMenuList_NEW = (JMenuItem) tempPopupMenu.add(new JMenuItem("New"));
+		
 		popupMenuList_NEW.addActionListener(new ActionListener() 
 		{
 			public void actionPerformed(ActionEvent e) 
@@ -179,7 +184,7 @@ public class AppList extends JPanel implements ActionListener
 			}
 		});
 
-		JMenuItem popupMenuList_DELETE = (JMenuItem) tempPopupMenu.add(new JMenuItem("Delete"));
+		popupMenuList_DELETE = (JMenuItem) tempPopupMenu.add(new JMenuItem("Delete"));
 
 		popupMenuList_DELETE.addActionListener(new ActionListener() 
 		{
@@ -189,7 +194,7 @@ public class AppList extends JPanel implements ActionListener
 			}
 		});
 
-		JMenuItem popupMenuList_MODIFY = (JMenuItem) tempPopupMenu.add(new JMenuItem("Modify"));
+		popupMenuList_MODIFY = (JMenuItem) tempPopupMenu.add(new JMenuItem("Modify"));
 		popupMenuList_MODIFY.addActionListener(new ActionListener() 
 		{
 			public void actionPerformed(ActionEvent e) 
@@ -199,7 +204,7 @@ public class AppList extends JPanel implements ActionListener
 		});
 		
 		tempPopupMenu.add(new JPopupMenu.Separator());
-		JMenuItem popupMenuList_DETAILS = new JMenuItem("Details");
+		popupMenuList_DETAILS = new JMenuItem("Details");
 		
 		Font f2 = new Font("Helvetica", Font.BOLD + Font.ITALIC, 11);
 		popupMenuList_DETAILS.setFont(f2);
@@ -644,7 +649,24 @@ public class AppList extends JPanel implements ActionListener
 		pressCol = tableView.getSelectedColumn();
 	
 		if ((e.getModifiers() & InputEvent.BUTTON3_MASK) != 0)
+		{
+			if(getSelectedApptTitle() == null)
+			{
+				popupMenuList_NEW.setEnabled(true);
+				popupMenuList_MODIFY.setEnabled(false);
+				popupMenuList_DELETE.setEnabled(false);
+				popupMenuList_DETAILS.setEnabled(false);
+			}
+			else
+			{
+				popupMenuList_NEW.setEnabled(false);
+				popupMenuList_MODIFY.setEnabled(true);
+				popupMenuList_DELETE.setEnabled(true);
+				popupMenuList_DETAILS.setEnabled(true);
+			}
+			
 			pop.show(e.getComponent(), e.getX(), e.getY());
+		}
 	}
 	
 	private void releaseResponse(MouseEvent e) 
@@ -654,7 +676,24 @@ public class AppList extends JPanel implements ActionListener
 		releaseCol = tableView.getSelectedColumn();
 	
 		if ((e.getModifiers() & InputEvent.BUTTON3_MASK) != 0)
+		{
+			if(getSelectedApptTitle() == null)
+			{
+				popupMenuList_NEW.setEnabled(true);
+				popupMenuList_MODIFY.setEnabled(false);
+				popupMenuList_DELETE.setEnabled(false);
+				popupMenuList_DETAILS.setEnabled(false);
+			}
+			else
+			{
+				popupMenuList_NEW.setEnabled(false);
+				popupMenuList_MODIFY.setEnabled(true);
+				popupMenuList_DELETE.setEnabled(true);
+				popupMenuList_DETAILS.setEnabled(true);
+			}
+			
 			pop.show(e.getComponent(), e.getX(), e.getY());
+		}
 	}
 	
 	private void calculateDrag(MouseEvent e)
