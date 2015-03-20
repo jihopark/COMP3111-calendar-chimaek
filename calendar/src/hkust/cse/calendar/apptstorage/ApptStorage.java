@@ -30,8 +30,6 @@ public abstract class ApptStorage {
 
 	public abstract Appt RetrieveAppts(int joinApptID);					// overload method to retrieve appointment with the given joint appointment id
 
-	public abstract boolean UpdateAppt(Appt appt);	//abstract method to update an appointment record
-
 	public abstract boolean RemoveAppt(Appt appt);	//abstract method to remove an appointment record
 	
 	public abstract User getDefaultUser();		//abstract method to return the current user object

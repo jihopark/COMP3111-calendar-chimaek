@@ -112,22 +112,6 @@ public class ApptStorageMemory extends ApptStorage {
 	}
 
 	@Override
-	public boolean UpdateAppt(Appt appt) {
-		for (Appt a : list){
-			if (a.equals(appt) && appt.isValid() && TimeController.getInstance().isNotPast(appt) && !checkOverlaps(appt)){
-				list.remove(a);
-				removeNotification(a.getNotification());
-				list.add(appt);
-				saveNotification(appt.getNotification());
-				System.out.println("ApptStorageMemory/UpdateAppt : Updated Appt #"+appt.getID());
-				return true;
-			}
-		}
-		System.out.println("ApptStorageMemory/UpdateAppt : Fail to Update Appt #"+appt.getID());
-		return false;
-	}
-
-	@Override
 	public boolean RemoveAppt(Appt appt) {
 		for (Appt a : list){
 			if (a.equals(appt) && TimeController.getInstance().isNotPast(appt)){

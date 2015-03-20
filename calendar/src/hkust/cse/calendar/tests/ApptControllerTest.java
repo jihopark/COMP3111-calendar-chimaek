@@ -32,17 +32,21 @@ public class ApptControllerTest {
 		appt.setTimeSpan(new TimeSpan(TimeController.getInstance().getCurrentTimeInMillis(), 
 				TimeController.getInstance().getCurrentTimeInMillis() + TimeController.ONE_HOUR));
 		//Daily
-		tmpList = ApptController.getInstance().getRepeatedApptList(appt, ApptController.DAILY, 
+		appt.setRepeatType(ApptController.DAILY);
+		tmpList = ApptController.getInstance().getRepeatedApptList(appt,
 				new Date(TimeController.getInstance().getCurrentTimeInMillis()+TimeController.ONE_HOUR*24*randomRepeatNumber));
 		printListByIteration(tmpList.get(0));
 		assertTrue(randomRepeatNumber + " Days Daily", tmpList.size()==randomRepeatNumber);
 		//Weekly
-		tmpList = ApptController.getInstance().getRepeatedApptList(appt, ApptController.WEEKLY, 
+
+		appt.setRepeatType(ApptController.WEEKLY);
+		tmpList = ApptController.getInstance().getRepeatedApptList(appt,
 				new Date(TimeController.getInstance().getCurrentTimeInMillis()+TimeController.ONE_HOUR*24*7*randomRepeatNumber));
 		printListByIteration(tmpList.get(0));
 		assertTrue(randomRepeatNumber + " Days Weekly", tmpList.size()==randomRepeatNumber);
 		//Monthly
-		tmpList = ApptController.getInstance().getRepeatedApptList(appt, ApptController.MONTHLY, 
+		appt.setRepeatType(ApptController.MONTHLY);
+		tmpList = ApptController.getInstance().getRepeatedApptList(appt, 
 				new Date(TimeController.getInstance().getCurrentTimeInMillis()+TimeController.ONE_HOUR*24*30*randomRepeatNumber));
 		printListByIteration(tmpList.get(0));
 		assertTrue(randomRepeatNumber + " Days Monthly", tmpList.size()==randomRepeatNumber);
@@ -56,9 +60,11 @@ public class ApptControllerTest {
 		appt.setTitle("Repeat Save Test");
 		appt.setTimeSpan(new TimeSpan(TimeController.getInstance().getCurrentTimeInMillis()+TimeController.FIFTEEN_MINS, 
 				TimeController.getInstance().getCurrentTimeInMillis() + TimeController.ONE_HOUR));
-		assertTrue("Save Daily Repeated Appt Correctly",ApptController.getInstance().saveRepeatedNewAppt(defaultUser, appt, ApptController.DAILY, 
+		appt.setRepeatType(ApptController.DAILY);
+		assertTrue("Save Daily Repeated Appt Correctly",ApptController.getInstance().saveRepeatedNewAppt(defaultUser, appt, 
 				new Date(TimeController.getInstance().getCurrentTimeInMillis()+TimeController.ONE_HOUR*24*randomRepeatNumber)));
-		assertFalse("Save Weekly Repeated Appt Correctly",ApptController.getInstance().saveRepeatedNewAppt(defaultUser, appt, ApptController.WEEKLY, 
+		appt.setRepeatType(ApptController.WEEKLY);
+		assertFalse("Save Weekly Repeated Appt Correctly",ApptController.getInstance().saveRepeatedNewAppt(defaultUser, appt, 
 				new Date(TimeController.getInstance().getCurrentTimeInMillis()+TimeController.ONE_HOUR*24*7*randomRepeatNumber)));
 		
 		//Retrieve List

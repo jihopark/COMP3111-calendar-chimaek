@@ -6,7 +6,8 @@ import java.util.Date;
 import java.util.LinkedList;
 
 public class Appt implements Serializable {
-
+	
+	private int repeatType = 0;
 	private TimeSpan mTimeSpan;					// Include day, start time and end time of the appointments
 
 	private String mTitle;						// The Title of the appointments
@@ -45,6 +46,13 @@ public class Appt implements Serializable {
 		attend = appt.getAttendList();
 		reject = appt.getRejectList();
 		waiting = appt.getWaitingList();
+		repeatType = appt.getRepeatType();
+	}
+	
+	public int getRepeatType(){ return repeatType; }
+	public void setRepeatType(int type){
+		if (repeatType <= 3)
+			repeatType = type;
 	}
 	
 	public void setNotification(Notification notification){
