@@ -92,7 +92,8 @@ public class CalGrid extends JFrame implements ActionListener {
 	private SimpleAttributeSet sabImportantDays = null;
 	// private boolean isLogin = false;
 	private JMenu Appmenu = new JMenu("Appointment");
-
+	
+	
 	private final String[] holidays = {
 			"New Years Day\nSpring Festival\n",
 			"President's Day (US)\n",
@@ -190,13 +191,15 @@ public class CalGrid extends JFrame implements ActionListener {
 		tableView = new JTable(dataModel) {
 			public TableCellRenderer getCellRenderer(int row, int col) {
 				String tem = (String) data[row][col];
-
+				
 				if (tem.equals("") == false) {
 					try {
-						if (todayDate.getYear() == currentYear
-								&& todayDate.getMonth() == currentMonth
-								&& todayDate.getDate() == Integer
-										.parseInt(tem)) {
+						//System.out.println("todayDate: "+(todayDate.getYear()+1900)+" "+(todayDate.getMonth()+1)+" "+todayDate.getDate());
+						//System.out.println("currentXx: "+currentYear+" "+currentMonth+" "+extract_only_date_string(tem));
+						
+						if ((todayDate.getYear()+1900) == currentYear
+								&& (todayDate.getMonth()+1) == currentMonth
+								&& todayDate.getDate() == extract_only_date_string(tem)) {
 							return new CalCellRenderer(todayDate);
 						}
 					} catch (Throwable e) {
@@ -579,7 +582,7 @@ public class CalGrid extends JFrame implements ActionListener {
 				only_date_substring.substring(1,2);
 		}
 			return new Integer(only_date_substring).intValue();
-	}
+	} 	
 	
 	public boolean IsTodayAppt(Appt appt) {
 		if (appt.TimeSpan().StartTime().getYear() + 1900 != currentYear)
