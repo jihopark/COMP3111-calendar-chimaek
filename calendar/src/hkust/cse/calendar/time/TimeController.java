@@ -109,7 +109,7 @@ public class TimeController {
 		
 		//System.out.println("Function numOfDaysInMonth(): currentMonth: " + currentMonth);
 		//System.out.println("Function numOfDaysInMonth(): currentYear: " + currentYear);
-		
+		//System.out.println("Function numOfDaysInMonth(): currentMonthDays: "+monthDays[currentMonth-1]);
 		if(this.isLeapYear(currentYear))
 		{
 			if(currentMonth == 2)
@@ -118,12 +118,12 @@ public class TimeController {
 			}
 			else
 			{
-				return monthDays[currentMonth];
+				return monthDays[currentMonth-1];
 			}
 		}
 		else
 		{
-			return monthDays[currentMonth];
+			return monthDays[currentMonth-1];
 		}
 		
 	}

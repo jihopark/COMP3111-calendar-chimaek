@@ -524,6 +524,7 @@ public class CalGrid extends JFrame implements ActionListener {
 		end.setYear(currentYear);
 		end.setMonth(currentMonth - 1);
 		end.setDate(TimeController.getInstance().numOfDaysInMonth());
+		//System.out.println("end date: "+TimeController.getInstance().numOfDaysInMonth());
 		end.setHours(23);
 		TimeSpan period = new TimeSpan(start, end);
 		return ApptController.getInstance().RetrieveApptsInList(mCurrUser, period);
@@ -636,11 +637,12 @@ public class CalGrid extends JFrame implements ActionListener {
 		int date;
 		for(int i=0; i<list.size(); i++){
 			date = list.get(i).getTimeSpan().StartTime().getDate();
+			//System.out.println("apptdate: "+date);
 			apptMarker[date-1]++;
 		}
 		//System.out.println("countApptsInMonth: ");
 		//for(int i=0; i<apptMarker.length;i++)
-		//System.out.println(i+": "+apptMarker[i]);
+		//	System.out.println(i+": "+apptMarker[i]);
 	}
 	
 	public void paintApptsInCal(int today_day) {
