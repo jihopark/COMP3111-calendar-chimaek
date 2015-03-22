@@ -54,6 +54,7 @@ import javax.swing.JTextField;
 import javax.swing.border.BevelBorder;
 import javax.swing.border.Border;
 import javax.swing.border.TitledBorder;
+import javax.swing.table.TableModel;
 
 
 public class AppScheduler extends JDialog implements ActionListener,
@@ -709,6 +710,7 @@ ComponentListener {
 					saveResponseFromNotification();
 				}
 				JOptionPane.showMessageDialog(this, "Saved appointment successfully!");
+				
 				dispose();
 			}
 			else

@@ -191,7 +191,7 @@ public class CalGrid extends JFrame implements ActionListener {
 		tableView = new JTable(dataModel) {
 			public TableCellRenderer getCellRenderer(int row, int col) {
 				String tem = (String) data[row][col];
-				
+				getDateArray(data);
 				if (tem.equals("") == false) {
 					try {
 						//System.out.println("todayDate: "+(todayDate.getYear()+1900)+" "+(todayDate.getMonth()+1)+" "+todayDate.getDate());
@@ -494,12 +494,12 @@ public class CalGrid extends JFrame implements ActionListener {
 			this.setTitle(mCurrTitle + "(" + currentYear + "-" + currentMonth + "-"
 					+ currentDay + ")");
 			
-///
-
-
+			getDateArray(data);
 			TableModel t = prepareTableModel();
 			this.tableView.setModel(t);
 			this.tableView.repaint();
+			
+			
 			updateAppList();
 		}
 	}
@@ -571,6 +571,7 @@ public class CalGrid extends JFrame implements ActionListener {
 		}
 		CalGrid.this.setTitle(mCurrTitle + "(" + currentYear + "-" + currentMonth
 				+ "-" + currentDay + ")");
+		
 		updateAppList();
 	}
 	public int extract_only_date_string(String cellString) {
