@@ -107,8 +107,8 @@ public class TimeController {
 			currentYear = Calendar.getInstance().getTime().getYear()+1900;
 		}
 		
-		System.out.println("Function numOfDaysInMonth(): currentMonth: " + currentMonth);
-		System.out.println("Function numOfDaysInMonth(): currentYear: " + currentYear);
+		//System.out.println("Function numOfDaysInMonth(): currentMonth: " + currentMonth);
+		//System.out.println("Function numOfDaysInMonth(): currentYear: " + currentYear);
 		
 		if(this.isLeapYear(currentYear))
 		{

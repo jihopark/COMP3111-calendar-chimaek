@@ -20,6 +20,7 @@ import java.awt.event.MouseEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.sql.Timestamp;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
@@ -72,8 +73,8 @@ public class CalGrid extends JFrame implements ActionListener {
 	private NotificationCheckThread notificationCheckThread = new NotificationCheckThread();
 	
 	private final Object[][] data = new Object[6][7];
-	//private final Vector[][] apptMarker = new Vector[6][7];
-	private final String[] names = { "Sunday", "Monday", "Tuesday",
+	private final int[] apptMarker = new int[31];
+	private final String[] dayNames = { "Sunday", "Monday", "Tuesday",
 			"Wednesday", "Thursday", "Friday", "Saturday" };
 	private final String[] months = { "January", "Feburary", "March", "April",
 			"May", "June", "July", "August", "September", "October",
@@ -127,7 +128,7 @@ public class CalGrid extends JFrame implements ActionListener {
 		applistPanel.setParent(this);
 
 		setJMenuBar(createMenuBar());
-
+		
 		//Change respective to time controller
 		todayDate = TimeController.getInstance().getCurrentTimeInDate();
 		currentYear = todayDate.getYear()+1900;
@@ -249,7 +250,7 @@ public class CalGrid extends JFrame implements ActionListener {
 		TableModel dataModel = new AbstractTableModel() {
 
 			public int getColumnCount() {
-				return names.length;
+				return dayNames.length;
 			}
 
 			public int getRowCount() {
@@ -261,7 +262,7 @@ public class CalGrid extends JFrame implements ActionListener {
 			}
 
 			public String getColumnName(int column) {
-				return names[column];
+				return dayNames[column];
 			}
 
 			public Class getColumnClass(int c) {
@@ -281,6 +282,7 @@ public class CalGrid extends JFrame implements ActionListener {
 	}
 
 	public void getDateArray(Object[][] data) {
+		
 		GregorianCalendar c = new GregorianCalendar(currentYear, currentMonth - 1, 1);
 		int day;
 		int date;
@@ -289,12 +291,11 @@ public class CalGrid extends JFrame implements ActionListener {
 		day = d.getDay();
 		date = d.getDate();
 
-		System.out.println("Day is: " + day);
-		System.out.println("Date is: " + date);
+		//System.out.println("Day is: " + day);
+		//System.out.println("Date is: " + date);
 		
 		
 		if (c.isLeapYear(currentYear)) {
-
 			monthDays[1] = 29;
 		} else
 			monthDays[1] = 28;
@@ -303,20 +304,14 @@ public class CalGrid extends JFrame implements ActionListener {
 		if (temp > 0)
 			day = temp + 1;
 		else if (temp < 0)
-			day = temp + 1 + 7;
+			day = (temp + 1) + 7;
 		else
 			day = date % 7;
-		day %= 7;
-		for (int i = 0; i < 6; i++)
 		
-			for (int j = 0; j < 7; j++) {
-				int temp1 = i * 7 + j - day + 1;
-				if (temp1 > 0 && temp1 <= monthDays[currentMonth - 1])
-					data[i][j] = new Integer(temp1).toString();
-				else
-					data[i][j] = new String("");
-			}
-
+		day %= 7;
+		countApptsInMonth(GetMonthAppts());
+		////////////////////////////
+		paintApptsInCal(day);
 	}
 
 	JMenuBar createMenuBar() {
@@ -400,7 +395,7 @@ public class CalGrid extends JFrame implements ActionListener {
 		});	
 		Appmenu.add(mi);
 		
-		//////////////////////////
+		
 		JMenu TimeMachine = (JMenu) menuBar.add(new JMenu("TimeMachine"));
 		TimeMachine.setMnemonic('T');
 		TimeMachine.getAccessibleContext().setAccessibleDescription(
@@ -457,7 +452,6 @@ public class CalGrid extends JFrame implements ActionListener {
 				TableModel t = prepareTableModel();
 				tableView.setModel(t);
 				tableView.repaint();
-
 			}
 			UpdateCal();
 		} else if (e.getSource() == monthComboBox) {
@@ -496,12 +490,9 @@ public class CalGrid extends JFrame implements ActionListener {
 			mCurrTitle = "Desktop Calendar - " + mCurrUser.ID() + " - ";
 			this.setTitle(mCurrTitle + "(" + currentYear + "-" + currentMonth + "-"
 					+ currentDay + ")");
-			Appt[] monthAppts = null;
-			GetMonthAppts();
+			
+///
 
-//			for (int i = 0; i < 6; i++)
-//				for (int j = 0; j < 7; j++)
-//					apptMarker[i][j] = new Vector(10, 1);
 
 			TableModel t = prepareTableModel();
 			this.tableView.setModel(t);
@@ -534,6 +525,7 @@ public class CalGrid extends JFrame implements ActionListener {
 		TimeSpan period = new TimeSpan(start, end);
 		return ApptController.getInstance().RetrieveApptsInList(mCurrUser, period);
 	}
+	
 
 	private void mousePressResponse() {
 		previousRow = tableView.getSelectedRow();
@@ -564,18 +556,31 @@ public class CalGrid extends JFrame implements ActionListener {
 				|| currentCol > 6)
 			return;
 
-		if (tableView.getModel().getValueAt(currentRow, currentCol) != "")
+		
+		
+		if (tableView.getModel().getValueAt(currentRow, currentCol) != "") {
 			try {
-				currentDay = new Integer((String) tableView.getModel()
-						.getValueAt(currentRow, currentCol)).intValue();
-			} catch (NumberFormatException n) {
+				currentDay = extract_only_date_string((String) tableView.getModel().getValueAt(currentRow, currentCol));
+			} 
+			catch (NumberFormatException n) {
 				return;
 			}
+		}
 		CalGrid.this.setTitle(mCurrTitle + "(" + currentYear + "-" + currentMonth
 				+ "-" + currentDay + ")");
 		updateAppList();
 	}
-
+	public int extract_only_date_string(String cellString) {
+		String only_date_substring = cellString;
+		int stringLength = only_date_substring.length();
+		if(stringLength>2) {
+			only_date_substring = only_date_substring.substring(stringLength-2, stringLength); 
+			if(only_date_substring.substring(0,1).equals(" "))
+				only_date_substring.substring(1,2);
+		}
+			return new Integer(only_date_substring).intValue();
+	}
+	
 	public boolean IsTodayAppt(Appt appt) {
 		if (appt.TimeSpan().StartTime().getYear() + 1900 != currentYear)
 			return false;
@@ -619,6 +624,39 @@ public class CalGrid extends JFrame implements ActionListener {
 		return ApptController.getInstance().RetrieveApptsInList(mCurrUser, period);
 	}
 
+	public void countApptsInMonth(List<Appt> list) 
+	{
+		for(int i=0; i<31;i++)
+			apptMarker[i]=0;
+		
+		int date;
+		for(int i=0; i<list.size(); i++){
+			date = list.get(i).getTimeSpan().StartTime().getDate();
+			apptMarker[date-1]++;
+		}
+		//System.out.println("countApptsInMonth: ");
+		//for(int i=0; i<apptMarker.length;i++)
+		//System.out.println(i+": "+apptMarker[i]);
+	}
+	
+	public void paintApptsInCal(int today_day) {
+		
+		for (int i = 0; i < 6; i++){
+			for (int j = 0; j < 7; j++) {
+				int temp1 = i * 7 + j - today_day + 1;
+				
+				if (temp1 > 0 && temp1 <= monthDays[currentMonth - 1]) {
+					String date_string = new Integer(temp1).toString();
+					if(apptMarker[temp1-1]!=0)
+						data[i][j] = "[[ "+apptMarker[temp1-1]+" ]]    "+date_string;
+					else 
+						data[i][j] = date_string;
+				}
+				else
+					data[i][j] = new String("");
+			}
+		}
+	}
 	public AppList getAppListPanel() {
 		return applistPanel;
 	}
