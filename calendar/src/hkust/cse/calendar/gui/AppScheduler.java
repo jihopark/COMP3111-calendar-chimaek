@@ -678,7 +678,7 @@ ComponentListener {
 		{
 			return;
 		}
-
+		
 		Timestamp timestampForStartTime = CreateTimeStamp(validDate, validTimeInterval[0]);
 		Timestamp timestampForEndTime = CreateTimeStamp(validDate, validTimeInterval[1]);
 		TimeSpan timeSpanForAppt = new TimeSpan(timestampForStartTime,timestampForEndTime);
@@ -698,26 +698,29 @@ ComponentListener {
 		//CASE: DAILY, WEEKLY, MONTHLY
 		if(!(oneTimeButton.isSelected()))
 		{
+		
 			int[] validEndAtDate = getValidDate(endAtYearField, endAtMonthField, endAtDayField);
-
-			Date endAtDate = intArrayToDate(validEndAtDate);
-
-			if(saveFrequencyWithEndAt(endAtDate))
+			Date endAtDate;
+			
+			if(validEndAtDate != null)
 			{
-				//SAVE NOTIFICATION
-				if(checkForNotification())
+				endAtDate = intArrayToDate(validEndAtDate);
+		
+				if(saveFrequencyWithEndAt(endAtDate))
 				{
-					saveResponseFromNotification();
+					//SAVE NOTIFICATION
+					if(checkForNotification())
+					{
+						saveResponseFromNotification();
+					}
+					JOptionPane.showMessageDialog(this, "Saved appointment successfully!");				
+					dispose();
 				}
-				JOptionPane.showMessageDialog(this, "Saved appointment successfully!");
-				
-				dispose();
+				else
+				{
+					JOptionPane.showMessageDialog(this, "Failed to save appointment!");
+				}
 			}
-			else
-			{
-				JOptionPane.showMessageDialog(this, "Failed to save appointment!");
-			}
-
 		}
 		//CASE: ONE-TIME
 		else
@@ -739,19 +742,7 @@ ComponentListener {
 		}
 
 	}
-
-	private Date intArrayToDate(int[] intArray)
-	{
-		Date temp = new Date();
-		temp.setYear(intArray[0]-1900);
-		temp.setMonth(intArray[1]-1);
-		temp.setDate(intArray[2]);
-		temp.setHours(23);
-		temp.setMinutes(59);
-
-		return temp;
-	}
-
+	
 	private void saveResponseFromNotification()
 	{
 
@@ -805,6 +796,13 @@ ComponentListener {
 
 	private boolean saveFrequencyWithEndAt(Date endAtDate)
 	{
+		System.out.println("Current Appt Time: " + currentAppt.getTimeSpan().StartTime().getTime());
+		
+		if((!(TimeController.getInstance().isNotPast(endAtDate))) 
+				|| (currentAppt.getTimeSpan().StartTime().getTime() > endAtDate.getTime())){
+			return false;
+		}
+		
 		int repeatType;
 		if(dailyButton.isSelected())
 			repeatType = ApptController.DAILY;
@@ -843,6 +841,20 @@ ComponentListener {
 		return stamp;
 	}
 
+	
+	//OPTIMIZED FOR DATE OBJECT
+	private Date intArrayToDate(int[] intArray)
+	{
+		Date temp = new Date();
+		temp.setYear(intArray[0]-1900);
+		temp.setMonth(intArray[1]-1);
+		temp.setDate(intArray[2]);
+		temp.setHours(23);
+		temp.setMinutes(59);
+
+		return temp;
+	}
+	
 	public void updateSettingAppt(Appt appt) {
 		currentAppt = appt;
 

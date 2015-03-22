@@ -76,6 +76,16 @@ public class TimeController {
 		return false;
 	}
 
+	public boolean isNotPast(Date date)
+	{
+		long currentTime = getCurrentTimeInMillis();
+		System.out.println("Current Time: " + currentTime);
+		System.out.println("EndAt Time: " + date.getTime());
+		if(currentTime <= date.getTime())
+			return true;
+		System.out.println("\nTimeController/isNotPast: Past Time!");
+		return false;
+	}
 	
 	public boolean isLeapYear(int year)
 	{
