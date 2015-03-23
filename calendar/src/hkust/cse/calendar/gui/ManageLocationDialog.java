@@ -70,6 +70,7 @@ public class ManageLocationDialog extends JPanel
         buttonPane.add(locationName);
         buttonPane.add(addButton);
         buttonPane.add(deleteButton);
+        deleteButton.setEnabled(false);
         buttonPane.setBorder(BorderFactory.createEmptyBorder(5,5,5,5));
 
         add(listScrollPane, BorderLayout.CENTER);
