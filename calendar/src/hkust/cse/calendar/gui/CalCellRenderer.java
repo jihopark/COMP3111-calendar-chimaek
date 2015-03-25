@@ -14,13 +14,20 @@ class CalCellRenderer extends DefaultTableCellRenderer
 
 	private int c;
 
-	public CalCellRenderer(Object value) {
-		if (value != null) {
-			setForeground(Color.blue);
-			setBackground(Color.black);
-		} else
+	public CalCellRenderer(int value) {
+		if (value != 0) {
+			if(value ==1) {
+				setForeground(Color.white);
+				setBackground(Color.green);
+			}
+			else if(value==2) {
+				setForeground(Color.blue);
+				setBackground(Color.white);
+			}
+		} else {
 			setForeground(Color.black);
-		setBackground(Color.white);
+			setBackground(Color.white);
+		}
 		setHorizontalAlignment(SwingConstants.RIGHT);
 		setVerticalAlignment(SwingConstants.TOP);
 	}

@@ -76,7 +76,7 @@ public class CalGrid extends JFrame implements ActionListener {
 	private final int[] apptMarker = new int[31];
 	private final String[] dayNames = { "Sunday", "Monday", "Tuesday",
 			"Wednesday", "Thursday", "Friday", "Saturday" };
-	private final String[] months = { "January", "Feburary", "March", "April",
+	private final String[] months = { "January", "February", "March", "April",
 			"May", "June", "July", "August", "September", "October",
 			"November", "December" };
 	private JTable tableView;
@@ -192,8 +192,8 @@ public class CalGrid extends JFrame implements ActionListener {
 		
 		tableView = new JTable(dataModel) {
 			public TableCellRenderer getCellRenderer(int row, int col) {
-				String tem = (String) data[row][col];
 				getDateArray(data);
+				String tem = (String) data[row][col];
 				if (tem.equals("") == false) {
 					try {
 						//System.out.println("todayDate: "+(todayDate.getYear()+1900)+" "+(todayDate.getMonth()+1)+" "+todayDate.getDate());
@@ -202,14 +202,16 @@ public class CalGrid extends JFrame implements ActionListener {
 						if ((todayDate.getYear()+1900) == currentYear
 								&& (todayDate.getMonth()+1) == currentMonth
 								&& todayDate.getDate() == extract_only_date_string(tem)) {
-							return new CalCellRenderer(todayDate);
+							return new CalCellRenderer(1); //1 if today
 						}
+						else if(tem.length()>2)
+							return new CalCellRenderer(2); //2 if not today but has appointments
 					} catch (Throwable e) {
 						System.exit(1);
 					}
 
 				}
-				return new CalCellRenderer(null);
+				return new CalCellRenderer(0); //0 if empty slot, and not today
 			}
 		};
 
