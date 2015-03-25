@@ -15,11 +15,16 @@ public class LocationStorageNullImpl extends LocationStorage {
 	private User defaultUser = null;
 	private ArrayList<Location> list;
 	private int locationNumber = 0;
+	private Location initialLocation = new Location();
 	
 	public LocationStorageNullImpl( User user )
 	{
 		defaultUser = user;
 		list = new ArrayList<Location>();
+		initialLocation.setName("-");
+		initialLocation.setID(0);
+		list.add(initialLocation);
+		locationNumber++;
 	}
 	
 	@Override
@@ -52,6 +57,7 @@ public class LocationStorageNullImpl extends LocationStorage {
 		if (checkForSameLocation(location)) {
 			list.add(location);
 			locationNumber++;
+			System.out.println("Saved Location ID is: " + location.getID());
 			return true;
 		}
 		return false;
@@ -90,8 +96,9 @@ public class LocationStorageNullImpl extends LocationStorage {
 		// TODO Auto-generated method stub
 		
 		if(index<list.size() && index>-1) {
-		list.remove(index);
-		return true;
+			list.remove(index);
+			locationNumber--;
+			return true;
 		}
 		return false;
 	}
