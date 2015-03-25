@@ -125,18 +125,20 @@ public class CalGrid extends JFrame implements ActionListener {
 		currentRow = 0;
 		currentCol = 0;
 
-		applistPanel = new AppList();
-		applistPanel.setParent(this);
-
 		setJMenuBar(createMenuBar());
 		
 		//Change respective to time controller
 		todayDate = TimeController.getInstance().getCurrentTimeInDate();
 		currentYear = todayDate.getYear()+1900;
 		currentDay = todayDate.getDate();
-		int temp = todayDate.getMonth()+1;
-		currentMonth = 12;
+		//int temp = todayDate.getMonth()+1;
+		//currentMonth = 12;
+		currentMonth = todayDate.getMonth()+1;
 
+		applistPanel = new AppList(currentYear,currentMonth,currentDay);
+		applistPanel.setParent(this);
+		
+		
 		getDateArray(data);
 
 		JPanel panelMonthYearAndImportantDays = new JPanel();
@@ -174,7 +176,7 @@ public class CalGrid extends JFrame implements ActionListener {
 		monthComboBox.setPreferredSize(new Dimension(200, 30));
 		for (int cnt = 0; cnt < 12; cnt++)
 			monthComboBox.addItem(months[cnt]);
-		monthComboBox.setSelectedIndex(temp - 1);
+		monthComboBox.setSelectedIndex(currentMonth+1);
 
 		JPanel yearGroup = new JPanel();
 		yearGroup.setLayout(new FlowLayout());
@@ -486,6 +488,7 @@ public class CalGrid extends JFrame implements ActionListener {
 		applistPanel.clear();
 		applistPanel.repaint();
 		applistPanel.setTodayAppt(GetTodayAppt());
+		applistPanel.updateTitleBorderForAppList(currentYear,currentMonth,currentDay);
 	}
 
 	public void UpdateCal() {
@@ -669,6 +672,16 @@ public class CalGrid extends JFrame implements ActionListener {
 
 	public User getCurrUser() {
 		return mCurrUser;
+	}
+	
+	public int[] getCurrentDateFromCalGrid()
+	{
+		int[] tempDateArray = new int[3];
+		tempDateArray[0] = currentYear;
+		tempDateArray[1] = currentMonth;
+		tempDateArray[2] = currentDay;
+		
+		return tempDateArray;
 	}
 	
 	// check for any invite or update from join appointment

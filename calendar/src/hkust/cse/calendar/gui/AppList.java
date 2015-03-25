@@ -100,8 +100,10 @@ class AppCellRenderer extends DefaultTableCellRenderer
 
 public class AppList extends JPanel implements ActionListener 
 {
-
-
+	private int currentYear;
+	private int currentMonth;
+	private int currentDay;
+	
 	public static int SMALLEST_DURATION = 15;
 	private static final long serialVersionUID = 1L;
 	public static int OFFSET = 0;
@@ -131,6 +133,7 @@ public class AppList extends JPanel implements ActionListener
 	public Appt selectedAppt=null;
 	private MouseEvent tempe;
 	private Random random = new Random();
+	private TitledBorder appListTitle;
 	
 	JMenuItem popupMenuList_NEW;
 	JMenuItem popupMenuList_DELETE;
@@ -138,18 +141,19 @@ public class AppList extends JPanel implements ActionListener
 	JMenuItem popupMenuList_DETAILS;
 	
 	//CONSTRUCTOR
-	public AppList() 
+	public AppList(int currentYear, int currentMonth, int currentDay) 
 	{
+		appListTitle = BorderFactory.createTitledBorder(currentYear +"-"+currentMonth + "-"+currentDay);
+		appListTitle.setTitleColor(new Color(102, 0, 51));
+		Font f = new Font("Helvetica", Font.BOLD + Font.ITALIC, 13);
+		appListTitle.setTitleFont(f);
+		setBorder(appListTitle);
+	
 		//initialize the Applist panel layout
 		setLayout(new BorderLayout());
 		currentRow = 0;
 		currentCol = 0;
-		TitledBorder b = BorderFactory.createTitledBorder("Appointment Contents");
-		b.setTitleColor(new Color(102, 0, 51));
-		Font f = new Font("Helvetica", Font.BOLD + Font.ITALIC, 11);
-		b.setTitleFont(f);
-		setBorder(b);
-
+		
 		//initialize the PopUpMenu
 		pop = initializePopupMenu();
 
@@ -168,6 +172,13 @@ public class AppList extends JPanel implements ActionListener
 		//this.
 	}
 
+	public void updateTitleBorderForAppList(int currentYear, int currentMonth, int currentDay)
+	{
+		appListTitle.setTitle(currentYear +"-"+currentMonth + "-"+currentDay);
+	}
+	
+	
+	
 	private JPopupMenu initializePopupMenu()
 	{
 		JPopupMenu tempPopupMenu = new JPopupMenu();
