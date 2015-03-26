@@ -118,22 +118,26 @@ public class TimeMachineDialog extends JFrame implements ActionListener
 		// TODO Auto-generated method stub
 		if(e.getSource() == OnButton)
 		{
-			// When button is clicked, change time		
-			OnButton.setEnabled(timeController.getInstance().isOnTimeMachineMode());
-			timeController.getInstance().enableTimeMachineMode();
-			OffButton.setEnabled(timeController.getInstance().isOnTimeMachineMode());
-						
-			int year = Integer.parseInt(yearField.getText());
-			int month = Integer.parseInt(monthField.getText());
-			int Day = Integer.parseInt(dayField.getText());
-			int hour = Integer.parseInt(startTimeHourField.getText());
-			int minute = Integer.parseInt(startTimeMinuteField.getText());
-			Timestamp changedTime = new Timestamp(year-1900, month-1, Day, hour, minute, 0, 0);
-			Date date = new Date(changedTime.getTime());
-			timeController.getInstance().setTimeMachine(date);
-			
-			System.out.println("Time Machine is Turned ON: " + timeController.getInstance().isOnTimeMachineMode());
-			
+			if(	isNull(yearField.getText()) || isNull(monthField.getText()) || isNull(dayField.getText()) ||
+				isNull(startTimeHourField.getText()) || isNull(startTimeMinuteField.getText())) {
+				System.out.println("Time Machine can not be turned on. Please Check for Null Values");
+			} else {
+				int year = Integer.parseInt(yearField.getText());
+				int month = Integer.parseInt(monthField.getText());
+				int Day = Integer.parseInt(dayField.getText());
+				int hour = Integer.parseInt(startTimeHourField.getText());
+				int minute = Integer.parseInt(startTimeMinuteField.getText());
+				Timestamp changedTime = new Timestamp(year-1900, month-1, Day, hour, minute, 0, 0);
+
+				// When button is clicked, change time		
+				OnButton.setEnabled(timeController.getInstance().isOnTimeMachineMode());
+				timeController.getInstance().enableTimeMachineMode();
+				OffButton.setEnabled(timeController.getInstance().isOnTimeMachineMode());				Date date = new Date(changedTime.getTime());
+				timeController.getInstance().setTimeMachine(date);
+				
+				System.out.println("Time Machine is Turned ON: " + timeController.getInstance().isOnTimeMachineMode());	
+			}
+
 		}
 		else if(e.getSource() == OffButton)
 		{
@@ -143,6 +147,18 @@ public class TimeMachineDialog extends JFrame implements ActionListener
 			System.out.println("Time Machine is Turned OFF: " + timeController.getInstance().isOnTimeMachineMode());
 		}
 	}
+
+
+	private boolean isNull(String text) {
+		// TODO Auto-generated method stub
+		if(text.equals("")) {
+			return true;
+		} else {
+			return false;
+		}
+	}
+
+
 
 	
 
