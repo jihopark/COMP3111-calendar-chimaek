@@ -70,7 +70,10 @@ public class ManageLocationDialog extends JPanel
         buttonPane.add(locationName);
         buttonPane.add(addButton);
         buttonPane.add(deleteButton);
-        deleteButton.setEnabled(false);
+        if(retrievedLocationList.getSize()==0 || 
+        		((retrievedLocationList.getSize()==1) && (retrievedLocationList.getElementAt(0).getName().equals("-") ))) {
+            deleteButton.setEnabled(false);
+        }
         buttonPane.setBorder(BorderFactory.createEmptyBorder(5,5,5,5));
 
         add(listScrollPane, BorderLayout.CENTER);
@@ -84,12 +87,19 @@ public class ManageLocationDialog extends JPanel
             //there's a valid selection	
             //so go ahead and remove whatever's selected.
             int index = displayList.getSelectedIndex();
-            retrievedLocationList.remove(index);
-            LocationController.getInstance().removeLocation(index);
-            
+            if(!retrievedLocationList.getElementAt(index).getName().equals("-")) {
+            	retrievedLocationList.remove(index);
+            	LocationController.getInstance().removeLocation(index);
+            }
+            else {
+            	//Print error message 
+    			JOptionPane.showMessageDialog(locationName, "Cannot delete default location!",
+    					"Input Error", JOptionPane.ERROR_MESSAGE);
+            }
             int size = LocationController.getInstance().getListSize();
      
-            if (size == 0) { //None's left, disable delete button.
+            if ((size == 0)||
+            		( (size==1) && (retrievedLocationList.getElementAt(0).getName().equals("-") ) )) { //None's left, disable delete button.
                 deleteButton.setEnabled(false);
             } 
             else { //Select an index.
@@ -123,6 +133,8 @@ public class ManageLocationDialog extends JPanel
             //User didn't type in a unique name...
             if (name.equals("") || alreadyInList(name)) {
                 Toolkit.getDefaultToolkit().beep();
+    			JOptionPane.showMessageDialog(locationName, "Input location already exists!",
+    					"Input Error", JOptionPane.ERROR_MESSAGE);
                 locationName.requestFocusInWindow();
                 locationName.selectAll();
                 return;
@@ -158,7 +170,7 @@ public class ManageLocationDialog extends JPanel
         protected boolean alreadyInList(String name) {
         	for(int i=0; i<retrievedLocationList.size();i++)
         	{
-        		if(retrievedLocationList.get(i).getName().equals(name))
+        		if(retrievedLocationList.get(i).getName().equalsIgnoreCase(name))
         			return true;
         	}
             return false;
