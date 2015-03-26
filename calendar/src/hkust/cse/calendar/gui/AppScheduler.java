@@ -679,8 +679,6 @@ ComponentListener {
 
 		//SAVE LOCATION
 		String locationString = (String) locationField.getSelectedItem();
-
-		//Temporary Location for Testing
 		Location locationObject = LocationController.getInstance().RetrieveLocations(locationString);
 		currentAppt.setLocation(locationObject);
 

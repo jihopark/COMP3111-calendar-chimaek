@@ -11,6 +11,7 @@ import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.sql.Timestamp;
+import java.util.Date;
 import java.util.LinkedList;
 import java.util.Vector;
 
@@ -95,7 +96,39 @@ public class DetailsDialog extends JFrame implements ActionListener {
 		area.setText("Appointment Information \n");
 		area.append("Title: " + appt.getTitle() + "\n");
 		area.append("Time: " + time + "\n");
-		area.append("Location: " + appt.getLocation().getName() + "\n" );
+
+		area.append("Location: " + appt.getLocation().toString() + "\n");
+		
+		//REPEAT DETAILS
+		area.append("Repeated: ");
+		switch(appt.getRepeatType())
+		{
+			case 0:area.append("One-Time \n"); break;
+			case 1:area.append("Daily \n"); break;
+			case 2:area.append("Weekly \n"); break;
+			case 3:area.append("Monthly \n"); break;
+		}
+		
+		//NOTIFICATION DETAILS
+		if(appt.getNotification() != null)
+		{
+			LinkedList<Boolean> alarmFlagList = appt.getNotification().getFlags();
+			area.append("Notifications: ");
+			if(alarmFlagList.get(0))
+				area.append("1 hour   ");
+			if(alarmFlagList.get(1))
+				area.append("3 hours   ");
+			if(alarmFlagList.get(2))
+				area.append("12 hours   ");
+			if(alarmFlagList.get(3))
+				area.append("24 hours   ");
+			area.append("\n");
+		}
+		else
+		{
+			area.append("Notifications at: -");
+		}
+		
 		area.append("\nParticipants:\n");
 		area.append("  Attend:");
 		LinkedList<String> attendList = appt.getAttendList();
