@@ -360,6 +360,8 @@ public class CalGrid extends JFrame implements ActionListener {
 					//System.out.println("closed");
 					dispose();
 					CalendarMain.logOut = true;
+					LoginDialog loginDialog = new LoginDialog();
+
 					return;	//return to CalendarMain()
 				}
 			}
@@ -397,7 +399,6 @@ public class CalGrid extends JFrame implements ActionListener {
 				
 				ManageLocationDialog dlg = new ManageLocationDialog();
 				dlg.createAndShowManageLocationDialogGUI();
-				//ManageLocationDialog.createAndShowManageLocationDialogGUI();
 			}	
 		});	
 		Appmenu.add(mi);
