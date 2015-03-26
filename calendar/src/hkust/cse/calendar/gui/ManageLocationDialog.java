@@ -93,6 +93,8 @@ public class ManageLocationDialog extends JPanel
             }
             else {
             	//Print error message 
+    			JOptionPane.showMessageDialog(locationName, "Cannot delete default location!",
+    					"Input Error", JOptionPane.ERROR_MESSAGE);
             }
             int size = LocationController.getInstance().getListSize();
      
@@ -131,6 +133,8 @@ public class ManageLocationDialog extends JPanel
             //User didn't type in a unique name...
             if (name.equals("") || alreadyInList(name)) {
                 Toolkit.getDefaultToolkit().beep();
+    			JOptionPane.showMessageDialog(locationName, "Input location already exists!",
+    					"Input Error", JOptionPane.ERROR_MESSAGE);
                 locationName.requestFocusInWindow();
                 locationName.selectAll();
                 return;
@@ -166,7 +170,7 @@ public class ManageLocationDialog extends JPanel
         protected boolean alreadyInList(String name) {
         	for(int i=0; i<retrievedLocationList.size();i++)
         	{
-        		if(retrievedLocationList.get(i).getName().equals(name))
+        		if(retrievedLocationList.get(i).getName().equalsIgnoreCase(name))
         			return true;
         	}
             return false;
