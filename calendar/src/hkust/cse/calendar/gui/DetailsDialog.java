@@ -97,7 +97,7 @@ public class DetailsDialog extends JFrame implements ActionListener {
 		area.append("Title: " + appt.getTitle() + "\n");
 		area.append("Time: " + time + "\n");
 
-		area.append("Location: " + appt.getLocation().toString() + "\n");
+		area.append("Location: " + appt.getLocation() + "\n");
 		
 		//REPEAT DETAILS
 		area.append("Repeated: ");
