@@ -128,12 +128,8 @@ public class CalGrid extends JFrame implements ActionListener {
 		setJMenuBar(createMenuBar());
 		
 		//Change respective to time controller
-		todayDate = TimeController.getInstance().getCurrentTimeInDate();
-		currentYear = todayDate.getYear()+1900;
-		currentDay = todayDate.getDate();
-		//int temp = todayDate.getMonth()+1;
-		//currentMonth = 12;
-		currentMonth = todayDate.getMonth()+1;
+		getTodayDate_TimeController();
+		
 
 		applistPanel = new AppList(currentYear,currentMonth,currentDay);
 		applistPanel.setParent(this);
@@ -154,7 +150,7 @@ public class CalGrid extends JFrame implements ActionListener {
 		styledDocImportantDays = textPaneImportantDays.getStyledDocument();
 		sabImportantDays = new SimpleAttributeSet();
 		StyleConstants.setBold(sabImportantDays, true);
-		StyleConstants.setFontSize(sabImportantDays, 30);
+		StyleConstants.setFontSize(sabImportantDays, 20);
 
 		JPanel panelImportantDays = new JPanel();
 		panelImportantDays.setLayout(new BorderLayout());
@@ -421,6 +417,15 @@ public class CalGrid extends JFrame implements ActionListener {
 		
 		return menuBar;
 	}
+	
+	private void getTodayDate_TimeController() {
+		todayDate = TimeController.getInstance().getCurrentTimeInDate();
+		currentYear = todayDate.getYear()+1900;
+		currentDay = todayDate.getDate();
+		//int temp = todayDate.getMonth()+1;
+		//currentMonth = 12;
+		currentMonth = todayDate.getMonth()+1;
+	}
 
 	private void initializeSystem() {
 
@@ -496,6 +501,7 @@ public class CalGrid extends JFrame implements ActionListener {
 
 	public void UpdateCal() {
 		if (mCurrUser != null) {
+			getTodayDate_TimeController();
 			mCurrTitle = "Desktop Calendar - " + mCurrUser.ID() + " - ";
 			this.setTitle(mCurrTitle + "(" + currentYear + "-" + currentMonth + "-"
 					+ currentDay + ")");
