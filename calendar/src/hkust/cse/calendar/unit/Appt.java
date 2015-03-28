@@ -60,7 +60,10 @@ public class Appt implements Serializable {
 	}
 	
 	public void setLocation(Location location){
-		this.location = location;
+		location.addCountForLocation();
+		if(this.location!=null)
+			this.location.subtractCountForLocation();
+		this.location= location;
 	}
 	
 	public Location getLocation(){
