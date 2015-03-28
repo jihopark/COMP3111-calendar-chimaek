@@ -173,6 +173,7 @@ public class ApptController {
 		if (!TimeController.getInstance().isNotPast(appt)){
 			return false;
 		}
+		appt.getLocation().subtractCountForLocation();
 		if (appt.isRepeated()){
 			System.out.println("\nRemove Repeated!");
 			Appt iterator = appt.getNextRepeatedAppt();
