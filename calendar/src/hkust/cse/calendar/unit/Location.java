@@ -5,15 +5,33 @@ import hkust.cse.calendar.locationstorage.LocationController;
 public class Location {
 	private String _name;
 	private int _locationID;
-		
+	private int _appointmentCount;
+	
 	public Location() {
 		_name = "";
 		_locationID = 0;
+		_appointmentCount = 0;
 	}
+	
+	public void addCountForLocation() {
+		_appointmentCount++;
+		System.out.println(_appointmentCount);
+	}
+	
+	public void subtractCountForLocation() {
+		_appointmentCount--;
+		System.out.println(_appointmentCount);
+	}
+	
+	public int getAppointmentCount() {
+		return _appointmentCount;
+	}
+	
 	
 	public Location(Location location) {
 		_name = location.getName();
 		_locationID = location.getID();
+		_appointmentCount = location.getAppointmentCount();
 	}
 	
 	public String getName() {
@@ -50,4 +68,5 @@ public class Location {
 	public String toString() {
 		return _name;
 	}
+
 }
