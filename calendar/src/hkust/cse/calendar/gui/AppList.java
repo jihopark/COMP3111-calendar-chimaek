@@ -660,7 +660,7 @@ public class AppList extends JPanel implements ActionListener
 			startTime = (currentRow + ROWNUM) * 15;
 		AppScheduler a = new AppScheduler("New", parent);
 		a.updateSettingAppt(hkust.cse.calendar.gui.Utility.createDefaultAppt(
-				parent.currentYear, parent.currentMonth, parent.currentDay,
+				parent.getCurrentlySelectedYear(), parent.getCurrentlySelectedMonth(), parent.getCurrentlySelectedDay(),
 				parent.mCurrUser, startTime));
 		a.setLocationRelativeTo(null);
 		a.show();

@@ -7,6 +7,7 @@ import javax.swing.JOptionPane;
 
 import hkust.cse.calendar.apptstorage.ApptController;
 import hkust.cse.calendar.apptstorage.ApptStorageMemory;
+import hkust.cse.calendar.gui.CalGrid;
 import hkust.cse.calendar.locationstorage.LocationController;
 import hkust.cse.calendar.locationstorage.LocationStorageNullImpl;
 import hkust.cse.calendar.time.TimeController;
@@ -16,14 +17,22 @@ import hkust.cse.calendar.unit.User;
 public class NotificationCheckThread extends Thread {
 
 	public static Date currentTime = new Date();
+	public CalGrid calGrid;
+	
+	public NotificationCheckThread(CalGrid cal)
+	{
+		calGrid = cal;
+	}
+	
+	
 	public void run() {
 		while(true) {
 			try {
 				Thread.sleep(1000);
 				currentTime = TimeController.getInstance().getCurrentTimeInDate();
-				
-				//System.out.println("Current Time is: " + currentTime);
-				//System.out.println("Current User Name is: " + ApptController.getInstance().gettUser());
+				calGrid.updateCalGridTitleClock(currentTime);
+				System.out.println("Current Time is: " + currentTime);
+				System.out.println("Current User Name is: " + ApptController.getInstance().getDefaultUser());
 				
 				if(NotificationController.getInstance().checkForNotificationTime(currentTime)) {
 					Notification notification = NotificationController.getInstance().retrieveNotification(currentTime);

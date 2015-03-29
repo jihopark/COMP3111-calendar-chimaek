@@ -59,18 +59,20 @@ public class CalGrid extends JFrame implements ActionListener {
 	public User mCurrUser;
 	private String mCurrTitle = "Desktop Calendar - No User - ";
 	private Date todayDate;
-	public int currentDay;
-	public int currentMonth;
-	public int currentYear;
-	public int previousRow;
-	public int previousCol;
-	public int currentRow;
-	public int currentCol;
+	private int currentlySelectedDay;
+	private int currentlySelectedMonth;
+	private int currentlySelectedYear;
+	private int previousRow;
+	private int previousCol;
+	private int currentRow;
+	private int currentCol;
+	private Date currentTime;
+	
 	private BasicArrowButton monthRightArrowButton;
 	private BasicArrowButton monthLeftArrowButton;
 	private JLabel yearLabel;
 	private JComboBox monthComboBox;
-	private NotificationCheckThread notificationCheckThread = new NotificationCheckThread();
+	private NotificationCheckThread notificationCheckThread = new NotificationCheckThread(this);
 	
 	private final Object[][] data = new Object[6][7];
 	private final int[] apptMarker = new int[31];
@@ -128,10 +130,12 @@ public class CalGrid extends JFrame implements ActionListener {
 		setJMenuBar(createMenuBar());
 		
 		//Change respective to time controller
-		getTodayDate_TimeController();
-		
 
-		applistPanel = new AppList(currentYear,currentMonth,currentDay);
+		getTodayDate_TimeController();	
+		//int temp = todayDate.getMonth()+1;
+		//currentMonth = 12;
+		
+		applistPanel = new AppList(currentlySelectedYear,currentlySelectedMonth,currentlySelectedDay);
 		applistPanel.setParent(this);
 		
 		
@@ -166,13 +170,13 @@ public class CalGrid extends JFrame implements ActionListener {
 		monthLeftArrowButton.setEnabled(true);
 		monthLeftArrowButton.addActionListener(this);
 
-		yearLabel = new JLabel(new Integer(currentYear).toString());
+		yearLabel = new JLabel(new Integer(currentlySelectedYear).toString());
 		monthComboBox = new JComboBox();
 		monthComboBox.addActionListener(this);
 		monthComboBox.setPreferredSize(new Dimension(200, 30));
 		for (int cnt = 0; cnt < 12; cnt++)
 			monthComboBox.addItem(months[cnt]);
-		monthComboBox.setSelectedIndex(currentMonth+1);
+		monthComboBox.setSelectedIndex(currentlySelectedMonth+1);
 
 		JPanel yearGroup = new JPanel();
 		yearGroup.setLayout(new FlowLayout());
@@ -195,8 +199,8 @@ public class CalGrid extends JFrame implements ActionListener {
 						//System.out.println("todayDate: "+(todayDate.getYear()+1900)+" "+(todayDate.getMonth()+1)+" "+todayDate.getDate());
 						//System.out.println("currentXx: "+currentYear+" "+currentMonth+" "+extract_only_date_string(tem));
 						
-						if ((todayDate.getYear()+1900) == currentYear
-								&& (todayDate.getMonth()+1) == currentMonth
+						if ((todayDate.getYear()+1900) == currentlySelectedYear
+								&& (todayDate.getMonth()+1) == currentlySelectedMonth
 								&& todayDate.getDate() == extract_only_date_string(tem)) {
 							return new CalCellRenderer(1); //1 if today
 						}
@@ -286,7 +290,7 @@ public class CalGrid extends JFrame implements ActionListener {
 
 	public void getDateArray(Object[][] data) {
 		
-		GregorianCalendar c = new GregorianCalendar(currentYear, currentMonth - 1, 1);
+		GregorianCalendar c = new GregorianCalendar(currentlySelectedYear, currentlySelectedMonth - 1, 1);
 		int day;
 		int date;
 		Date d = c.getTime();
@@ -298,7 +302,7 @@ public class CalGrid extends JFrame implements ActionListener {
 		//System.out.println("Date is: " + date);
 		
 		
-		if (c.isLeapYear(currentYear)) {
+		if (c.isLeapYear(currentlySelectedYear)) {
 			monthDays[1] = 29;
 		} else
 			monthDays[1] = 28;
@@ -324,7 +328,7 @@ public class CalGrid extends JFrame implements ActionListener {
 				if (e.getActionCommand().equals("Manual Scheduling")) {
 					AppScheduler defaultAppt = new AppScheduler("New", CalGrid.this);
 					defaultAppt.updateSettingAppt(hkust.cse.calendar.gui.Utility
-							.createDefaultAppt(currentYear, currentMonth, currentDay,
+							.createDefaultAppt(currentlySelectedYear, currentlySelectedMonth, currentlySelectedDay,
 								mCurrUser));
 					defaultAppt.setLocationRelativeTo(null);
 					defaultAppt.show();
@@ -420,11 +424,11 @@ public class CalGrid extends JFrame implements ActionListener {
 	
 	private void getTodayDate_TimeController() {
 		todayDate = TimeController.getInstance().getCurrentTimeInDate();
-		currentYear = todayDate.getYear()+1900;
-		currentDay = todayDate.getDate();
+		currentlySelectedYear = todayDate.getYear()+1900;
+		currentlySelectedDay = todayDate.getDate();
 		//int temp = todayDate.getMonth()+1;
 		//currentMonth = 12;
-		currentMonth = todayDate.getMonth()+1;
+		currentlySelectedMonth = todayDate.getMonth()+1;
 	}
 
 	private void initializeSystem() {
@@ -441,10 +445,10 @@ public class CalGrid extends JFrame implements ActionListener {
 		if (e.getSource() == monthRightArrowButton) {
 			if (yearLabel == null)
 				return;
-			currentYear = currentYear + 1;
-			yearLabel.setText(new Integer(currentYear).toString());
-			CalGrid.this.setTitle("Desktop Calendar - No User - (" + currentYear
-					+ "-" + currentMonth + "-" + currentDay + ")");
+			currentlySelectedYear = currentlySelectedYear + 1;
+			yearLabel.setText(new Integer(currentlySelectedYear).toString());
+			//CalGrid.this.setTitle("Desktop Calendar - No User - (" + currentlySelectedYear
+			//		+ "-" + currentlySelectedMonth + "-" + currentlySelectedDay + ")");
 			getDateArray(data);
 			if (tableView != null) {
 				TableModel t = prepareTableModel();
@@ -456,10 +460,10 @@ public class CalGrid extends JFrame implements ActionListener {
 		} else if (e.getSource() == monthLeftArrowButton) {
 			if (yearLabel == null)
 				return;
-			currentYear = currentYear - 1;
-			yearLabel.setText(new Integer(currentYear).toString());
-			CalGrid.this.setTitle("Desktop Calendar - No User - (" + currentYear
-					+ "-" + currentMonth + "-" + currentDay + ")");
+			currentlySelectedYear = currentlySelectedYear - 1;
+			yearLabel.setText(new Integer(currentlySelectedYear).toString());
+			//CalGrid.this.setTitle("Desktop Calendar - No User - (" + currentYear
+			//	+ "-" + currentMonth + "-" + currentDay + ")");
 			getDateArray(data);
 			if (tableView != null) {
 				TableModel t = prepareTableModel();
@@ -469,17 +473,17 @@ public class CalGrid extends JFrame implements ActionListener {
 			UpdateCal();
 		} else if (e.getSource() == monthComboBox) {
 			if (monthComboBox.getSelectedItem() != null) {
-				currentMonth = monthComboBox.getSelectedIndex() + 1;
+				currentlySelectedMonth = monthComboBox.getSelectedIndex() + 1;
 				try {
 					styledDocImportantDays.remove(0, styledDocImportantDays.getLength());
-					styledDocImportantDays.insertString(0, holidays[currentMonth - 1], sabImportantDays);
+					styledDocImportantDays.insertString(0, holidays[currentlySelectedMonth - 1], sabImportantDays);
 				} catch (BadLocationException e1) {
 
 					e1.printStackTrace();
 				}
 
-				CalGrid.this.setTitle("Desktop Calendar - No User - ("
-						+ currentYear + "-" + currentMonth + "-" + currentDay + ")");
+				//CalGrid.this.setTitle("Desktop Calendar - No User - ("
+				//	+ currentYear + "-" + currentMonth + "-" + currentDay + ")");
 				getDateArray(data);
 				if (tableView != null) {
 					TableModel t = prepareTableModel();
@@ -491,20 +495,20 @@ public class CalGrid extends JFrame implements ActionListener {
 		}
 	}
 
-	// update the appointment list on gui
+	// update the appointment list
 	public void updateAppList() {
 		applistPanel.clear();
 		applistPanel.repaint();
 		applistPanel.setTodayAppt(GetTodayAppt());
-		applistPanel.updateTitleBorderForAppList(currentYear,currentMonth,currentDay);
+		applistPanel.updateTitleBorderForAppList(currentlySelectedYear,currentlySelectedMonth,currentlySelectedDay);
 	}
 
 	public void UpdateCal() {
 		if (mCurrUser != null) {
-			getTodayDate_TimeController();
-			mCurrTitle = "Desktop Calendar - " + mCurrUser.ID() + " - ";
-			this.setTitle(mCurrTitle + "(" + currentYear + "-" + currentMonth + "-"
-					+ currentDay + ")");
+
+			//mCurrTitle = "Desktop Calendar - " + mCurrUser.ID() + " - ";
+			//this.setTitle(mCurrTitle + "(" + currentlySelectedYear + "-" + currentlySelectedMonth + "-"
+			//		+ currentlySelectedDay + ")");
 			
 			getDateArray(data);
 			TableModel t = prepareTableModel();
@@ -528,13 +532,13 @@ public class CalGrid extends JFrame implements ActionListener {
 
 	private List<Appt> GetMonthAppts() {
 		Timestamp start = new Timestamp(0);
-		start.setYear(currentYear);
-		start.setMonth(currentMonth - 1);
+		start.setYear(currentlySelectedYear);
+		start.setMonth(currentlySelectedMonth - 1);
 		start.setDate(1);
 		start.setHours(0);
 		Timestamp end = new Timestamp(0);
-		end.setYear(currentYear);
-		end.setMonth(currentMonth - 1);
+		end.setYear(currentlySelectedYear);
+		end.setMonth(currentlySelectedMonth - 1);
 		end.setDate(TimeController.getInstance().numOfDaysInMonth());
 		//System.out.println("end date: "+TimeController.getInstance().numOfDaysInMonth());
 		end.setHours(23);
@@ -576,14 +580,14 @@ public class CalGrid extends JFrame implements ActionListener {
 		
 		if (tableView.getModel().getValueAt(currentRow, currentCol) != "") {
 			try {
-				currentDay = extract_only_date_string((String) tableView.getModel().getValueAt(currentRow, currentCol));
+				currentlySelectedDay = extract_only_date_string((String) tableView.getModel().getValueAt(currentRow, currentCol));
 			} 
 			catch (NumberFormatException n) {
 				return;
 			}
 		}
-		CalGrid.this.setTitle(mCurrTitle + "(" + currentYear + "-" + currentMonth
-				+ "-" + currentDay + ")");
+		CalGrid.this.setTitle(mCurrTitle + "(" + currentlySelectedYear + "-" + currentlySelectedMonth
+				+ "-" + currentlySelectedDay + ")");
 		
 		updateAppList();
 	}
@@ -599,40 +603,40 @@ public class CalGrid extends JFrame implements ActionListener {
 	} 	
 	
 	public boolean IsTodayAppt(Appt appt) {
-		if (appt.TimeSpan().StartTime().getYear() + 1900 != currentYear)
+		if (appt.TimeSpan().StartTime().getYear() + 1900 != currentlySelectedYear)
 			return false;
-		if ((appt.TimeSpan().StartTime().getMonth() + 1) != currentMonth)
+		if ((appt.TimeSpan().StartTime().getMonth() + 1) != currentlySelectedMonth)
 			return false;
-		if (appt.TimeSpan().StartTime().getDate() != currentDay)
+		if (appt.TimeSpan().StartTime().getDate() != currentlySelectedDay)
 			return false;
 		return true;
 	}
 
 	public boolean IsMonthAppts(Appt appt) {
 
-		if (appt.TimeSpan().StartTime().getYear() + 1900 != currentYear)
+		if (appt.TimeSpan().StartTime().getYear() + 1900 != currentlySelectedYear)
 			return false;
 
-		if ((appt.TimeSpan().StartTime().getMonth() + 1) != currentMonth)
+		if ((appt.TimeSpan().StartTime().getMonth() + 1) != currentlySelectedMonth)
 			return false;
 		return true;
 	}
 
 	public List<Appt> GetTodayAppt() {
 		Integer temp;
-		temp = new Integer(currentDay);
+		temp = new Integer(currentlySelectedDay);
 		Timestamp start = new Timestamp(0);
-		start.setYear(currentYear);
-		start.setMonth(currentMonth-1);
-		start.setDate(currentDay);
+		start.setYear(currentlySelectedYear);
+		start.setMonth(currentlySelectedMonth-1);
+		start.setDate(currentlySelectedDay);
 		start.setHours(0);
 		start.setMinutes(0);
 		start.setSeconds(0);
 		
 		Timestamp end = new Timestamp(0);
-		end.setYear(currentYear);
-		end.setMonth(currentMonth-1);
-		end.setDate(currentDay);
+		end.setYear(currentlySelectedYear);
+		end.setMonth(currentlySelectedMonth-1);
+		end.setDate(currentlySelectedDay);
 		end.setHours(23);
 		end.setMinutes(59);
 		end.setSeconds(59);
@@ -663,7 +667,7 @@ public class CalGrid extends JFrame implements ActionListener {
 			for (int j = 0; j < 7; j++) {
 				int temp1 = i * 7 + j - today_day + 1;
 				
-				if (temp1 > 0 && temp1 <= monthDays[currentMonth - 1]) {
+				if (temp1 > 0 && temp1 <= monthDays[currentlySelectedMonth - 1]) {
 					String date_string = new Integer(temp1).toString();
 					if(apptMarker[temp1-1]!=0)
 						data[i][j] = "[[ "+apptMarker[temp1-1]+" ]]    "+date_string;
@@ -683,14 +687,36 @@ public class CalGrid extends JFrame implements ActionListener {
 		return mCurrUser;
 	}
 	
-	public int[] getCurrentDateFromCalGrid()
+	public int getCurrentlySelectedYear()
 	{
-		int[] tempDateArray = new int[3];
-		tempDateArray[0] = currentYear;
-		tempDateArray[1] = currentMonth;
-		tempDateArray[2] = currentDay;
-		
-		return tempDateArray;
+		return currentlySelectedYear;
+	}
+	
+	public int getCurrentlySelectedMonth()
+	{
+		return currentlySelectedMonth;
+	}
+	
+	public int getCurrentlySelectedDay()
+	{
+		return currentlySelectedDay;
+	}
+	
+	public void updateCalGridTitleClock(Date currentTime)
+	{
+		mCurrTitle = "Desktop Calendar - " + mCurrUser.ID() + " - ";
+		if(currentTime.getHours() == 0)
+		{
+			this.setTitle(mCurrTitle + (currentTime.getHours()+12) + ":" + currentTime.getMinutes() + "AM");
+		}
+		else if(currentTime.getHours() < 12)
+		{
+			this.setTitle(mCurrTitle + currentTime.getHours() + ":" + currentTime.getMinutes() + "AM");
+		}
+		else
+		{
+			this.setTitle(mCurrTitle + currentTime.getHours() + ":" + currentTime.getMinutes() + "PM");
+		}
 	}
 	
 	// check for any invite or update from join appointment
