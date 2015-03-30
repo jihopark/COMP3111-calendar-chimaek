@@ -104,7 +104,7 @@ ComponentListener {
 	private JPanel panelDetail;
 
 	private JComboBox locationField;
-
+	private String[] locationStringArray;
 
 	//	private JTextField attendField;
 	//	private JTextField rejectField;
@@ -419,7 +419,7 @@ ComponentListener {
 			locationList.add(LocationController.getInstance().getLocationList().getElementAt(i));
 		}
 
-		String[] locationStringArray = new String[locationList.size()];
+		locationStringArray = new String[locationList.size()];
 		int i = 0;
 		for(Location l: locationList)
 		{
@@ -857,8 +857,11 @@ ComponentListener {
 
 		//Load data on location.
 		if(currentAppt.getLocation() != null)
-		{
-			locationField.setSelectedItem(currentAppt.getLocation());
+		{	
+			String currentLocation = currentAppt.getLocation().getName();
+			String locationStringItem = getStringItemFromLocationStringArray(currentLocation);
+			if(locationStringItem != null)
+				locationField.setSelectedItem(locationStringItem);
 		}
 
 		//If Current Appt is Repeated
@@ -966,6 +969,18 @@ ComponentListener {
 		currentAppt = appt;
 	}
 
+	public String getStringItemFromLocationStringArray(String targetString)
+	{
+		for(int i=0; i<locationStringArray.length; i++)
+		{
+			if(locationStringArray[i].compareTo(targetString) == 0)
+			{
+				return locationStringArray[i];
+			}
+		}
+		return null;
+	}
+	
 
 	private void allDisableEdit(){
 		yearField.setEditable(false);
