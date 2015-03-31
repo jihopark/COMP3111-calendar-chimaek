@@ -47,6 +47,7 @@ public class Appt implements Serializable {
 		reject = appt.getRejectList();
 		waiting = appt.getWaitingList();
 		repeatType = appt.getRepeatType();
+		location = appt.getLocation();
 	}
 	
 	public int getRepeatType(){ return repeatType; }
