@@ -18,7 +18,6 @@ public class TimeController {
 	/* Applying Singleton Structure */
 	private static TimeController instance = null;
 	private boolean onTimeMachineMode = false;
-	private Calendar timeMachine = null;
 	private long timeMachineDifference;
 	
 	/* Empty Constructor, since in singleton getInstance() is used instead*/
@@ -102,16 +101,11 @@ public class TimeController {
 		int currentYear;
 		
 		
-		if(onTimeMachineMode)
-		{
-			currentMonth = timeMachine.getTime().getMonth()+1;
-			currentYear = timeMachine.getTime().getYear()+1900;
-		}
-		else
-		{
-			currentMonth = Calendar.getInstance().getTime().getMonth()+1;
-			currentYear = Calendar.getInstance().getTime().getYear()+1900;
-		}
+		
+		
+		currentMonth = getCurrentTimeInDate().getMonth()+1;
+		currentYear = getCurrentTimeInDate().getYear()+1900;
+		
 		
 		//System.out.println("Function numOfDaysInMonth(): currentMonth: " + currentMonth);
 		//System.out.println("Function numOfDaysInMonth(): currentYear: " + currentYear);
