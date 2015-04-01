@@ -24,10 +24,8 @@ public abstract class NotificationStorage {
 
 	public abstract Notification RetrieveNotification(int notificationID);
 	
-	public abstract Notification RetrieveNotification(Date currentTime);
+	public abstract List<NotificationTime> RetrieveNotification(Date currentTime);
 
-	public abstract Boolean CheckForNotificationTime(Date currentTime);
-
-	public abstract LinkedList<Date> RetrieveAllNotificationTimes(Notification notification);
+	public abstract List<NotificationTime> RetrieveAllNotificationTimes(Notification notification);
 
 }

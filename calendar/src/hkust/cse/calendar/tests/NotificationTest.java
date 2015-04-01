@@ -12,7 +12,7 @@ import org.junit.Test;
 
 public class NotificationTest {
 
-	public LinkedList<Boolean> test = new LinkedList<Boolean>();
+	/*public LinkedList<Boolean> test = new LinkedList<Boolean>();
 	@Test
 	public void notificationShouldHaveRequiredFields() {
 		Notification notification = new Notification();
@@ -22,7 +22,7 @@ public class NotificationTest {
 		notification.setFlags(true,true,false,false);
 		notification.setAlarms();
 		assertFalse("notification does not have required fields", notification.isValid());
-	}
+	}*/
 	
 	@Test
 	public void notificationNameShouldNotBeTooLong() {

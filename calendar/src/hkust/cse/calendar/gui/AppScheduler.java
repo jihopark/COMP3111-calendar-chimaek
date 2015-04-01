@@ -23,7 +23,7 @@ import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.GregorianCalendar;
-import java.util.LinkedList;
+import java.util.List;
 
 import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
@@ -44,7 +44,6 @@ import javax.swing.JTextField;
 import javax.swing.border.BevelBorder;
 import javax.swing.border.Border;
 import javax.swing.border.TitledBorder;
-import javax.swing.table.TableModel;
 
 
 public class AppScheduler extends JDialog implements ActionListener,
@@ -903,7 +902,7 @@ ComponentListener {
 		//Load data on notification.
 		if(currentAppt.getNotification() != null)
 		{
-			LinkedList<Boolean> flagList = currentAppt.getNotification().getFlags();
+			List<Boolean> flagList = currentAppt.getNotification().getFlags();
 			if(flagList.get(0).booleanValue() == true)
 			{
 				oneHourCheckBox.setSelected(true);

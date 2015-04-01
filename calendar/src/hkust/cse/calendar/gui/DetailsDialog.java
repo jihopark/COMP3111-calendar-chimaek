@@ -5,14 +5,13 @@ import hkust.cse.calendar.unit.TimeSpan;
 import hkust.cse.calendar.unit.User;
 
 import java.awt.Container;
-import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.sql.Timestamp;
-import java.util.Date;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Vector;
 
 import javax.swing.JButton;
@@ -112,7 +111,7 @@ public class DetailsDialog extends JFrame implements ActionListener {
 		//NOTIFICATION DETAILS
 		if(appt.getNotification() != null)
 		{
-			LinkedList<Boolean> alarmFlagList = appt.getNotification().getFlags();
+			List<Boolean> alarmFlagList = appt.getNotification().getFlags();
 			area.append("Notifications: ");
 			if(alarmFlagList.get(0))
 				area.append("1 hour   ");

@@ -1,13 +1,11 @@
 package hkust.cse.calendar.notification;
 
-import java.util.Date;
-import java.util.LinkedList;
-
-import hkust.cse.calendar.locationstorage.LocationStorage;
-import hkust.cse.calendar.unit.Appt;
-import hkust.cse.calendar.unit.Location;
 import hkust.cse.calendar.unit.Notification;
 import hkust.cse.calendar.unit.User;
+
+import java.util.Date;
+import java.util.LinkedList;
+import java.util.List;
 
 public class NotificationController {
 
@@ -44,12 +42,12 @@ public class NotificationController {
 			return mNotificationStorage.RetrieveNotification(notificationID);
 		}
 		
-		//Retrieve Notification with currentTime
-		public Notification retrieveNotification(Date currentTime) {
+		//Retrieve Notification with currentTime. returns empty arraylist if no notification
+		public List<NotificationTime> retrieveNotification(Date currentTime) {
 			return mNotificationStorage.RetrieveNotification(currentTime);
 		}
 		
-		public LinkedList<Date> retrieveAllNotificationTimes(Notification notification){
+		public List<NotificationTime> retrieveAllNotificationTimes(Notification notification){
 			return mNotificationStorage.RetrieveAllNotificationTimes(notification);
 		}
 		
@@ -68,10 +66,4 @@ public class NotificationController {
 		public boolean removeNotification(Notification notification){
 			return mNotificationStorage.RemoveNotification(notification);
 		}
-		//check For notification with given time
-		public Boolean checkForNotificationTime(Date currentTime) {
-			return mNotificationStorage.CheckForNotificationTime(currentTime);
-		}
-
-		
 }
