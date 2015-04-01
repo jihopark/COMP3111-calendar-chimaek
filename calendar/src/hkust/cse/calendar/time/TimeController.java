@@ -19,6 +19,7 @@ public class TimeController {
 	private static TimeController instance = null;
 	private boolean onTimeMachineMode = false;
 	private Calendar timeMachine = null;
+	private long timeMachineDifference;
 	
 	/* Empty Constructor, since in singleton getInstance() is used instead*/
 	public TimeController() {
@@ -35,8 +36,7 @@ public class TimeController {
 	/* Set Time Machine Mode */
 	public void setTimeMachine(Date d){
 		onTimeMachineMode = true;
-		timeMachine = Calendar.getInstance();
-		timeMachine.setTime(d);
+		timeMachineDifference = Calendar.getInstance().getTimeInMillis() - d.getTime();
 	}
 	
 	public boolean isOnTimeMachineMode(){
@@ -52,20 +52,16 @@ public class TimeController {
 	
 	public long getCurrentTimeInMillis(){
 		if (onTimeMachineMode)
-			return timeMachine.getTimeInMillis();
+			return Calendar.getInstance().getTimeInMillis() - timeMachineDifference;
 		return Calendar.getInstance().getTimeInMillis();
 	}
 	
 	public Timestamp getCurrentTimeInTimestamp(){
-		if (onTimeMachineMode)
-			return new Timestamp(timeMachine.getTimeInMillis());
-		return new Timestamp(Calendar.getInstance().getTimeInMillis());
+		return new Timestamp(getCurrentTimeInMillis());
 	}
 	
 	public Date getCurrentTimeInDate(){
-		if (onTimeMachineMode)
-			return timeMachine.getTime();
-		return Calendar.getInstance().getTime();
+		return new Date(getCurrentTimeInMillis());
 	}
 	
 	public boolean isNotPast(Appt appt){
