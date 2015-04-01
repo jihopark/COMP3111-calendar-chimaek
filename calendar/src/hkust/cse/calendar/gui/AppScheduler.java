@@ -713,22 +713,13 @@ ComponentListener {
 		//CASE: ONE-TIME
 		else
 		{
-			if(saveFrequencyWithoutEndAt())
-			{
-				//SAVE NOTIFICATION
-				if(checkForNotification())
-				{
-					saveResponseFromNotification();
-				}
+			if (saveFrequencyWithoutEndAt()){
 				JOptionPane.showMessageDialog(this, "Saved appointment successfully");
 				dispose();
 			}
 			else
-			{
 				JOptionPane.showMessageDialog(this, "Failed to save appointment!");
-			}
 		}
-
 	}
 	
 	private void saveResponseFromNotification()
@@ -760,14 +751,14 @@ ComponentListener {
 		}
 
 
-		if(ApptController.getInstance().setNotificationForAppt(currentAppt, flagOne, flagTwo, flagThree, flagFour))
+		/*if(ApptController.getInstance().setNotificationForAppt(currentAppt, flagOne, flagTwo, flagThree, flagFour))
 		{
 			JOptionPane.showMessageDialog(this, "Saved notification successfully");
 		}
 		else
 		{
 			JOptionPane.showMessageDialog(this, "Failed to save notification");
-		}
+		}*/
 	}
 
 
@@ -802,7 +793,17 @@ ComponentListener {
 			return false;
 
 		currentAppt.setRepeatType(repeatType);
-
+		
+		if (checkForNotification()){
+			boolean flagOne = oneHourCheckBox.isSelected();
+			boolean flagTwo = threeHourCheckBox.isSelected();
+			boolean flagThree = twelveHourCheckBox.isSelected();
+			boolean flagFour = twentyfourHourCheckBox.isSelected();
+			
+			if (isModifying)
+				return ApptController.getInstance().modifyRepeatedNewAppt(UserController.getInstance().getDefaultUser(), currentAppt, endAtDate);
+			return ApptController.getInstance().saveRepeatedNewAppt(UserController.getInstance().getDefaultUser(), currentAppt, endAtDate);	
+		}
 		if (isModifying)
 			return ApptController.getInstance().modifyRepeatedNewAppt(UserController.getInstance().getDefaultUser(), currentAppt, endAtDate);
 		return ApptController.getInstance().saveRepeatedNewAppt(UserController.getInstance().getDefaultUser(), currentAppt, endAtDate);	
@@ -810,6 +811,16 @@ ComponentListener {
 
 	private boolean saveFrequencyWithoutEndAt()
 	{
+		if (checkForNotification()){
+			boolean flagOne = oneHourCheckBox.isSelected();
+			boolean flagTwo = threeHourCheckBox.isSelected();
+			boolean flagThree = twelveHourCheckBox.isSelected();
+			boolean flagFour = twentyfourHourCheckBox.isSelected();
+			if (isModifying)
+				return ApptController.getInstance().modifyAppt(UserController.getInstance().getDefaultUser(), currentAppt);
+			return ApptController.getInstance().saveNewAppt(UserController.getInstance().getDefaultUser(), currentAppt,
+					flagOne, flagTwo, flagThree, flagFour);
+		}
 		if (isModifying)
 			return ApptController.getInstance().modifyAppt(UserController.getInstance().getDefaultUser(), currentAppt);
 		return ApptController.getInstance().saveNewAppt(UserController.getInstance().getDefaultUser(), currentAppt);

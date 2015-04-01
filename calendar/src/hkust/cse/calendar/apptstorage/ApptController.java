@@ -77,10 +77,18 @@ public class ApptController {
 		} else if (action == MODIFY) {		// Update the Appt in the storage if it is modified and non-null
 			if (appt == null)
 				return;
-	//		mApptStorage.UpdateAppt(appt);
+			//		mApptStorage.UpdateAppt(appt);
 		} else if (action == REMOVE) {		// Remove the Appt from the storage if it should be removed
 			mApptStorage.RemoveAppt(appt);
 		} 
+	}
+
+	//Save Appt with Notification
+	public boolean saveNewAppt(User user, Appt appt, 
+			boolean flagOne, boolean flagTwo, boolean flagThree, boolean flagFour){
+		appt.setID(apptIDCount++);
+		System.out.println("Notificaiton Saved " + setNotificationForAppt(appt, flagOne, flagTwo, flagThree, flagFour));
+		return mApptStorage.SaveAppt(appt);
 	}
 
 	//Register appt as New Appt of user. Return true if successfully registered
@@ -151,10 +159,10 @@ public class ApptController {
 		if (removeAppt(user, appt)){
 			return saveNewAppt(user, appt);
 		}
-		
+
 		return false;
 	}
-	
+
 	public boolean modifyRepeatedNewAppt(User user, Appt appt, Date repeatEndDate){
 		//If repeated, then modify all repeated appts. However, past appts will not be modified
 		if (!TimeController.getInstance().isNotPast(appt)){
@@ -162,7 +170,7 @@ public class ApptController {
 		}
 		//Remove Appt First
 		removeAppt(user, appt);
-		
+
 		//Save Modified Appt
 		return saveRepeatedNewAppt(user, appt, repeatEndDate);		
 	}
