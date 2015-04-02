@@ -63,7 +63,7 @@ public class NotificationStorageNullImpl extends NotificationStorage {
 		ArrayList<NotificationTime> notis = new ArrayList<NotificationTime>();
 		for (Notification a : list){ //for each notification
 			for(NotificationTime time : a.getTimes()) { //check each alarm
-				if (time.getNotificationTime().getTime()/1000 == currentTime.getTime()/1000){
+				if (time!=null && time.getNotificationTime().getTime()/1000 == currentTime.getTime()/1000){
 					notis.add(time);
 					break;
 				}

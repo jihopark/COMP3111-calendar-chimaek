@@ -34,6 +34,7 @@ public class Notification {
 		_appt = appt;
 		_name = name;
 		_appointmentTime = time;
+
 		setAlarms(flagOne, flagTwo, flagThree, flagFour);
 	}
 	
@@ -84,38 +85,44 @@ public class Notification {
 	public void setAlarms(boolean flagOne, boolean flagTwo, boolean flagThree, boolean flagFour) {
 		//check flag1, set alarm1 repeat 4 times
 		Calendar cal = Calendar.getInstance();
+		for (int i=0;i<4;i++)
+			_times.add(null);
 		
 		if(flagOne) {
 			cal.setTime(_appointmentTime);
 			cal.add(Calendar.HOUR, -1);
 			Date oneHourBack = cal.getTime();
-			_times.add(new NotificationTime(this, ONE_HOUR,oneHourBack));
+			_times.set(ONE_HOUR,new NotificationTime(this, ONE_HOUR,oneHourBack));
 		}
 		if(flagTwo) {
 			cal.setTime(_appointmentTime);
 			cal.add(Calendar.HOUR, -3);
 			Date threeHourBack = cal.getTime();
-			_times.add(new NotificationTime(this, THREE_HOUR,threeHourBack));
+			_times.set(THREE_HOUR,new NotificationTime(this, THREE_HOUR,threeHourBack));
 		}
 		if(flagThree) {
 			cal.setTime(_appointmentTime);
 			cal.add(Calendar.HOUR, -12);
 			Date twelveHourBack = cal.getTime();
-			_times.add(new NotificationTime(this, TWELVE_HOUR,twelveHourBack));
+			_times.set(TWELVE_HOUR,new NotificationTime(this, TWELVE_HOUR,twelveHourBack));
 		}
 		if(flagFour) {
 			cal.setTime(_appointmentTime);
 			cal.add(Calendar.HOUR, -24);
 			Date twentyFourHourBack = cal.getTime();
-			_times.add(new NotificationTime(this, TWENTY_FOUR_HOUR,twentyFourHourBack));
+			_times.set(TWENTY_FOUR_HOUR,new NotificationTime(this, TWENTY_FOUR_HOUR,twentyFourHourBack));
 		}
 	}
 	
 	public List<Boolean> getFlags(){
 		ArrayList<Boolean> flags = new ArrayList<Boolean>();
+		for (int i=0; i<4; i++)
+			flags.add(false);
+		
 		for (int i=0; i<4; i++){
 			if (_times.get(i)==null) flags.set(i, false);
 			else flags.set(i, true);
+			System.out.println("Notification/getFlags " + flags.get(i));
 		}
 		return flags;
 	}

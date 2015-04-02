@@ -87,7 +87,8 @@ public class ApptController {
 	public boolean saveNewAppt(User user, Appt appt, 
 			boolean flagOne, boolean flagTwo, boolean flagThree, boolean flagFour){
 		appt.setID(apptIDCount++);
-		setNotificationForAppt(appt, flagOne, flagTwo, flagThree, flagFour);
+		if (flagOne || flagTwo || flagThree || flagFour)
+			setNotificationForAppt(appt, flagOne, flagTwo, flagThree, flagFour);
 		return mApptStorage.SaveAppt(appt);
 	}
 
@@ -107,7 +108,8 @@ public class ApptController {
 		for (Appt a : tmpList){
 			if (!saveNewAppt(user, a))
 				return false;
-			setNotificationForAppt(a, flagOne, flagTwo, flagThree, flagFour);
+			if (flagOne || flagTwo || flagThree || flagFour)
+				setNotificationForAppt(a, flagOne, flagTwo, flagThree, flagFour);
 		}
 		return true;
 	}
@@ -165,19 +167,38 @@ public class ApptController {
 	}
 
 	//Modify appt of user. Return true if successfully modified
+	/*
 	public boolean modifyAppt(User user, Appt appt){
 		if (!TimeController.getInstance().isNotPast(appt)){
 			return false;
 		}
 		//Remove Appt First
+		List<Boolean> tmp = appt.getNotification().getFlags();
 		if (removeAppt(user, appt)){
 			return saveNewAppt(user, appt);
 		}
 
 		return false;
-	}
+	}*/
+	
+	public boolean modifyAppt(User user, Appt appt, 
+			boolean flagOne, boolean flagTwo, boolean flagThree, boolean flagFour){
+		if (!TimeController.getInstance().isNotPast(appt)){
+			return false;
+		}
+		//Remove Appt First
+		if (removeAppt(user, appt)){
+			if (flagOne || flagTwo || flagThree || flagFour)
+				return saveNewAppt(user, appt,flagOne, flagTwo, flagThree, flagFour);
+			else 
+				return saveNewAppt(user, appt);
+		}
 
-	public boolean modifyRepeatedNewAppt(User user, Appt appt, Date repeatEndDate){
+		return false;
+	}
+	
+	/*public boolean modifyRepeatedNewAppt(User user, Appt appt, Date repeatEndDate,
+			boolean flagOne, boolean flagTwo, boolean flagThree, boolean flagFour){
 		//If repeated, then modify all repeated appts. However, past appts will not be modified
 		if (!TimeController.getInstance().isNotPast(appt)){
 			return false;
@@ -186,6 +207,23 @@ public class ApptController {
 		removeAppt(user, appt);
 
 		//Save Modified Appt
+		if (flagOne || flagTwo || flagThree || flagFour)
+			return saveRepeatedNewAppt(user, appt, repeatEndDate, flagOne, flagTwo, flagThree, flagFour);
+		return saveRepeatedNewAppt(user, appt, repeatEndDate);		
+	}*/
+
+	public boolean modifyRepeatedNewAppt(User user, Appt appt, Date repeatEndDate,
+			boolean flagOne, boolean flagTwo, boolean flagThree, boolean flagFour){
+		//If repeated, then modify all repeated appts. However, past appts will not be modified
+		if (!TimeController.getInstance().isNotPast(appt)){
+			return false;
+		}
+		//Remove Appt First
+		removeAppt(user, appt);
+
+		//Save Modified Appt
+		if (flagOne || flagTwo || flagThree || flagFour)
+			return saveRepeatedNewAppt(user, appt, repeatEndDate, flagOne, flagTwo, flagThree, flagFour);
 		return saveRepeatedNewAppt(user, appt, repeatEndDate);		
 	}
 

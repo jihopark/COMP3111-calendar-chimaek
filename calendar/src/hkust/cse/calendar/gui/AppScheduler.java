@@ -800,12 +800,14 @@ ComponentListener {
 			boolean flagFour = twentyfourHourCheckBox.isSelected();
 			
 			if (isModifying)
-				return ApptController.getInstance().modifyRepeatedNewAppt(UserController.getInstance().getDefaultUser(), currentAppt, endAtDate);
+				return ApptController.getInstance().modifyRepeatedNewAppt(UserController.getInstance().getDefaultUser(), currentAppt, endAtDate,
+						flagOne, flagTwo, flagThree, flagFour);
 			return ApptController.getInstance().saveRepeatedNewAppt(UserController.getInstance().getDefaultUser(), currentAppt, endAtDate,
 					flagOne, flagTwo, flagThree, flagFour);	
 		}
 		if (isModifying)
-			return ApptController.getInstance().modifyRepeatedNewAppt(UserController.getInstance().getDefaultUser(), currentAppt, endAtDate);
+			return ApptController.getInstance().modifyRepeatedNewAppt(UserController.getInstance().getDefaultUser(), currentAppt, endAtDate,
+					false, false, false, false);
 		return ApptController.getInstance().saveRepeatedNewAppt(UserController.getInstance().getDefaultUser(), currentAppt, endAtDate);	
 	}
 
@@ -817,12 +819,14 @@ ComponentListener {
 			boolean flagThree = twelveHourCheckBox.isSelected();
 			boolean flagFour = twentyfourHourCheckBox.isSelected();
 			if (isModifying)
-				return ApptController.getInstance().modifyAppt(UserController.getInstance().getDefaultUser(), currentAppt);
+				return ApptController.getInstance().modifyAppt(UserController.getInstance().getDefaultUser(), currentAppt,
+						flagOne, flagTwo, flagThree, flagFour);
 			return ApptController.getInstance().saveNewAppt(UserController.getInstance().getDefaultUser(), currentAppt,
 					flagOne, flagTwo, flagThree, flagFour);
 		}
 		if (isModifying)
-			return ApptController.getInstance().modifyAppt(UserController.getInstance().getDefaultUser(), currentAppt);
+			return ApptController.getInstance().modifyAppt(UserController.getInstance().getDefaultUser(), currentAppt,
+					false, false, false, false);
 		return ApptController.getInstance().saveNewAppt(UserController.getInstance().getDefaultUser(), currentAppt);
 	}
 

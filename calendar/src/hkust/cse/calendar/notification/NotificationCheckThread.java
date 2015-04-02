@@ -28,7 +28,7 @@ public class NotificationCheckThread extends Thread {
 				Thread.sleep(1000);
 				currentTime = TimeController.getInstance().getCurrentTimeInDate();
 				calGrid.updateCalGridTitleClock(currentTime);
-				System.out.println("Current Time is: " + currentTime);
+				//System.out.println("Current Time is: " + currentTime);
 				List<NotificationTime> notifications = NotificationController.getInstance().retrieveNotification(currentTime);
 				if (notifications.size()!=0){
 					for (NotificationTime time : notifications){
