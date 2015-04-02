@@ -195,7 +195,6 @@ public class CalGrid extends JFrame implements ActionListener {
 				getDateArray(data);
 				String tem = (String) data[row][col];
 				
-				System.out.println(tem);
 				if (tem.equals("") == false) {
 					try {
 						
@@ -223,10 +222,6 @@ public class CalGrid extends JFrame implements ActionListener {
 
 			public void mousePressed(MouseEvent e) {
 				mousePressResponse();
-			}
-
-			public void mouseReleased(MouseEvent e) {
-				mouseResponse();
 			}
 		});
 
@@ -552,9 +547,7 @@ public class CalGrid extends JFrame implements ActionListener {
 	private void mousePressResponse() {
 		previousRow = tableView.getSelectedRow();
 		previousCol = tableView.getSelectedColumn();
-	}
-	
-	private void mouseResponse() {
+		
 		int[] selectedRows = tableView.getSelectedRows();
 		int[] selectedCols = tableView.getSelectedColumns();
 		if(tableView.getSelectedRow() == previousRow && tableView.getSelectedColumn() == previousCol){
@@ -592,6 +585,7 @@ public class CalGrid extends JFrame implements ActionListener {
 		
 		updateAppList();
 	}
+
 	public int extract_only_date_string(String cellString) {
 		String only_date_substring = cellString;
 		int stringLength = only_date_substring.length();
