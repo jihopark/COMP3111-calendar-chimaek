@@ -176,7 +176,7 @@ public class CalGrid extends JFrame implements ActionListener {
 		monthComboBox.setPreferredSize(new Dimension(200, 30));
 		for (int cnt = 0; cnt < 12; cnt++)
 			monthComboBox.addItem(months[cnt]);
-		monthComboBox.setSelectedIndex(currentlySelectedMonth+1);
+		monthComboBox.setSelectedIndex(currentlySelectedMonth+2);
 
 		JPanel yearGroup = new JPanel();
 		yearGroup.setLayout(new FlowLayout());
@@ -194,10 +194,10 @@ public class CalGrid extends JFrame implements ActionListener {
 			public TableCellRenderer getCellRenderer(int row, int col) {
 				getDateArray(data);
 				String tem = (String) data[row][col];
+				
+				System.out.println(tem);
 				if (tem.equals("") == false) {
 					try {
-						//System.out.println("todayDate: "+(todayDate.getYear()+1900)+" "+(todayDate.getMonth()+1)+" "+todayDate.getDate());
-						//System.out.println("currentXx: "+currentYear+" "+currentMonth+" "+extract_only_date_string(tem));
 						
 						if ((todayDate.getYear()+1900) == currentlySelectedYear
 								&& (todayDate.getMonth()+1) == currentlySelectedMonth
@@ -207,6 +207,7 @@ public class CalGrid extends JFrame implements ActionListener {
 						else if(tem.length()>2)
 							return new CalCellRenderer(2); //2 if not today but has appointments
 					} catch (Throwable e) {
+						System.out.println("ERROR: TableCellRenderer getCellRenderer");
 						System.exit(1);
 					}
 
@@ -429,6 +430,7 @@ public class CalGrid extends JFrame implements ActionListener {
 		//int temp = todayDate.getMonth()+1;
 		//currentMonth = 12;
 		currentlySelectedMonth = todayDate.getMonth()+1;
+		System.out.println("currentlySelectedMonth: " + currentlySelectedMonth);
 	}
 
 	private void initializeSystem() {
@@ -575,7 +577,6 @@ public class CalGrid extends JFrame implements ActionListener {
 		if (currentRow > 5 || currentRow < 0 || currentCol < 0
 				|| currentCol > 6)
 			return;
-
 		
 		
 		if (tableView.getModel().getValueAt(currentRow, currentCol) != "") {
@@ -595,9 +596,9 @@ public class CalGrid extends JFrame implements ActionListener {
 		String only_date_substring = cellString;
 		int stringLength = only_date_substring.length();
 		if(stringLength>2) {
-			only_date_substring = only_date_substring.substring(stringLength-2, stringLength); 
+			only_date_substring = only_date_substring.substring(stringLength-2, stringLength);
 			if(only_date_substring.substring(0,1).equals(" "))
-				only_date_substring.substring(1,2);
+				only_date_substring=only_date_substring.substring(1,2);
 		}
 			return new Integer(only_date_substring).intValue();
 	} 	
