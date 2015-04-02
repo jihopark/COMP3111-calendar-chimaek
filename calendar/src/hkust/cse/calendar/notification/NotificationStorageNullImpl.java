@@ -25,6 +25,7 @@ public class NotificationStorageNullImpl extends NotificationStorage {
 	public boolean SaveNotification(Notification notification) { 
 		if(notificationIsValid(notification)) {
 			list.add(notification);
+			System.out.println("NotificationStorageNullImpl/SaveNotification Notification added. Total " + list.size());
 			notificationNumber++;
 			return true;
 		}

@@ -87,7 +87,7 @@ public class ApptController {
 	public boolean saveNewAppt(User user, Appt appt, 
 			boolean flagOne, boolean flagTwo, boolean flagThree, boolean flagFour){
 		appt.setID(apptIDCount++);
-		System.out.println("Notificaiton Saved " + setNotificationForAppt(appt, flagOne, flagTwo, flagThree, flagFour));
+		setNotificationForAppt(appt, flagOne, flagTwo, flagThree, flagFour);
 		return mApptStorage.SaveAppt(appt);
 	}
 
@@ -96,7 +96,22 @@ public class ApptController {
 		appt.setID(apptIDCount++);
 		return mApptStorage.SaveAppt(appt);
 	}
-
+	
+	//Save Repeated Appt with Notification
+	public boolean saveRepeatedNewAppt(User user, Appt appt, Date repeatEndDate, 
+			boolean flagOne, boolean flagTwo, boolean flagThree, boolean flagFour){
+		List<Appt> tmpList;
+		tmpList = getRepeatedApptList(appt, repeatEndDate);
+		if (mApptStorage.checkOverlaps(tmpList))
+			return false;
+		for (Appt a : tmpList){
+			if (!saveNewAppt(user, a))
+				return false;
+			setNotificationForAppt(a, flagOne, flagTwo, flagThree, flagFour);
+		}
+		return true;
+	}
+	
 	public boolean saveRepeatedNewAppt(User user, Appt appt, Date repeatEndDate){
 		List<Appt> tmpList;
 		tmpList = getRepeatedApptList(appt, repeatEndDate);
@@ -106,7 +121,6 @@ public class ApptController {
 			if (!saveNewAppt(user, a))
 				return false;
 		}
-		System.out.println("\nDone here");
 		return true;
 	}
 
@@ -204,7 +218,7 @@ public class ApptController {
 
 	public boolean setNotificationForAppt(Appt appt, 
 			boolean flagOne, boolean flagTwo, boolean flagThree, boolean flagFour){
-
+		System.out.println("ApptController/setNotificationForAppt Notification For " + appt.TimeSpan());
 		Notification noti = new Notification(appt, appt.getTitle(), appt.getTimeSpan().StartTime(),
 				flagOne, flagTwo, flagThree, flagFour);
 		appt.setNotification(noti);

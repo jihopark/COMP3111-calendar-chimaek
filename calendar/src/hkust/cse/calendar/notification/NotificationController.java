@@ -59,6 +59,7 @@ public class NotificationController {
 		//Save New
 		public boolean saveNewNotification(Notification notification){
 			notification.setID(notificationIDCount++);
+			System.out.println("NotificationController Save Notification");
 			return mNotificationStorage.SaveNotification(notification);
 		}
 		

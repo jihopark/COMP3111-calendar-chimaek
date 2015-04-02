@@ -53,10 +53,10 @@ public class ApptStorageMemory extends ApptStorage {
 				list.add(appt);
 				apptNumber++;
 				System.out.println("ApptStorageMemory/SaveAppt : Saved Appt #"+appt.getID());
-				saveNotification(appt.getNotification());
+				/*saveNotification(appt.getNotification());
 				//Save Notification if any
 				if (appt.getNotification()!=null)
-					NotificationController.getInstance().saveNewNotification(appt.getNotification());
+					NotificationController.getInstance().saveNewNotification(appt.getNotification());*/
 				return true;
 			}
 		}
