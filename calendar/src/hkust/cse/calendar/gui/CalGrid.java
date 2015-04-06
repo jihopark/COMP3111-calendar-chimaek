@@ -425,7 +425,6 @@ public class CalGrid extends JFrame implements ActionListener {
 		//int temp = todayDate.getMonth()+1;
 		//currentMonth = 12;
 		currentlySelectedMonth = todayDate.getMonth()+1;
-		System.out.println("currentlySelectedMonth: " + currentlySelectedMonth);
 	}
 
 	private void initializeSystem() {
@@ -580,8 +579,6 @@ public class CalGrid extends JFrame implements ActionListener {
 				return;
 			}
 		}
-		CalGrid.this.setTitle(mCurrTitle + "(" + currentlySelectedYear + "-" + currentlySelectedMonth
-				+ "-" + currentlySelectedDay + ")");
 		
 		updateAppList();
 	}

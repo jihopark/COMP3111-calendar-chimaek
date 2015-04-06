@@ -466,20 +466,20 @@ public class AppList extends JPanel implements ActionListener
 		if (appt == null)
 			return;
 
-		Timestamp temp;
+		Timestamp tempStartTimeStamp = appt.TimeSpan().StartTime();
+		int startDay = tempStartTimeStamp.getDate();
+		int startMin = tempStartTimeStamp.getHours() * 60 + tempStartTimeStamp.getMinutes();
 
-		temp = appt.TimeSpan().StartTime();
-		int startMin = temp.getHours() * 60 + temp.getMinutes();
-		startMin = startMin - OFFSET * 60;
-
-		temp = appt.TimeSpan().EndTime();
-		int endMin = temp.getHours() * 60 + temp.getMinutes();
-		endMin = endMin - OFFSET * 60;
-
+		Timestamp tempEndTimeStamp = appt.TimeSpan().EndTime();
+		int endDay = tempEndTimeStamp.getDate();
+		int endMin = tempEndTimeStamp.getHours() * 60 + tempEndTimeStamp.getMinutes();
+		if(endMin == 0 && (endDay == (startDay+1)))
+			endMin= endMin + 24*60;
+		
 		int[] pos = new int[2];
 		for (int i = startMin; i < endMin; i = i + SMALLEST_DURATION) 
 		{
-			pos = calRowColNum(i);
+			pos = calculateRowColNum(i);
 			if (i == startMin) 
 			{
 				tableView.getModel().setValueAt(appt, pos[0], pos[1]);
@@ -519,7 +519,7 @@ public class AppList extends JPanel implements ActionListener
 
 	}
 
-	public int[] calRowColNum(int startTime) 
+	public int[] calculateRowColNum(int startTime) 
 	{
 		int[] position = new int[2];
 		position[0] = startTime / SMALLEST_DURATION;

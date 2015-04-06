@@ -838,9 +838,18 @@ ComponentListener {
 		Timestamp stamp = new Timestamp(0);
 		stamp.setYear(date[0]);
 		stamp.setMonth(date[1] - 1);
-		stamp.setDate(date[2]);
-		stamp.setHours(time / 60);
-		stamp.setMinutes(time % 60);
+		if(time/60 == 24)
+		{
+			stamp.setDate(date[2]+1);
+			stamp.setHours(0);
+			stamp.setMinutes(time % 60);
+		}
+		else
+		{
+			stamp.setDate(date[2]);
+			stamp.setHours(time / 60);
+			stamp.setMinutes(time % 60);
+		}
 		return stamp;
 	}
 
