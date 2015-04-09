@@ -59,7 +59,7 @@ public class NotificationController {
 		//Save New
 		public boolean saveNewNotification(Notification notification){
 			notification.setID(notificationIDCount++);
-			System.out.println("NotificationController/saveNewNotification Saved");
+			System.out.println("NotificationController/saveNewNotification Saved. ID is " + notification.getID());
 			return mNotificationStorage.SaveNotification(notification);
 		}
 		
@@ -67,5 +67,9 @@ public class NotificationController {
 		public boolean removeNotification(Notification notification){
 			System.out.println("NotificationController/removeNewNotification Removed");
 			return mNotificationStorage.RemoveNotification(notification);
+		}
+		
+		public Notification getNotificationByID(int id){
+			return mNotificationStorage.RetrieveNotification(id);
 		}
 }

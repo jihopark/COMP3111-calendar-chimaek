@@ -82,4 +82,8 @@ public class LocationController {
 			System.out.println(mLocationStorage.getLocationList().getElementAt(i));
 		}
 	}
+	
+	public Location getLocationByID(int id){
+		return mLocationStorage.RetrieveLocations(id);
+	}
 }

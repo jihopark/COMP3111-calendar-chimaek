@@ -55,8 +55,8 @@ public class LocationStorageNullImpl extends LocationStorage {
 	public boolean SaveLocation(Location location) {
 		// TODO Auto-generated method stub
 		if (checkForSameLocation(location)) {
+			location.setID(locationNumber++);
 			list.add(location);
-			locationNumber++;
 			System.out.println("Saved Location ID is: " + location.getID());
 			return true;
 		}
@@ -76,7 +76,7 @@ public class LocationStorageNullImpl extends LocationStorage {
 	@Override
 	public int getListSize() {
 		return list.size();
-	}
+	} 
 	
 	@Override
 	public boolean UpdateLocation(Location location) {
@@ -97,7 +97,6 @@ public class LocationStorageNullImpl extends LocationStorage {
 		
 		if(index<list.size() && index>-1) {
 			list.remove(index);
-			locationNumber--;
 			return true;
 		}
 		return false;

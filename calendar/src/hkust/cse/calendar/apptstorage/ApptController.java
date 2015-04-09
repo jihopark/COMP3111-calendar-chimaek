@@ -259,8 +259,10 @@ public class ApptController {
 		System.out.println("ApptController/setNotificationForAppt Notification For " + appt.TimeSpan());
 		Notification noti = new Notification(appt, appt.getTitle(), appt.getTimeSpan().StartTime(),
 				flagOne, flagTwo, flagThree, flagFour);
-		appt.setNotification(noti);
-		return NotificationController.getInstance().saveNewNotification(noti);
+		boolean tmp = NotificationController.getInstance().saveNewNotification(noti);
+		if (tmp)
+			appt.setNotification(noti);
+		return tmp;
 	}
 
 	/* Get the defaultUser of mApptStorage */

@@ -51,6 +51,7 @@ public class NotificationStorageNullImpl extends NotificationStorage {
 	public Notification RetrieveNotification(int notificationID) {
 		for (Notification a : list){
 			if (a.getID() == notificationID){
+				System.out.println("NotificationStorageNullImpl/RetriveNotification ID is " + a.getID());
 				return a;
 			}
 		}

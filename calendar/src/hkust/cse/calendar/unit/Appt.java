@@ -1,5 +1,8 @@
 package hkust.cse.calendar.unit;
 
+import hkust.cse.calendar.locationstorage.LocationController;
+import hkust.cse.calendar.notification.NotificationController;
+
 import java.io.Serializable;
 import java.sql.Timestamp;
 import java.util.Date;
@@ -18,9 +21,8 @@ public class Appt implements Serializable {
 	
 	private Appt nextRepeatedAppt = null;						
 	private Appt previousRepeatedAppt = null;
-
-	private Location location;
-	private Notification notification;
+	
+	private int location_id = -1, notification_id = -1;
 	
 	private LinkedList<String> attend;			// The Attendant list
 	
@@ -47,7 +49,7 @@ public class Appt implements Serializable {
 		reject = appt.getRejectList();
 		waiting = appt.getWaitingList();
 		repeatType = appt.getRepeatType();
-		location = appt.getLocation();
+		location_id = appt.getLocationID();
 	}
 	
 	public int getRepeatType(){ return repeatType; }
@@ -57,22 +59,32 @@ public class Appt implements Serializable {
 	}
 	
 	public void setNotification(Notification notification){
-		this.notification = notification;
+		notification_id = notification.getID();
 	}
 	
 	public void setLocation(Location location){
 		location.addCountForLocation();
-		if(this.location!=null)
-			this.location.subtractCountForLocation();
-		this.location= location;
+		if(location_id!=-1)
+			getLocation().subtractCountForLocation();
+		location_id= location.getID();
+		System.out.println("Appt/setLocation " + "Set Location " + location_id);
 	}
 	
+	public int getLocationID(){ return location_id; }
+	public int getNotificationID(){ return notification_id; }
+	
+	
 	public Location getLocation(){
-		return location;
+		System.out.println("Appt/getLocation " + "Get Location " + location_id);
+		if (location_id == -1)
+			return null;
+		
+		return LocationController.getInstance().getLocationByID(location_id);
 	}
 	
 	public Notification getNotification(){
-		return notification;
+		System.out.println("Appt/getNotification " + "Get Notification " + notification_id );
+		return NotificationController.getInstance().getNotificationByID(notification_id);
 	}
 
 	// Getter of the mTimeSpan
