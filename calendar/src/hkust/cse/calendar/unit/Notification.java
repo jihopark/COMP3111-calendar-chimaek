@@ -1,5 +1,6 @@
 package hkust.cse.calendar.unit;
 
+import hkust.cse.calendar.apptstorage.ApptController;
 import hkust.cse.calendar.notification.NotificationTime;
 
 import java.util.ArrayList;
@@ -18,7 +19,8 @@ public class Notification {
 	private ArrayList<NotificationTime> _times = new ArrayList<NotificationTime>();
 	
 	private Date _appointmentTime;
-	private Appt _appt;
+	private int appt_id = -1;
+	//private Appt _appt;
 	private int _notificationID; 
 	private boolean delivered = false;
 	
@@ -31,7 +33,7 @@ public class Notification {
 	
 	public Notification(Appt appt, String name, Date time, 
 			boolean flagOne, boolean flagTwo, boolean flagThree, boolean flagFour){
-		_appt = appt;
+		appt_id = appt.getID();
 		_name = name;
 		_appointmentTime = time;
 
@@ -48,7 +50,7 @@ public class Notification {
 	public void setTimes(ArrayList<NotificationTime> times){ _times = times; } 
 	
 	public Appt getAppt(){
-		return _appt;
+		return ApptController.getInstance().RetrieveAppt(appt_id);
 	}
 
 	public Date getAppointmentTime() {

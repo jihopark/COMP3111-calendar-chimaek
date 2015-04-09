@@ -60,9 +60,8 @@ public class ApptController {
 		return mApptStorage.RetrieveApptsInList(time);
 	}
 
-	// overload method to retrieve appointment with the given joint appointment id
-	public Appt RetrieveAppts(int joinApptID) {
-		return mApptStorage.RetrieveAppts(joinApptID);
+	public Appt RetrieveAppt(int apptID) {
+		return mApptStorage.RetrieveAppts(apptID);
 	}
 
 	/* Manage the Appt in the storage

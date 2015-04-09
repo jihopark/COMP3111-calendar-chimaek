@@ -106,8 +106,11 @@ public class ApptStorageMemory extends ApptStorage {
 	}
 
 	@Override
-	public Appt RetrieveAppts(int joinApptID) {
-		// TODO Auto-generated method stub
+	public Appt RetrieveAppts(int apptID) {
+		for (Appt a : list){
+			if (a.getID() == apptID)
+				return a;
+		}
 		return null;
 	}
 
