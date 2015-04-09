@@ -1,16 +1,18 @@
 package hkust.cse.calendar.locationstorage;
 
+import hkust.cse.calendar.diskstorage.JsonStorable;
+import hkust.cse.calendar.unit.Location;
+import hkust.cse.calendar.unit.User;
+
 import java.util.ArrayList;
-import java.util.List;
 
 import javax.swing.DefaultListModel;
 
-import hkust.cse.calendar.unit.Appt;
-import hkust.cse.calendar.unit.Location;
-import hkust.cse.calendar.unit.TimeSpan;
-import hkust.cse.calendar.unit.User;
+import sun.org.mozilla.javascript.internal.InterfaceAdapter;
 
-public class LocationStorageNullImpl extends LocationStorage {
+import com.google.gson.GsonBuilder;
+
+public class LocationStorageNullImpl extends LocationStorage implements JsonStorable {
 
 	private User defaultUser = null;
 	private ArrayList<Location> list;
@@ -58,6 +60,7 @@ public class LocationStorageNullImpl extends LocationStorage {
 			location.setID(locationNumber++);
 			list.add(location);
 			System.out.println("Saved Location ID is: " + location.getID());
+			saveToJson();
 			return true;
 		}
 		return false;
@@ -107,6 +110,22 @@ public class LocationStorageNullImpl extends LocationStorage {
 	private boolean checkForSameLocation(Location location) {
 	// need to implement if Location with same name exists
 		return true;
+	}
+	
+	/*
+	 * For Disk Storage
+	 * */
+	
+	public String getFileName(){
+		return "Location.txt";
+	}
+	
+	public void loadFromJson(){
+		
+	}
+	
+	public void saveToJson(){
+		
 	}
 
 

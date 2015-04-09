@@ -34,8 +34,6 @@ public abstract class ApptStorage {
 	
 	public abstract User getDefaultUser();		//abstract method to return the current user object
 	
-	public abstract void LoadApptFromXml();		//abstract method to load appointment from xml reocrd into hash map
-	
 	public abstract boolean checkOverlaps(List<Appt> appts);
 	
 	public abstract boolean checkOverlaps(Appt appt);

@@ -430,7 +430,6 @@ public class CalGrid extends JFrame implements ActionListener {
 	private void initializeSystem() {
 
 		mCurrUser = ApptController.getInstance().getDefaultUser();	//get User from ApptController.getInstance().
-		ApptController.getInstance().LoadApptFromXml();
 		notificationCheckThread.start();
 		// Fix Me !
 		// Load the saved appointments from disk

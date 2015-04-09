@@ -1,6 +1,6 @@
 package hkust.cse.calendar.notification;
 
-import hkust.cse.calendar.time.TimeController;
+import hkust.cse.calendar.diskstorage.JsonStorable;
 import hkust.cse.calendar.unit.Notification;
 import hkust.cse.calendar.unit.User;
 
@@ -9,7 +9,7 @@ import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 
-public class NotificationStorageNullImpl extends NotificationStorage {
+public class NotificationStorageNullImpl extends NotificationStorage implements JsonStorable {
 	
 	private User defaultUser = null;
 	private LinkedList<Notification> list;
@@ -98,6 +98,22 @@ public class NotificationStorageNullImpl extends NotificationStorage {
 	private boolean notificationIsValid(Notification notification) {
 		// TODO Auto-generated method stub
 		return true;
+	}
+	
+	/*
+	 * For Disk Storage
+	 * */
+	
+	public String getFileName(){
+		return "Notification.txt";
+	}
+	
+	public void loadFromJson(){
+		
+	}
+	
+	public void saveToJson(){
+		
 	}
 
 }

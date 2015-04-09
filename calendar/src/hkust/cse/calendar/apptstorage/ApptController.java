@@ -268,9 +268,4 @@ public class ApptController {
 	public User getDefaultUser() {
 		return mApptStorage.getDefaultUser();
 	}
-
-	// method used to load appointment from xml record into hash map
-	public void LoadApptFromXml(){
-		mApptStorage.LoadApptFromXml();
-	}
 }

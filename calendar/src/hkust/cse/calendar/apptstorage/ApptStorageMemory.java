@@ -1,18 +1,20 @@
 package hkust.cse.calendar.apptstorage;
 
+import hkust.cse.calendar.diskstorage.JsonStorable;
+import hkust.cse.calendar.notification.NotificationController;
 import hkust.cse.calendar.time.TimeController;
 import hkust.cse.calendar.unit.Appt;
 import hkust.cse.calendar.unit.Notification;
 import hkust.cse.calendar.unit.TimeSpan;
 import hkust.cse.calendar.unit.User;
-import hkust.cse.calendar.notification.NotificationController;
 
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.LinkedList;
 import java.util.List;
 
-public class ApptStorageMemory extends ApptStorage {
+import com.google.gson.Gson;
+
+public class ApptStorageMemory extends ApptStorage implements JsonStorable {
 
 	private User defaultUser = null;
 	
@@ -148,13 +150,23 @@ public class ApptStorageMemory extends ApptStorage {
 		return defaultUser;
 	}
 
-	@Override
-	public void LoadApptFromXml() {
-		// TODO Auto-generated method stub
-	}
-	
 	public int getTotalApptCount(){
 		return apptNumber;
 	}
-
+	
+	/*
+	 * For Disk Storage
+	 * */
+	
+	public String getFileName(){
+		return "Appt.txt";
+	}
+	
+	public void loadFromJson(){
+		
+	}
+	
+	public void saveToJson(){
+		
+	}
 }
