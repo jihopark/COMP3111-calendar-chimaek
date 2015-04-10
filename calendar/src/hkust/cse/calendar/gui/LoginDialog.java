@@ -122,6 +122,9 @@ public class LoginDialog extends JFrame implements ActionListener
 		else if(e.getSource() == signupButton)
 		{
 			// Create a new account
+			RegisterDialog registerDialog = new RegisterDialog();
+			setVisible(false);
+			
 		}
 		else if(e.getSource() == closeButton)
 		{
