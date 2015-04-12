@@ -87,6 +87,7 @@ public class RegisterDialog extends JFrame implements ActionListener {
 		{
 			LoginDialog loginDialog = new LoginDialog();
 			setVisible(false);
+			dispose();
 		} else if(e.getSource() == registerButton)
 		{
 			//register after checking for input errors
@@ -103,12 +104,14 @@ public class RegisterDialog extends JFrame implements ActionListener {
 					"Register Success", JOptionPane.OK_OPTION);
 			LoginDialog loginDialog = new LoginDialog();
 			setVisible(false);
+			dispose();
 		}
 	}
 
 	private boolean checkForWrongUserName(String userName) {
 		// TODO Auto-generated method stub
-		if(checkUserName(userName)){
+
+		if(userName.isEmpty() || checkUserName(userName)){
 			return true;
 		}
 		return false;
@@ -139,6 +142,9 @@ public class RegisterDialog extends JFrame implements ActionListener {
 	}
 
 	private boolean checkForWrongPassword(String firstPassword, String secondPassword) {
+		if(firstPassword.isEmpty() || secondPassword.isEmpty()){
+			return true;
+		}
 		if(firstPassword.equals(secondPassword)) {
 			return false;
 		} else {
