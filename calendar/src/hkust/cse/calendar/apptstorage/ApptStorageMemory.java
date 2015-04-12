@@ -9,27 +9,29 @@ import hkust.cse.calendar.unit.TimeSpan;
 import hkust.cse.calendar.unit.User;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
-
-import com.google.gson.Gson;
 
 public class ApptStorageMemory extends ApptStorage implements JsonStorable {
 
 	private User defaultUser = null;
 	
-	private LinkedList<Appt> list;
+	//private LinkedList<Appt> list;
  	private int apptNumber = 0;
 	
 	public ApptStorageMemory( User user )
 	{
 		defaultUser = user;
-		list = new LinkedList<Appt>();
+		mAppts = new HashMap<User, LinkedList<Appt>>();
+		//list = new LinkedList<Appt>();
 	}
 	
 	@Override
-	public boolean checkOverlaps(Appt appt){
-		for (Appt a : list){
+	public boolean checkOverlaps(User user, Appt appt){
+		if (mAppts.get(user)==null)
+			return false;
+		for (Appt a : mAppts.get(user)){
 			if (!a.equals(appt) && a.TimeSpan().Overlap(appt.TimeSpan())){
 				System.out.println("\nApptStorageMemory/checkOverlaps: Overlaps!");
 				return true;
@@ -40,19 +42,22 @@ public class ApptStorageMemory extends ApptStorage implements JsonStorable {
 	}
 	
 	@Override
-	public boolean checkOverlaps(List<Appt> appts){
+	public boolean checkOverlaps(User user, List<Appt> appts){
 		for (Appt a : appts){
-			if (checkOverlaps(a))
+			if (checkOverlaps(user, a))
 				return true;
 		}
 		return false;
 	}
 		
 	@Override
-	public boolean SaveAppt(Appt appt) {
+	public boolean SaveAppt(User user, Appt appt) {
 		if (appt!=null && appt.isValid()){
-			if (!checkOverlaps(appt) && TimeController.getInstance().isNotPast(appt)){
-				list.add(appt);
+			if (!checkOverlaps(user, appt) && TimeController.getInstance().isNotPast(appt)){
+				if (mAppts.get(user)==null){
+					mAppts.put(user, new LinkedList<Appt>());
+				}
+				mAppts.get(user).add(appt);
 				apptNumber++;
 				System.out.println("ApptStorageMemory/SaveAppt : Saved Appt #"+appt.getID());
 				/*saveNotification(appt.getNotification());
@@ -67,10 +72,13 @@ public class ApptStorageMemory extends ApptStorage implements JsonStorable {
 	}
 	
 	//Only For Testing Purpose. Don't Use for Real Use
-	public boolean SavePastAppt(Appt appt) {
+	public boolean SavePastAppt(User user, Appt appt) {
 		if (appt!=null && appt.isValid()){
-			if (!checkOverlaps(appt)){
-				list.add(appt);
+			if (!checkOverlaps(user, appt)){
+				if (mAppts.get(user)==null){
+					mAppts.put(user, new LinkedList<Appt>());
+				}
+				mAppts.get(user).add(appt);
 				apptNumber++;
 				System.out.println("ApptStorageMemory/SavePastAppt : Saved Past Appt #"+appt.getID());
 				return true;
@@ -87,13 +95,15 @@ public class ApptStorageMemory extends ApptStorage implements JsonStorable {
 	}
 	
 	@Override
-	public List<Appt> RetrieveApptsInList(TimeSpan d) {
+	public List<Appt> RetrieveApptsInList(User user, TimeSpan d) {
 		ArrayList<Appt> retrieveList = new ArrayList<Appt>();
 		
-		for (Appt a : list){
-			if (a.TimeSpan().Overlap(d)){
-				retrieveList.add(a);
-	//			System.out.println("ApptStorageMemory/RetrieveApptsInList : Retrive Appt #"+a.getID());
+		if (mAppts.get(user) != null){
+			for (Appt a : mAppts.get(user)){
+				if (a.TimeSpan().Overlap(d)){
+					retrieveList.add(a);
+	//				System.out.println("ApptStorageMemory/RetrieveApptsInList : Retrive Appt #"+a.getID());
+				}
 			}
 		}
 		
@@ -109,18 +119,22 @@ public class ApptStorageMemory extends ApptStorage implements JsonStorable {
 
 	@Override
 	public Appt RetrieveAppts(int apptID) {
-		for (Appt a : list){
-			if (a.getID() == apptID)
-				return a;
+		for (User user : mAppts.keySet()){
+			for (Appt a : mAppts.get(user)){
+				if (a.getID() == apptID)
+					return a;
+			}
 		}
 		return null;
 	}
 
 	@Override
-	public boolean RemoveAppt(Appt appt) {
-		for (Appt a : list){
+	public boolean RemoveAppt(User user, Appt appt) {
+		if (mAppts.get(user) == null)
+			return false;
+		for (Appt a : mAppts.get(user)){
 			if (a.equals(appt) && TimeController.getInstance().isNotPast(appt)){
-				list.remove(a);
+				mAppts.get(user).remove(a);
 				apptNumber--;
 				System.out.println("ApptStorageMemory/RemoveAppt : Removed Appt #"+appt.getID());
 				removeNotification(a.getNotification());

@@ -57,7 +57,7 @@ public class ApptController {
 	}
 
 	public List<Appt> RetrieveApptsInList(User user, TimeSpan time){
-		return mApptStorage.RetrieveApptsInList(time);
+		return mApptStorage.RetrieveApptsInList(user, time);
 	}
 
 	public Appt RetrieveAppt(int apptID) {
@@ -67,7 +67,7 @@ public class ApptController {
 	/* Manage the Appt in the storage
 	 * parameters: the Appt involved, the action to take on the Appt */
 	@Deprecated
-	public void ManageAppt(Appt appt, int action) {
+	/*public void ManageAppt(Appt appt, int action) {
 
 		if (action == NEW) {				// Save the Appt into the storage if it is new and non-null
 			if (appt == null)
@@ -80,7 +80,7 @@ public class ApptController {
 		} else if (action == REMOVE) {		// Remove the Appt from the storage if it should be removed
 			mApptStorage.RemoveAppt(appt);
 		} 
-	}
+	}*/
 
 	//Save Appt with Notification
 	public boolean saveNewAppt(User user, Appt appt, 
@@ -88,13 +88,13 @@ public class ApptController {
 		appt.setID(apptIDCount++);
 		if (flagOne || flagTwo || flagThree || flagFour)
 			setNotificationForAppt(appt, flagOne, flagTwo, flagThree, flagFour);
-		return mApptStorage.SaveAppt(appt);
+		return mApptStorage.SaveAppt(user, appt);
 	}
 
 	//Register appt as New Appt of user. Return true if successfully registered
 	public boolean saveNewAppt(User user, Appt appt){
 		appt.setID(apptIDCount++);
-		return mApptStorage.SaveAppt(appt);
+		return mApptStorage.SaveAppt(user, appt);
 	}
 	
 	//Save Repeated Appt with Notification
@@ -102,7 +102,7 @@ public class ApptController {
 			boolean flagOne, boolean flagTwo, boolean flagThree, boolean flagFour){
 		List<Appt> tmpList;
 		tmpList = getRepeatedApptList(appt, repeatEndDate);
-		if (mApptStorage.checkOverlaps(tmpList))
+		if (mApptStorage.checkOverlaps(user, tmpList))
 			return false;
 		for (Appt a : tmpList){
 			if (!saveNewAppt(user, a))
@@ -116,7 +116,7 @@ public class ApptController {
 	public boolean saveRepeatedNewAppt(User user, Appt appt, Date repeatEndDate){
 		List<Appt> tmpList;
 		tmpList = getRepeatedApptList(appt, repeatEndDate);
-		if (mApptStorage.checkOverlaps(tmpList))
+		if (mApptStorage.checkOverlaps(user, tmpList))
 			return false;
 		for (Appt a : tmpList){
 			if (!saveNewAppt(user, a))
@@ -237,20 +237,20 @@ public class ApptController {
 			System.out.println("\nRemove Repeated!");
 			Appt iterator = appt.getNextRepeatedAppt();
 			while (iterator!=null){
-				mApptStorage.RemoveAppt(iterator);
+				mApptStorage.RemoveAppt(user, iterator);
 				iterator = iterator.getNextRepeatedAppt();
 			}
 			iterator = appt.getPreviousRepeatedAppt();
 			while (iterator!=null){
 				if (!TimeController.getInstance().isNotPast(iterator))
 					break;
-				mApptStorage.RemoveAppt(iterator);
+				mApptStorage.RemoveAppt(user, iterator);
 				iterator = iterator.getPreviousRepeatedAppt();
 			}
-			mApptStorage.RemoveAppt(appt);
+			mApptStorage.RemoveAppt(user, appt);
 			return true;
 		}
-		return mApptStorage.RemoveAppt(appt);
+		return mApptStorage.RemoveAppt(user, appt);
 	}
 
 	public boolean setNotificationForAppt(Appt appt, 
