@@ -90,6 +90,7 @@ ComponentListener {
 	private JButton CancelBut;
 	private JButton inviteBut;
 	private JButton rejectBut;
+	private JButton groupEventButton;
 
 	private Appt currentAppt;
 	private CalGrid parent;
@@ -110,7 +111,7 @@ ComponentListener {
 	//	private JTextField waitingField;
 	private boolean isModifying = false;
 	private final String MODIFY = "Modify";
-
+	
 	private void commonConstructor(String title, CalGrid cal) {
 
 		parent = cal;
@@ -171,8 +172,10 @@ ComponentListener {
 		initiateSaveButton();
 		initiateRejectButton();
 		initiateCancelButton();
-
+		initiateGroupEventButton();
+		
 		//add them to the panel
+		panelBottom.add(groupEventButton);
 		panelBottom.add(saveBut);
 		panelBottom.add(rejectBut);
 		rejectBut.show(false);
@@ -197,6 +200,7 @@ ComponentListener {
 		pack();
 
 	}
+
 
 	public JPanel initiateDatePanel()
 	{
@@ -480,6 +484,11 @@ ComponentListener {
 		CancelBut = new JButton("Cancel");
 		CancelBut.addActionListener(this);
 	}
+	private void initiateGroupEventButton() {
+		// TODO Auto-generated method stub
+		groupEventButton = new JButton("Save as Group Event");
+		groupEventButton.addActionListener(this);
+	}
 
 	//Constructor	
 	AppScheduler(String title, CalGrid cal, Appt appt) {
@@ -508,6 +517,11 @@ ComponentListener {
 			saveButtonResponse();
 
 		}
+		else if (e.getSource() == groupEventButton) 
+		{
+			groupEventButtonResponse();
+
+		}
 		else if (e.getSource() == rejectBut)
 		{
 			if (JOptionPane.showConfirmDialog(this, "Reject this joint appointment?", "Confirmation", JOptionPane.YES_NO_OPTION) == 0)
@@ -533,6 +547,12 @@ ComponentListener {
 		parent.repaint();
 	}
 	
+	private void groupEventButtonResponse() {
+		// TODO Auto-generated method stub
+		GroupInvitationDialog groupInvitationDialog = new GroupInvitationDialog();
+	}
+
+
 	private void enableEndAtFields(boolean b){
 		endAtYearField.setEditable(b);
 		endAtMonthField.setEditable(b);
