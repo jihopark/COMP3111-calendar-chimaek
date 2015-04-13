@@ -100,12 +100,8 @@ public class TimeController {
 		int currentMonth;
 		int currentYear;
 		
-		
-		
-		
 		currentMonth = getCurrentTimeInDate().getMonth()+1;
 		currentYear = getCurrentTimeInDate().getYear()+1900;
-		
 		
 		//System.out.println("Function numOfDaysInMonth(): currentMonth: " + currentMonth);
 		//System.out.println("Function numOfDaysInMonth(): currentYear: " + currentYear);
@@ -127,5 +123,142 @@ public class TimeController {
 		}
 		
 	}
+	
+	
+	/*TimeController as standard time source*/
+	
+	public Timestamp dateInputToTimestamp(int year, int month, int date, int hour, int min, int sec)
+	{
+		Timestamp tempTimestamp = new Timestamp(0);
+		long dateInputInMillisFromEpoch = dateInputToMillisFromEpoch(year,month,date,hour,min,sec);
+		tempTimestamp.setTime(dateInputInMillisFromEpoch);
+		return tempTimestamp;
+	}
+	
+	public Date dateInputToDate(int year, int month, int date, int hour, int min, int sec)
+	{
+		Date tempDate = new Date(0);
+		long dateInputInMillisFromEpoch = dateInputToMillisFromEpoch(year,month,date,hour,min,sec);
+		tempDate.setTime(dateInputInMillisFromEpoch);
+		return tempDate;
+	}
+	
+	public long dateInputToMillisFromEpoch(int year, int month, int date, int hour, int min, int sec)
+	{
+		Calendar tempCalendar = Calendar.getInstance();
+		tempCalendar.set(year, month-1, date, hour, min, sec);
+		return tempCalendar.getTimeInMillis();
+	}
+	
+	public Date millisFromEpochToDate(long millis)
+	{
+		Date tempDate = new Date(millis);
+		return tempDate;
+	}
+
+	public Date millisFromEpochToTimestamp(long millis)
+	{
+		Timestamp tempTimestamp = new Timestamp(millis);
+		return tempTimestamp;
+	}
+	
+	public void setYear(Date date, int year)
+	{
+		Calendar tempCalendar = Calendar.getInstance();
+		tempCalendar.setTime(date);
+		tempCalendar.set(Calendar.YEAR, year);
+		date.setTime(tempCalendar.getTimeInMillis());		
+	}
+	
+	public void setMonth(Date date, int month)
+	{
+		Calendar tempCalendar = Calendar.getInstance();
+		tempCalendar.setTime(date);
+		tempCalendar.set(Calendar.MONTH, month-1);
+		date.setTime(tempCalendar.getTimeInMillis());	
+	}
+	
+	public void setDate(Date date, int day)
+	{
+		Calendar tempCalendar = Calendar.getInstance();
+		tempCalendar.setTime(date);
+		tempCalendar.set(Calendar.DATE, day);
+		date.setTime(tempCalendar.getTimeInMillis());	
+	}
+	
+	public void setHour(Date date, int hour)
+	{
+		Calendar tempCalendar = Calendar.getInstance();
+		tempCalendar.setTime(date);
+		tempCalendar.set(Calendar.HOUR_OF_DAY, hour);
+		date.setTime(tempCalendar.getTimeInMillis());	
+	}
+	
+	public void setMinute(Date date, int minute)
+	{
+		Calendar tempCalendar = Calendar.getInstance();
+		tempCalendar.setTime(date);
+		tempCalendar.set(Calendar.MINUTE, minute);
+		date.setTime(tempCalendar.getTimeInMillis());	
+	}
+	
+	public void setSecond(Date date, int second)
+	{
+		Calendar tempCalendar = Calendar.getInstance();
+		tempCalendar.setTime(date);
+		tempCalendar.set(Calendar.SECOND, second);
+		date.setTime(tempCalendar.getTimeInMillis());	
+	}
+	
+	
+	public int getYearFrom(Date date)
+	{
+		Calendar tempCalendar = Calendar.getInstance();
+		tempCalendar.setTime(date);
+		return tempCalendar.get(Calendar.YEAR);
+	}
+	
+	public int getMonthFrom(Date date)
+	{
+		Calendar tempCalendar = Calendar.getInstance();
+		tempCalendar.setTime(date);
+		return tempCalendar.get(Calendar.MONTH)+1;
+	}
+	
+	public int getDateFrom(Date date)
+	{
+		Calendar tempCalendar = Calendar.getInstance();
+		tempCalendar.setTime(date);
+		return tempCalendar.get(Calendar.DATE);
+	}
+	
+	public int getHourFrom(Date date)
+	{
+		Calendar tempCalendar = Calendar.getInstance();
+		tempCalendar.setTime(date);
+		return tempCalendar.get(Calendar.HOUR_OF_DAY);
+	}
+	
+	public int getMinuteFrom(Date date)
+	{
+		Calendar tempCalendar = Calendar.getInstance();
+		tempCalendar.setTime(date);
+		return tempCalendar.get(Calendar.MINUTE);
+	}
+	
+	public int getSecondFrom(Date date)
+	{
+		Calendar tempCalendar = Calendar.getInstance();
+		tempCalendar.setTime(date);
+		return tempCalendar.get(Calendar.SECOND);
+	}
+	
+	public long getTimeInMillisFromEpoch(Date date)
+	{
+		Calendar tempCalendar = Calendar.getInstance();
+		tempCalendar.setTime(date);
+		return tempCalendar.getTimeInMillis();
+	}
+	
 	
 }

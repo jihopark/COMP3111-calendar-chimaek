@@ -1,5 +1,7 @@
 package hkust.cse.calendar.unit;
 
+import hkust.cse.calendar.time.TimeController;
+
 import java.io.Serializable;
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
@@ -16,11 +18,11 @@ public class TimeSpan implements Serializable {
 
 	/* Create a new TimeSpan object with the specific starting time and ending time */
 	public TimeSpan(Timestamp start, Timestamp end) {
-		int startYear = start.getYear() - 1900;
-		start.setYear(startYear);
+		int startYear = TimeController.getInstance().getYearFrom(start);
+		TimeController.getInstance().setYear(start, startYear);
 		
-		int endYear = end.getYear() - 1900;
-		end.setYear(endYear);
+		int endYear = TimeController.getInstance().getYearFrom(end);
+		TimeController.getInstance().setYear(end,endYear);
 		
 		mStartTime = start;
 		mEndTime = end;

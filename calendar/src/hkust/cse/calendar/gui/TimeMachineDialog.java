@@ -127,7 +127,7 @@ public class TimeMachineDialog extends JFrame implements ActionListener
 				int Day = Integer.parseInt(dayField.getText());
 				int hour = Integer.parseInt(startTimeHourField.getText());
 				int minute = Integer.parseInt(startTimeMinuteField.getText());
-				Timestamp changedTime = new Timestamp(year-1900, month-1, Day, hour, minute, 0, 0);
+				Timestamp changedTime = TimeController.getInstance().dateInputToTimestamp(year, month, Day, hour, minute, 0);
 
 				// When button is clicked, change time		
 				OnButton.setEnabled(timeController.getInstance().isOnTimeMachineMode());

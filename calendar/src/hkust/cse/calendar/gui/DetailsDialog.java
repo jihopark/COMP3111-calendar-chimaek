@@ -1,5 +1,6 @@
 package hkust.cse.calendar.gui;
 
+import hkust.cse.calendar.time.TimeController;
 import hkust.cse.calendar.unit.Appt;
 import hkust.cse.calendar.unit.TimeSpan;
 import hkust.cse.calendar.unit.User;
@@ -80,17 +81,17 @@ public class DetailsDialog extends JFrame implements ActionListener {
 
 	public void Display(Appt appt) {
 
-		Timestamp sTime = appt.TimeSpan().StartTime();
-		Timestamp eTime = appt.TimeSpan().EndTime();
-		String time = sTime.getHours() + ":";
-		if (sTime.getMinutes() == 0)
-			time = time + "00" + " - " + eTime.getHours() + ":";
+		Timestamp startTime = appt.TimeSpan().StartTime();
+		Timestamp endTime = appt.TimeSpan().EndTime();
+		String time = TimeController.getInstance().getHourFrom(startTime) + ":";
+		if (TimeController.getInstance().getMinuteFrom(startTime) == 0)
+			time = time + "00" + " - " + TimeController.getInstance().getHourFrom(endTime) + ":";
 		else
-			time = time + sTime.getMinutes() + " - " + eTime.getHours() + ":";
-		if (eTime.getMinutes() == 0)
+			time = time + TimeController.getInstance().getMinuteFrom(startTime) + " - " + TimeController.getInstance().getHourFrom(endTime) + ":";
+		if (TimeController.getInstance().getMinuteFrom(endTime) == 0)
 			time = time + "00";
 		else
-			time = time + eTime.getMinutes();
+			time = time + TimeController.getInstance().getMinuteFrom(endTime);
 
 		area.setText("Appointment Information \n");
 		area.append("Title: " + appt.getTitle() + "\n");

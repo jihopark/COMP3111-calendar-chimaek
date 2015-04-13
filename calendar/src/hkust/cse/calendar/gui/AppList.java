@@ -438,8 +438,12 @@ public class AppList extends JPanel implements ActionListener
 		{
 			return;
 		}
+		
 		for (Appt a : list)
+		{
 			addAppt(a);
+		}
+		
 		repaint();
 
 	}
@@ -457,22 +461,28 @@ public class AppList extends JPanel implements ActionListener
 		currColor = Color.getHSBColor(hue, saturation, luminance);	
 		currColorForJoint = Color.getHSBColor(hue, saturation, luminance);
 
-
 		if(!appt.isRepeated())
+		{
 			color = currColor;
+		}
 		else
+		{
 			color = currColorForJoint;
-
-		if (appt == null)
+		}
+		
+		if(appt == null)
+		{
 			return;
-
+		}
+			
 		Timestamp tempStartTimeStamp = appt.TimeSpan().StartTime();
-		int startDay = tempStartTimeStamp.getDate();
-		int startMin = tempStartTimeStamp.getHours() * 60 + tempStartTimeStamp.getMinutes();
+		int startDay = TimeController.getInstance().getDateFrom(tempStartTimeStamp);
+		int startMin = TimeController.getInstance().getHourFrom(tempStartTimeStamp) * 60 + TimeController.getInstance().getMinuteFrom(tempStartTimeStamp);
 
 		Timestamp tempEndTimeStamp = appt.TimeSpan().EndTime();
-		int endDay = tempEndTimeStamp.getDate();
-		int endMin = tempEndTimeStamp.getHours() * 60 + tempEndTimeStamp.getMinutes();
+		int endDay = TimeController.getInstance().getDateFrom(tempEndTimeStamp);
+		int endMin = TimeController.getInstance().getHourFrom(tempEndTimeStamp)* 60 + TimeController.getInstance().getMinuteFrom(tempEndTimeStamp);
+		
 		if(endMin == 0 && (endDay == (startDay+1)))
 			endMin= endMin + 24*60;
 		

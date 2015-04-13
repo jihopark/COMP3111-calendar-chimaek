@@ -91,7 +91,7 @@ public class ApptStorageMemory extends ApptStorage {
 		for (Appt a : list){
 			if (a.TimeSpan().Overlap(d)){
 				retrieveList.add(a);
-	//			System.out.println("ApptStorageMemory/RetrieveApptsInList : Retrive Appt #"+a.getID());
+				//System.out.println("ApptStorageMemory/RetrieveApptsInList : Retrive Appt #"+a.getID()+" "+a.TimeSpan());
 			}
 		}
 		

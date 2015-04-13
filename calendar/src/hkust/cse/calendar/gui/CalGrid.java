@@ -198,9 +198,9 @@ public class CalGrid extends JFrame implements ActionListener {
 				if (tem.equals("") == false) {
 					try {
 						
-						if ((todayDate.getYear()+1900) == currentlySelectedYear
-								&& (todayDate.getMonth()+1) == currentlySelectedMonth
-								&& todayDate.getDate() == extract_only_date_string(tem)) {
+						if ((TimeController.getInstance().getYearFrom(todayDate)) == currentlySelectedYear
+								&& (TimeController.getInstance().getMonthFrom(todayDate)) == currentlySelectedMonth
+								&& TimeController.getInstance().getDateFrom(todayDate) == extract_only_date_string(tem)) {
 							return new CalCellRenderer(1); //1 if today
 						}
 						else if(tem.length()>2)
@@ -313,7 +313,6 @@ public class CalGrid extends JFrame implements ActionListener {
 		
 		day %= 7;
 		countApptsInMonth(GetMonthAppts());
-		////////////////////////////
 		paintApptsInCal(day);
 	}
 
@@ -420,11 +419,11 @@ public class CalGrid extends JFrame implements ActionListener {
 	
 	private void getTodayDate_TimeController() {
 		todayDate = TimeController.getInstance().getCurrentTimeInDate();
-		currentlySelectedYear = todayDate.getYear()+1900;
-		currentlySelectedDay = todayDate.getDate();
+		currentlySelectedYear = TimeController.getInstance().getYearFrom(todayDate);
+		currentlySelectedDay = TimeController.getInstance().getDateFrom(todayDate);
 		//int temp = todayDate.getMonth()+1;
 		//currentMonth = 12;
-		currentlySelectedMonth = todayDate.getMonth()+1;
+		currentlySelectedMonth = TimeController.getInstance().getMonthFrom(todayDate);
 	}
 
 	private void initializeSystem() {
@@ -528,16 +527,18 @@ public class CalGrid extends JFrame implements ActionListener {
 
 	private List<Appt> GetMonthAppts() {
 		Timestamp start = new Timestamp(0);
-		start.setYear(currentlySelectedYear);
-		start.setMonth(currentlySelectedMonth - 1);
-		start.setDate(1);
-		start.setHours(0);
+		TimeController.getInstance().setYear(start,currentlySelectedYear);
+		TimeController.getInstance().setMonth(start,currentlySelectedMonth);
+		TimeController.getInstance().setDate(start,1);
+		TimeController.getInstance().setHour(start,0);
+		
 		Timestamp end = new Timestamp(0);
-		end.setYear(currentlySelectedYear);
-		end.setMonth(currentlySelectedMonth - 1);
-		end.setDate(TimeController.getInstance().numOfDaysInMonth());
+		TimeController.getInstance().setYear(end,currentlySelectedYear);
+		TimeController.getInstance().setMonth(end,currentlySelectedMonth);
+		TimeController.getInstance().setDate(end,TimeController.getInstance().numOfDaysInMonth());
+		TimeController.getInstance().setHour(end,23);
 		//System.out.println("end date: "+TimeController.getInstance().numOfDaysInMonth());
-		end.setHours(23);
+		
 		TimeSpan period = new TimeSpan(start, end);
 		return ApptController.getInstance().RetrieveApptsInList(mCurrUser, period);
 	}
@@ -595,45 +596,50 @@ public class CalGrid extends JFrame implements ActionListener {
 	} 	
 	
 	public boolean IsTodayAppt(Appt appt) {
-		if (appt.TimeSpan().StartTime().getYear() + 1900 != currentlySelectedYear)
+		
+		Timestamp todayApptStartTime = appt.TimeSpan().StartTime();
+		
+		if (TimeController.getInstance().getYearFrom(todayApptStartTime) != currentlySelectedYear)
 			return false;
-		if ((appt.TimeSpan().StartTime().getMonth() + 1) != currentlySelectedMonth)
+		if (TimeController.getInstance().getMonthFrom(todayApptStartTime) != currentlySelectedMonth)
 			return false;
-		if (appt.TimeSpan().StartTime().getDate() != currentlySelectedDay)
+		if (TimeController.getInstance().getDateFrom(todayApptStartTime) != currentlySelectedDay)
 			return false;
 		return true;
 	}
 
 	public boolean IsMonthAppts(Appt appt) {
 
-		if (appt.TimeSpan().StartTime().getYear() + 1900 != currentlySelectedYear)
+		Timestamp monthApptStartTime = appt.TimeSpan().StartTime();
+		
+		if (TimeController.getInstance().getYearFrom(monthApptStartTime) != currentlySelectedYear)
 			return false;
 
-		if ((appt.TimeSpan().StartTime().getMonth() + 1) != currentlySelectedMonth)
+		if (TimeController.getInstance().getMonthFrom(monthApptStartTime) != currentlySelectedMonth)
 			return false;
 		return true;
 	}
 
 	public List<Appt> GetTodayAppt() {
-		Integer temp;
-		temp = new Integer(currentlySelectedDay);
+		
 		Timestamp start = new Timestamp(0);
-		start.setYear(currentlySelectedYear);
-		start.setMonth(currentlySelectedMonth-1);
-		start.setDate(currentlySelectedDay);
-		start.setHours(0);
-		start.setMinutes(0);
-		start.setSeconds(0);
+		TimeController.getInstance().setYear(start, currentlySelectedYear);
+		TimeController.getInstance().setMonth(start, currentlySelectedMonth);
+		TimeController.getInstance().setDate(start, currentlySelectedDay);
+		TimeController.getInstance().setHour(start, 0);
+		TimeController.getInstance().setMinute(start, 0);
+		TimeController.getInstance().setSecond(start, 0);
 		
 		Timestamp end = new Timestamp(0);
-		end.setYear(currentlySelectedYear);
-		end.setMonth(currentlySelectedMonth-1);
-		end.setDate(currentlySelectedDay);
-		end.setHours(23);
-		end.setMinutes(59);
-		end.setSeconds(59);
+		TimeController.getInstance().setYear(end, currentlySelectedYear);
+		TimeController.getInstance().setMonth(end, currentlySelectedMonth);
+		TimeController.getInstance().setDate(end, currentlySelectedDay);
+		TimeController.getInstance().setHour(end, 23);
+		TimeController.getInstance().setMinute(end, 59);
+		TimeController.getInstance().setSecond(end, 59);
 		
 		TimeSpan period = new TimeSpan(start, end);
+		
 		return ApptController.getInstance().RetrieveApptsInList(mCurrUser, period);
 	}
 
@@ -644,7 +650,7 @@ public class CalGrid extends JFrame implements ActionListener {
 		
 		int date;
 		for(int i=0; i<list.size(); i++){
-			date = list.get(i).getTimeSpan().StartTime().getDate();
+			date = TimeController.getInstance().getDateFrom(list.get(i).getTimeSpan().StartTime());
 			//System.out.println("apptdate: "+date);
 			apptMarker[date-1]++;
 		}
@@ -697,17 +703,21 @@ public class CalGrid extends JFrame implements ActionListener {
 	public void updateCalGridTitleClock(Date currentTime)
 	{
 		mCurrTitle = "Desktop Calendar - " + mCurrUser.ID() + " - ";
-		if(currentTime.getHours() == 0)
+		if(TimeController.getInstance().getHourFrom(currentTime) == 0)
 		{
-			this.setTitle(mCurrTitle + (currentTime.getHours()+12) + ":" + currentTime.getMinutes() + "AM");
+			this.setTitle(mCurrTitle + (TimeController.getInstance().getHourFrom(currentTime)+12) + ":" + TimeController.getInstance().getMinuteFrom(currentTime) + "AM");
 		}
-		else if(currentTime.getHours() < 12)
+		else if(TimeController.getInstance().getHourFrom(currentTime) < 12)
 		{
-			this.setTitle(mCurrTitle + currentTime.getHours() + ":" + currentTime.getMinutes() + "AM");
+			this.setTitle(mCurrTitle + TimeController.getInstance().getHourFrom(currentTime) + ":" + TimeController.getInstance().getMinuteFrom(currentTime) + "AM");
+		}
+		else if(TimeController.getInstance().getHourFrom(currentTime) == 12)
+		{
+			this.setTitle(mCurrTitle + TimeController.getInstance().getHourFrom(currentTime) + ":" + TimeController.getInstance().getMinuteFrom(currentTime) + "PM");
 		}
 		else
 		{
-			this.setTitle(mCurrTitle + currentTime.getHours() + ":" + currentTime.getMinutes() + "PM");
+			this.setTitle(mCurrTitle + TimeController.getInstance().getHourFrom(currentTime)%12 + ":" + TimeController.getInstance().getMinuteFrom(currentTime) + "PM");
 		}
 	}
 	

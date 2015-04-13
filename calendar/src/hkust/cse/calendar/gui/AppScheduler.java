@@ -619,7 +619,7 @@ ComponentListener {
 
 
 	//helper function
-	private int getTime(JTextField h, JTextField min) 
+	private int getTimeInput(JTextField h, JTextField min) 
 	{
 
 		int hour = Utility.getNumber(h.getText());
@@ -636,8 +636,8 @@ ComponentListener {
 	private int[] getValidTimeInterval() {
 
 		int[] result = new int[2];
-		result[0] = getTime(startTimeHourField, startTimeMinuteField);
-		result[1] = getTime(endTimeHourField, endTimeMinuteField);
+		result[0] = getTimeInput(startTimeHourField, startTimeMinuteField);
+		result[1] = getTimeInput(endTimeHourField, endTimeMinuteField);
 		if ((result[0] % 15) != 0 || (result[1] % 15) != 0) {
 			JOptionPane.showMessageDialog(this,
 					"Minute Must be 0, 15, 30, or 45 !", "Input Error",
@@ -690,7 +690,9 @@ ComponentListener {
 		
 		Timestamp timestampForStartTime = CreateTimeStamp(validDate, validTimeInterval[0]);
 		Timestamp timestampForEndTime = CreateTimeStamp(validDate, validTimeInterval[1]);
+		
 		TimeSpan timeSpanForAppt = new TimeSpan(timestampForStartTime,timestampForEndTime);
+		
 		currentAppt.setTimeSpan(timeSpanForAppt);
 		currentAppt.setTitle(titleField.getText());
 		currentAppt.setInfo(detailArea.getText());
@@ -856,19 +858,19 @@ ComponentListener {
 	//to create a Timestamp object.
 	private Timestamp CreateTimeStamp(int[] date, int time) {
 		Timestamp stamp = new Timestamp(0);
-		stamp.setYear(date[0]);
-		stamp.setMonth(date[1] - 1);
+		TimeController.getInstance().setYear(stamp, date[0]);
+		TimeController.getInstance().setMonth(stamp, date[1]);
 		if(time/60 == 24)
 		{
-			stamp.setDate(date[2]+1);
-			stamp.setHours(0);
-			stamp.setMinutes(time % 60);
+			TimeController.getInstance().setDate(stamp, date[2]+1);
+			TimeController.getInstance().setHour(stamp, 0);
+			TimeController.getInstance().setMinute(stamp, time % 60);
 		}
 		else
 		{
-			stamp.setDate(date[2]);
-			stamp.setHours(time / 60);
-			stamp.setMinutes(time % 60);
+			TimeController.getInstance().setDate(stamp,date[2]);
+			TimeController.getInstance().setHour(stamp, time/60);
+			TimeController.getInstance().setMinute(stamp, time % 60);
 		}
 		return stamp;
 	}
@@ -878,26 +880,26 @@ ComponentListener {
 	private Date intArrayToDate(int[] intArray)
 	{
 		Date temp = new Date();
-		temp.setYear(intArray[0]-1900);
-		temp.setMonth(intArray[1]-1);
-		temp.setDate(intArray[2]);
-		temp.setHours(23);
-		temp.setMinutes(59);
-
+		TimeController.getInstance().setYear(temp, intArray[0]);
+		TimeController.getInstance().setMonth(temp,intArray[1]);
+		TimeController.getInstance().setDate(temp, intArray[2]);
+		TimeController.getInstance().setHour(temp, 23);
+		TimeController.getInstance().setMinute(temp, 59);
 		return temp;
 	}
 	
 	public void updateSettingAppt(Appt appt) {
 		currentAppt = appt;
-
+		Timestamp startTimestamp = currentAppt.getTimeSpan().StartTime();
+		Timestamp endTimestamp = currentAppt.getTimeSpan().EndTime(); 
 		//Load data on date and time field.
-		yearField.setText(Integer.toString(currentAppt.getTimeSpan().StartTime().getYear()+1900));
-		monthField.setText(Integer.toString(currentAppt.getTimeSpan().StartTime().getMonth()+1));
-		dayField.setText(Integer.toString(currentAppt.getTimeSpan().StartTime().getDate()));
-		startTimeHourField.setText(Integer.toString(currentAppt.getTimeSpan().StartTime().getHours()));
-		startTimeMinuteField.setText(Integer.toString(currentAppt.getTimeSpan().StartTime().getMinutes()));
-		endTimeHourField.setText(Integer.toString(currentAppt.getTimeSpan().EndTime().getHours()));
-		endTimeMinuteField.setText(Integer.toString(currentAppt.getTimeSpan().EndTime().getMinutes()));
+		yearField.setText(Integer.toString(TimeController.getInstance().getYearFrom(startTimestamp)));
+		monthField.setText(Integer.toString(TimeController.getInstance().getMonthFrom(startTimestamp)));
+		dayField.setText(Integer.toString(TimeController.getInstance().getDateFrom(startTimestamp)));
+		startTimeHourField.setText(Integer.toString(TimeController.getInstance().getHourFrom(startTimestamp)));
+		startTimeMinuteField.setText(Integer.toString(TimeController.getInstance().getMinuteFrom(startTimestamp)));
+		endTimeHourField.setText(Integer.toString(TimeController.getInstance().getHourFrom(endTimestamp)));
+		endTimeMinuteField.setText(Integer.toString(TimeController.getInstance().getMinuteFrom(endTimestamp)));
 
 		//Load data on location.
 		if(currentAppt.getLocation() != null)
@@ -911,9 +913,9 @@ ComponentListener {
 		//If Current Appt is Repeated
 		if (currentAppt.isRepeated()){
 			Timestamp endAtTime = currentAppt.getRepeateEndDate();
-			endAtYearField.setText(""+(endAtTime.getYear()+1900));
-			endAtMonthField.setText(""+(endAtTime.getMonth()+1));
-			endAtDayField.setText(""+endAtTime.getDate());
+			endAtYearField.setText(""+(TimeController.getInstance().getYearFrom(endAtTime)));
+			endAtMonthField.setText(""+(TimeController.getInstance().getMonthFrom(endAtTime)));
+			endAtDayField.setText(""+(TimeController.getInstance().getDateFrom(endAtTime)));
 
 			enableEndAtFields(true);
 			switch(currentAppt.getRepeatType()){
