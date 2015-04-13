@@ -77,6 +77,9 @@ ComponentListener {
 	private JRadioButton weeklyButton;
 	private JRadioButton monthlyButton;
 
+	private JTextField notificationHourField;
+	private JTextField notificationMinuteField;
+	
 	private JCheckBox oneHourCheckBox;
 	private JCheckBox threeHourCheckBox;
 	private JCheckBox twelveHourCheckBox;
@@ -332,10 +335,32 @@ ComponentListener {
 		JPanel panelNotification = new JPanel();
 		Border notificationBorder = new TitledBorder(null, "Notification");
 		panelNotification.setBorder(notificationBorder);
-		BoxLayout boxLayout = new BoxLayout(panelNotification, BoxLayout.Y_AXIS);
-		panelNotification.setLayout(boxLayout);
-
-		oneHourCheckBox = new JCheckBox("1 hour");
+		panelNotification.setLayout(new BorderLayout());
+		
+		JPanel hourPanel = new JPanel();
+		hourPanel.setLayout(new FlowLayout());
+		JLabel hourLabel = new JLabel("Hour(s)");
+		notificationHourField = new JTextField(4);
+		hourPanel.add(notificationHourField);
+		hourPanel.add(hourLabel);
+		
+		JPanel minutePanel = new JPanel();
+		minutePanel.setLayout(new FlowLayout());
+		JLabel minuteLabel = new JLabel("Minutes");
+		notificationMinuteField = new JTextField(4);
+		minutePanel.add(notificationMinuteField);
+		minutePanel.add(minuteLabel);
+		
+		JPanel descriptionPanel = new JPanel();
+		descriptionPanel.setLayout(new FlowLayout());
+		JLabel descriptionLabel = new JLabel("before the appointment");
+		descriptionPanel.add(descriptionLabel);
+		
+		panelNotification.add("North", hourPanel);
+		panelNotification.add("Center", minutePanel);
+		panelNotification.add("South", descriptionPanel);
+		
+		/*oneHourCheckBox = new JCheckBox("1 hour");
 		threeHourCheckBox = new JCheckBox("3 hours");
 		twelveHourCheckBox = new JCheckBox("12 hours");
 		twentyfourHourCheckBox = new JCheckBox("24 hours");
@@ -344,7 +369,7 @@ ComponentListener {
 		panelNotification.add(threeHourCheckBox);
 		panelNotification.add(twelveHourCheckBox);
 		panelNotification.add(twentyfourHourCheckBox);
-
+		 */
 		return panelNotification;
 
 	}
