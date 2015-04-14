@@ -4,8 +4,8 @@ import java.io.Serializable;
 
 public class User implements Serializable {
 
-	private String mPassword;				// User password
 	private String mID;						// User id
+	private String mPassword;				// User password
 
 	// Getter of the user id
 	public String ID() {		
@@ -19,12 +19,12 @@ public class User implements Serializable {
 	}
 
 	// Another getter of the user id
-	public String toString() {
+	public String getID() {
 		return ID();
 	}
 
 	// Getter of the user password
-	public String Password() {
+	public String getPW() {
 		return mPassword;
 	}
 

@@ -7,7 +7,8 @@ import hkust.cse.calendar.locationstorage.LocationStorageNullImpl;
 import hkust.cse.calendar.notification.NotificationController;
 import hkust.cse.calendar.notification.NotificationStorageNullImpl;
 import hkust.cse.calendar.unit.User;
-import hkust.cse.calendar.user.UserController;
+import hkust.cse.calendar.userstorage.UserController;
+import hkust.cse.calendar.userstorage.UserStorageMemory;
 
 import java.awt.Container;
 import java.awt.FlowLayout;
@@ -112,8 +113,7 @@ public class LoginDialog extends JFrame implements ActionListener
 		{
 			// When the button is clicked, check the user name and password, and try to log the user in
 			
-
-			if (!attemptLogin(userName.getText(), password.getPassword())){
+			if (!attemptLogin(userName.getText(), String.valueOf(password.getPassword()))){
 				JOptionPane.showMessageDialog(this, "Incorrect Credential",
 						"Input Error", JOptionPane.ERROR_MESSAGE);
 			}
@@ -135,7 +135,8 @@ public class LoginDialog extends JFrame implements ActionListener
 		}
 	}
 	
-	private boolean attemptLogin(String id, char[] pw){
+	private boolean attemptLogin(String id, String pw){
+		UserController.getInstance().initUserStorage(new UserStorageMemory());
 		User user = UserController.getInstance().getUserFromCredential(id, pw);
 		if (user == null)
 			return false;
@@ -145,7 +146,6 @@ public class LoginDialog extends JFrame implements ActionListener
 		NotificationController.getInstance().initNotificationStorage(new NotificationStorageNullImpl(user));
 		CalGrid grid = new CalGrid();
 		setVisible( false );
-		
 		return true;
 	}
 	

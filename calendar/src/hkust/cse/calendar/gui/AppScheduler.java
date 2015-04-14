@@ -7,7 +7,7 @@ import hkust.cse.calendar.time.TimeController;
 import hkust.cse.calendar.unit.Appt;
 import hkust.cse.calendar.unit.Location;
 import hkust.cse.calendar.unit.TimeSpan;
-import hkust.cse.calendar.user.UserController;
+import hkust.cse.calendar.userstorage.UserController;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
@@ -441,7 +441,7 @@ ComponentListener {
 		//GUI for location list.
 		//test for location combobox.
 
-		LocationController.getInstance().initLocationStorage(new LocationStorageNullImpl(UserController.getInstance().getDefaultUser()));
+		LocationController.getInstance().initLocationStorage(new LocationStorageNullImpl(UserController.getInstance().getAdmin()));
 		ArrayList<Location> locationList = new ArrayList<Location>();
 		for(int i=0; i<LocationController.getInstance().getLocationList().getSize(); i++){
 			locationList.add(LocationController.getInstance().getLocationList().getElementAt(i));
@@ -847,15 +847,15 @@ ComponentListener {
 			boolean flagFour = twentyfourHourCheckBox.isSelected();
 			
 			if (isModifying)
-				return ApptController.getInstance().modifyRepeatedNewAppt(UserController.getInstance().getDefaultUser(), currentAppt, endAtDate,
+				return ApptController.getInstance().modifyRepeatedNewAppt(UserController.getInstance().getAdmin(), currentAppt, endAtDate,
 						flagOne, flagTwo, flagThree, flagFour);
-			return ApptController.getInstance().saveRepeatedNewAppt(UserController.getInstance().getDefaultUser(), currentAppt, endAtDate,
+			return ApptController.getInstance().saveRepeatedNewAppt(UserController.getInstance().getAdmin(), currentAppt, endAtDate,
 					flagOne, flagTwo, flagThree, flagFour);	
 		}
 		if (isModifying)
-			return ApptController.getInstance().modifyRepeatedNewAppt(UserController.getInstance().getDefaultUser(), currentAppt, endAtDate,
+			return ApptController.getInstance().modifyRepeatedNewAppt(UserController.getInstance().getAdmin(), currentAppt, endAtDate,
 					false, false, false, false);
-		return ApptController.getInstance().saveRepeatedNewAppt(UserController.getInstance().getDefaultUser(), currentAppt, endAtDate);	
+		return ApptController.getInstance().saveRepeatedNewAppt(UserController.getInstance().getAdmin(), currentAppt, endAtDate);	
 	}
 
 	private boolean saveFrequencyWithoutEndAt()
@@ -866,15 +866,15 @@ ComponentListener {
 			boolean flagThree = twelveHourCheckBox.isSelected();
 			boolean flagFour = twentyfourHourCheckBox.isSelected();
 			if (isModifying)
-				return ApptController.getInstance().modifyAppt(UserController.getInstance().getDefaultUser(), currentAppt,
+				return ApptController.getInstance().modifyAppt(UserController.getInstance().getAdmin(), currentAppt,
 						flagOne, flagTwo, flagThree, flagFour);
-			return ApptController.getInstance().saveNewAppt(UserController.getInstance().getDefaultUser(), currentAppt,
+			return ApptController.getInstance().saveNewAppt(UserController.getInstance().getAdmin(), currentAppt,
 					flagOne, flagTwo, flagThree, flagFour);
 		}
 		if (isModifying)
-			return ApptController.getInstance().modifyAppt(UserController.getInstance().getDefaultUser(), currentAppt,
+			return ApptController.getInstance().modifyAppt(UserController.getInstance().getAdmin(), currentAppt,
 					false, false, false, false);
-		return ApptController.getInstance().saveNewAppt(UserController.getInstance().getDefaultUser(), currentAppt);
+		return ApptController.getInstance().saveNewAppt(UserController.getInstance().getAdmin(), currentAppt);
 	}
 
 

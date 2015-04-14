@@ -4,7 +4,7 @@ import hkust.cse.calendar.apptstorage.ApptController;
 import hkust.cse.calendar.time.TimeController;
 import hkust.cse.calendar.unit.Appt;
 import hkust.cse.calendar.unit.TimeSpan;
-import hkust.cse.calendar.user.UserController;
+import hkust.cse.calendar.userstorage.UserController;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
@@ -580,7 +580,7 @@ public class AppList extends JPanel implements ActionListener
 				if (reply != JOptionPane.YES_OPTION)
 					return ;
 			}
-			if (ApptController.getInstance().removeAppt(UserController.getInstance().getDefaultUser(), selectedAppt)){
+			if (ApptController.getInstance().removeAppt(UserController.getInstance().getAdmin(), selectedAppt)){
 				parent.getAppListPanel().clear();
 				parent.getAppListPanel().setTodayAppt(parent.GetTodayAppt());
 				parent.repaint();

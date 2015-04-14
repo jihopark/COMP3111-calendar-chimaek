@@ -8,7 +8,6 @@ import hkust.cse.calendar.unit.User;
 import hkust.cse.calendar.notification.NotificationController;
 
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.LinkedList;
 import java.util.List;
 
