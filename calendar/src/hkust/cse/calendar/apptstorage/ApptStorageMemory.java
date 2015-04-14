@@ -119,12 +119,15 @@ public class ApptStorageMemory extends ApptStorage implements JsonStorable {
 
 	@Override
 	public Appt RetrieveAppts(int apptID) {
+		System.out.println("ApptStorageMemory/RetrieveAppts Retrieve #" + apptID);
 		for (User user : mAppts.keySet()){
 			for (Appt a : mAppts.get(user)){
 				if (a.getID() == apptID)
 					return a;
 			}
 		}
+		System.out.println("ApptStorageMemory/RetrieveAppts Not Found");
+		
 		return null;
 	}
 

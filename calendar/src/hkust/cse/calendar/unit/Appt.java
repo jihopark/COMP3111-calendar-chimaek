@@ -1,5 +1,6 @@
 package hkust.cse.calendar.unit;
 
+import hkust.cse.calendar.apptstorage.ApptController;
 import hkust.cse.calendar.locationstorage.LocationController;
 import hkust.cse.calendar.notification.NotificationController;
 
@@ -19,8 +20,8 @@ public class Appt implements Serializable {
 
 	private int mApptID;						// The appointment id	
 	
-	private Appt nextRepeatedAppt = null;						
-	private Appt previousRepeatedAppt = null;
+	private int nextRepeatedAppt_id = -1;						
+	private int previousRepeatedAppt_id = -1;
 	
 	private int location_id = -1, notification_id = -1;
 	
@@ -111,30 +112,40 @@ public class Appt implements Serializable {
 	public Timestamp getRepeateEndDate(){
 		if (isRepeated()){
 			Appt temp = this;
-			while (temp.nextRepeatedAppt!=null)
-				temp = temp.nextRepeatedAppt;
+			while (temp.nextRepeatedAppt_id!=-1)
+				temp = ApptController.getInstance().RetrieveAppt(temp.nextRepeatedAppt_id);
 			return temp.getTimeSpan().EndTime();
 		}
 		return null;
 	}
 	
 	public Appt getNextRepeatedAppt(){
-		return nextRepeatedAppt;
+		return ApptController.getInstance().RetrieveAppt(nextRepeatedAppt_id);
 	}
 	
 	public Appt getPreviousRepeatedAppt(){
-		return previousRepeatedAppt;
+		return ApptController.getInstance().RetrieveAppt(previousRepeatedAppt_id);
 	}
 	
 	public void setPreviousRepeatedAppt(Appt appt){
-		previousRepeatedAppt = appt;
+		if (appt == null)
+			previousRepeatedAppt_id = -1;
+		else{
+			previousRepeatedAppt_id = appt.getID();
+			System.out.println("Appt/setNextRepeatedAppt " + previousRepeatedAppt_id + " set to previous repeated appt for " + getID());
+		}
 	}
 	public void setNextRepeatedAppt(Appt appt){
-		nextRepeatedAppt = appt;
+		if (appt == null)
+			nextRepeatedAppt_id = -1;
+		else{
+			nextRepeatedAppt_id = appt.getID();
+			System.out.println("Appt/setNextRepeatedAppt " + nextRepeatedAppt_id + " set to next repeated appt for " + getID());
+		}
 	}
 	
 	public boolean isRepeated(){
-		return !(previousRepeatedAppt == null && nextRepeatedAppt == null);
+		return !(previousRepeatedAppt_id == -1 && nextRepeatedAppt_id == -1);
 	}
 
 

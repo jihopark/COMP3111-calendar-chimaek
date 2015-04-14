@@ -110,6 +110,7 @@ public class ApptController {
 			if (flagOne || flagTwo || flagThree || flagFour)
 				setNotificationForAppt(a, flagOne, flagTwo, flagThree, flagFour);
 		}
+		linkRepeatedAppt(tmpList);
 		return true;
 	}
 	
@@ -118,11 +119,25 @@ public class ApptController {
 		tmpList = getRepeatedApptList(appt, repeatEndDate);
 		if (mApptStorage.checkOverlaps(user, tmpList))
 			return false;
+		Appt tmp = null;
 		for (Appt a : tmpList){
 			if (!saveNewAppt(user, a))
 				return false;
 		}
+		
+		linkRepeatedAppt(tmpList);
 		return true;
+	}
+	
+	private void linkRepeatedAppt(List<Appt> list){
+		Appt tmp = null;
+		for (Appt a : list){
+			if (tmp!=null){
+				a.setPreviousRepeatedAppt(tmp);
+				tmp.setNextRepeatedAppt(a);
+			}
+			tmp = a;
+		}
 	}
 
 
@@ -134,8 +149,6 @@ public class ApptController {
 		endTime.setTime(new Date(appt.getTimeSpan().EndTime().getTime()));
 
 		Appt i = new Appt(appt);
-		i.setNextRepeatedAppt(null);
-		i.setPreviousRepeatedAppt(null);
 		list.add(i);
 
 		Appt j = new Appt(appt);
@@ -155,9 +168,6 @@ public class ApptController {
 			if (endTime.getTime().after(repeatEndDate))
 				break;
 			j.setTimeSpan(new TimeSpan(startTime.getTimeInMillis(), endTime.getTimeInMillis()));
-			j.setNextRepeatedAppt(null);
-			i.setNextRepeatedAppt(j);
-			j.setPreviousRepeatedAppt(i);
 			list.add(j);
 			i = j;
 			j = new Appt(i);
