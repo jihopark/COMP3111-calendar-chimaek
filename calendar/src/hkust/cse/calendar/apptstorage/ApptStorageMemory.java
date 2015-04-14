@@ -13,6 +13,8 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 
+import com.google.gson.Gson;
+
 public class ApptStorageMemory extends ApptStorage implements JsonStorable {
 
 	private User defaultUser = null;
@@ -60,10 +62,6 @@ public class ApptStorageMemory extends ApptStorage implements JsonStorable {
 				mAppts.get(user).add(appt);
 				apptNumber++;
 				System.out.println("ApptStorageMemory/SaveAppt : Saved Appt #"+appt.getID());
-				/*saveNotification(appt.getNotification());
-				//Save Notification if any
-				if (appt.getNotification()!=null)
-					NotificationController.getInstance().saveNewNotification(appt.getNotification());*/
 				return true;
 			}
 		}
@@ -184,6 +182,7 @@ public class ApptStorageMemory extends ApptStorage implements JsonStorable {
 	}
 	
 	public void saveToJson(){
-		
+		Gson gson = new Gson();
+		System.out.println("ApptStorageMemory/saveToJson " +gson.toJson(this));
 	}
 }

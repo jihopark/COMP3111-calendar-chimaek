@@ -1,5 +1,6 @@
 package hkust.cse.calendar.apptstorage;
 
+import hkust.cse.calendar.diskstorage.JsonStorable;
 import hkust.cse.calendar.notification.NotificationController;
 import hkust.cse.calendar.time.TimeController;
 import hkust.cse.calendar.unit.Appt;
@@ -88,13 +89,21 @@ public class ApptController {
 		appt.setID(apptIDCount++);
 		if (flagOne || flagTwo || flagThree || flagFour)
 			setNotificationForAppt(appt, flagOne, flagTwo, flagThree, flagFour);
-		return mApptStorage.SaveAppt(user, appt);
+		boolean tmp = mApptStorage.SaveAppt(user, appt);
+		
+		
+		if (tmp) updateDiskStorage();
+		
+		return tmp;
 	}
 
 	//Register appt as New Appt of user. Return true if successfully registered
 	public boolean saveNewAppt(User user, Appt appt){
 		appt.setID(apptIDCount++);
-		return mApptStorage.SaveAppt(user, appt);
+		boolean tmp = mApptStorage.SaveAppt(user, appt);
+
+		if (tmp) updateDiskStorage();
+		return tmp;
 	}
 	
 	//Save Repeated Appt with Notification
@@ -111,6 +120,7 @@ public class ApptController {
 				setNotificationForAppt(a, flagOne, flagTwo, flagThree, flagFour);
 		}
 		linkRepeatedAppt(tmpList);
+		updateDiskStorage();
 		return true;
 	}
 	
@@ -126,6 +136,7 @@ public class ApptController {
 		}
 		
 		linkRepeatedAppt(tmpList);
+		updateDiskStorage();
 		return true;
 	}
 	
@@ -258,9 +269,17 @@ public class ApptController {
 				iterator = iterator.getPreviousRepeatedAppt();
 			}
 			mApptStorage.RemoveAppt(user, appt);
+			updateDiskStorage();
 			return true;
 		}
-		return mApptStorage.RemoveAppt(user, appt);
+		boolean tmp = mApptStorage.RemoveAppt(user, appt);
+		updateDiskStorage();
+		return tmp;
+	}
+	
+	private void updateDiskStorage(){
+		if (mApptStorage instanceof JsonStorable)
+			((JsonStorable) mApptStorage).saveToJson();
 	}
 
 	public boolean setNotificationForAppt(Appt appt, 
