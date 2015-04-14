@@ -77,9 +77,10 @@ ComponentListener {
 	private JRadioButton weeklyButton;
 	private JRadioButton monthlyButton;
 
+	private JCheckBox notificationEnableBox;
 	private JTextField notificationHourField;
 	private JTextField notificationMinuteField;
-	
+
 	private JCheckBox oneHourCheckBox;
 	private JCheckBox threeHourCheckBox;
 	private JCheckBox twelveHourCheckBox;
@@ -337,28 +338,33 @@ ComponentListener {
 		panelNotification.setBorder(notificationBorder);
 		panelNotification.setLayout(new BorderLayout());
 		
-		JPanel hourPanel = new JPanel();
-		hourPanel.setLayout(new FlowLayout());
+		JPanel notificationhHourPanel = new JPanel();
+		notificationhHourPanel.setLayout(new FlowLayout());
 		JLabel hourLabel = new JLabel("Hour(s)");
 		notificationHourField = new JTextField(4);
-		hourPanel.add(notificationHourField);
-		hourPanel.add(hourLabel);
+		notificationHourField.setEditable(false);
+		notificationhHourPanel.add(notificationHourField);
+		notificationhHourPanel.add(hourLabel);
 		
-		JPanel minutePanel = new JPanel();
-		minutePanel.setLayout(new FlowLayout());
+		JPanel notificationMinutePanel = new JPanel();
+		notificationMinutePanel.setLayout(new FlowLayout());
 		JLabel minuteLabel = new JLabel("Minutes");
 		notificationMinuteField = new JTextField(4);
-		minutePanel.add(notificationMinuteField);
-		minutePanel.add(minuteLabel);
+		notificationMinuteField.setEditable(false);
+		notificationMinutePanel.add(notificationMinuteField);
+		notificationMinutePanel.add(minuteLabel);
+		
 		
 		JPanel descriptionPanel = new JPanel();
 		descriptionPanel.setLayout(new FlowLayout());
-		JLabel descriptionLabel = new JLabel("before the appointment");
-		descriptionPanel.add(descriptionLabel);
+		notificationEnableBox = new JCheckBox("Turn on/off notification");
+		descriptionPanel.add(notificationEnableBox);
+		notificationEnableBox.addActionListener(this);
 		
-		panelNotification.add("North", hourPanel);
-		panelNotification.add("Center", minutePanel);
-		panelNotification.add("South", descriptionPanel);
+		panelNotification.add("North", descriptionPanel);
+		panelNotification.add("Center", notificationhHourPanel);
+		panelNotification.add("South", notificationMinutePanel);
+		
 		
 		/*oneHourCheckBox = new JCheckBox("1 hour");
 		threeHourCheckBox = new JCheckBox("3 hours");
@@ -533,7 +539,6 @@ ComponentListener {
 		// distinguish which button is clicked and continue with require function
 		if (e.getSource() == CancelBut) 
 		{
-
 			setVisible(false);
 			dispose();
 		}
@@ -567,6 +572,10 @@ ComponentListener {
 		{
 			enableEndAtFields(true);
 		}
+		else if(e.getSource() == notificationEnableBox)
+		{
+			modifyNotificationField();
+		}
 		parent.getAppListPanel().clear();
 		parent.getAppListPanel().setTodayAppt(parent.GetTodayAppt());
 		parent.repaint();
@@ -577,7 +586,21 @@ ComponentListener {
 		GroupInvitationDialog groupInvitationDialog = new GroupInvitationDialog();
 	}
 
-
+	private void modifyNotificationField()
+	{
+		if(notificationEnableBox.isSelected())
+		{
+			notificationHourField.setEditable(true);
+			notificationMinuteField.setEditable(true);
+		}
+		else
+		{
+			notificationHourField.setEditable(false);
+			notificationMinuteField.setEditable(false);
+		}
+	}
+	
+	
 	private void enableEndAtFields(boolean b){
 		endAtYearField.setEditable(b);
 		endAtMonthField.setEditable(b);
@@ -743,10 +766,10 @@ ComponentListener {
 				if(saveFrequencyWithEndAt(endAtDate))
 				{
 					//SAVE NOTIFICATION
-					if(checkForNotification())
+					/*if(checkForNotification())
 					{
 						saveResponseFromNotification();
-					}
+					}*/
 					JOptionPane.showMessageDialog(this, "Saved appointment successfully!");				
 					dispose();
 				}
@@ -840,7 +863,7 @@ ComponentListener {
 
 		currentAppt.setRepeatType(repeatType);
 		
-		if (checkForNotification()){
+		/*if (checkForNotification()){
 			boolean flagOne = oneHourCheckBox.isSelected();
 			boolean flagTwo = threeHourCheckBox.isSelected();
 			boolean flagThree = twelveHourCheckBox.isSelected();
@@ -851,7 +874,7 @@ ComponentListener {
 						flagOne, flagTwo, flagThree, flagFour);
 			return ApptController.getInstance().saveRepeatedNewAppt(UserController.getInstance().getAdmin(), currentAppt, endAtDate,
 					flagOne, flagTwo, flagThree, flagFour);	
-		}
+		}*/
 		if (isModifying)
 			return ApptController.getInstance().modifyRepeatedNewAppt(UserController.getInstance().getAdmin(), currentAppt, endAtDate,
 					false, false, false, false);
@@ -860,7 +883,7 @@ ComponentListener {
 
 	private boolean saveFrequencyWithoutEndAt()
 	{
-		if (checkForNotification()){
+		/*if (checkForNotification()){
 			boolean flagOne = oneHourCheckBox.isSelected();
 			boolean flagTwo = threeHourCheckBox.isSelected();
 			boolean flagThree = twelveHourCheckBox.isSelected();
@@ -870,7 +893,7 @@ ComponentListener {
 						flagOne, flagTwo, flagThree, flagFour);
 			return ApptController.getInstance().saveNewAppt(UserController.getInstance().getAdmin(), currentAppt,
 					flagOne, flagTwo, flagThree, flagFour);
-		}
+		}*/
 		if (isModifying)
 			return ApptController.getInstance().modifyAppt(UserController.getInstance().getAdmin(), currentAppt,
 					false, false, false, false);
@@ -961,7 +984,7 @@ ComponentListener {
 
 
 		//Load data on notification.
-		if(currentAppt.getNotification() != null)
+		/*if(currentAppt.getNotification() != null)
 		{
 			List<Boolean> flagList = currentAppt.getNotification().getFlags();
 			if(flagList.get(0).booleanValue() == true)
@@ -999,7 +1022,7 @@ ComponentListener {
 			{
 				twentyfourHourCheckBox.setSelected(false);
 			}
-		}
+		}*/
 
 		//endAtYearField.setText(Integer.toString(NewAppt.getEndAtTime));
 		//endAtMonthField.setText(Integer.toString(NewAppt.getEndAtTime));
