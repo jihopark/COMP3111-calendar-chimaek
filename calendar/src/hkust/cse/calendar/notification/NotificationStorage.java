@@ -25,5 +25,6 @@ public abstract class NotificationStorage {
 	public abstract List<NotificationTime> RetrieveNotification(User user, Date currentTime);
 
 	public abstract List<NotificationTime> RetrieveAllNotificationTimes(Notification notification);
-
+	
+	public abstract int getIDCount();
 }

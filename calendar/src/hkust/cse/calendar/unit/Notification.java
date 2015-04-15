@@ -46,6 +46,11 @@ public class Notification {
 		_times = notification.getTimes();
 	}
 	
+	public void resetNotificationID(){
+		for (NotificationTime t : _times)
+			if(t!=null) t.setNotificationParentID(getID());
+	}
+	
 	public ArrayList<NotificationTime> getTimes(){ return _times; }
 	public void setTimes(ArrayList<NotificationTime> times){ _times = times; } 
 	

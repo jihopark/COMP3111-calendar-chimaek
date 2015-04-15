@@ -1,6 +1,8 @@
 package hkust.cse.calendar.notification;
 
+import hkust.cse.calendar.diskstorage.FileManager;
 import hkust.cse.calendar.diskstorage.JsonStorable;
+import hkust.cse.calendar.locationstorage.LocationStorageMemory;
 import hkust.cse.calendar.unit.Notification;
 import hkust.cse.calendar.unit.User;
 
@@ -10,13 +12,16 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 
-public class NotificationStorageNullImpl extends NotificationStorage implements JsonStorable {
+import com.google.gson.Gson;
+
+public class NotificationStorageMemory extends NotificationStorage implements JsonStorable {
 	
 	//private LinkedList<Notification> list;
 	private int notificationNumber = 0;
+	private int notificationIDCount = 1;
 	private HashMap<String, LinkedList<Notification>> notifications;
 	
-	public NotificationStorageNullImpl(User user)
+	public NotificationStorageMemory(User user)
 	{
 		notifications = new HashMap<String, LinkedList<Notification>>();
 		//list = new LinkedList<Notification>();
@@ -30,12 +35,15 @@ public class NotificationStorageNullImpl extends NotificationStorage implements 
 			notifications.get(user.toString()).add(notification);
 			System.out.println("NotificationStorageNullImpl/SaveNotification Notification added.");
 			notificationNumber++;
+			notification.resetNotificationID();
+			saveToJson();
 			return true;
 		}
 		else {
 			return false;
 		}
 	}
+	
 
 
 	@Override
@@ -44,6 +52,7 @@ public class NotificationStorageNullImpl extends NotificationStorage implements 
 			if (a.equals(notification) && notificationIsValid(notification)) {
 				notifications.get(user.toString()).remove(a);
 				notificationNumber--;
+				saveToJson();
 				return true;
 			}
 		}
@@ -61,6 +70,7 @@ public class NotificationStorageNullImpl extends NotificationStorage implements 
 			}
 		}
 		//if can't find location in the list
+		System.out.println("Cannot find #" +notificationID);
 		return null;
 	}
 	
@@ -95,10 +105,16 @@ public class NotificationStorageNullImpl extends NotificationStorage implements 
 			if (a.equals(notification)){
 				notifications.get(user.toString()).remove(a);
 				notifications.get(user.toString()).add(notification);
+				saveToJson();
 				return true;
 			}
 		}
 		return false;
+	}
+	
+	@Override
+	public int getIDCount(){
+		return notificationIDCount++;
 	}
 	
 	//temp functions
@@ -112,15 +128,19 @@ public class NotificationStorageNullImpl extends NotificationStorage implements 
 	 * */
 	
 	public String getFileName(){
-		return "Notification.txt";
+		return "DISK_NOTIFICATION.txt";
 	}
 	
 	public Object loadFromJson(){
-		return null;
+		Gson gson = new Gson();
+		String json = FileManager.getInstance().loadFromFile(getFileName());
+		if (json.equals("")) return null;
+		return gson.fromJson(json, NotificationStorageMemory.class);
 	}
 	
 	public void saveToJson(){
-		
+		Gson gson = new Gson();
+		FileManager.getInstance().writeToFile(gson.toJson(this), getFileName());
 	}
 
 }
