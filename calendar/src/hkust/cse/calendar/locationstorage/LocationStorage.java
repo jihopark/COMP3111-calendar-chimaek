@@ -34,7 +34,8 @@ public abstract class LocationStorage {
 	public abstract Location RetrieveLocations(String locationString);
 
 	public abstract int getListSize();
-
+	
+	public abstract int getIDCount();
 
 	/*
 	 * Add other methods if necessary

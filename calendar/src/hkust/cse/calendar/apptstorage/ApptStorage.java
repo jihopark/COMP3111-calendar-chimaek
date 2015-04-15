@@ -41,6 +41,7 @@ public abstract class ApptStorage {
 	
 	public abstract void removeNotification(Notification noti);
 	
+	public abstract int getIDCount();
 	/*
 	 * Add other methods if necessary
 	 */

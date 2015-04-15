@@ -11,7 +11,7 @@ public class LocationController {
 	/* Applying Singleton Structure */
 	private static LocationController instance = null;
 
-	private static int locationIDCount = 0;
+	//private static int locationIDCount = 0;
 		
 	/* The Location storage */
 	private static LocationStorage mLocationStorage;
@@ -64,7 +64,7 @@ public class LocationController {
 	
 	//save new location
 	public boolean saveNewLocation(Location location){
-		location.setID(locationIDCount++);
+		location.setID(mLocationStorage.getIDCount());
 		return mLocationStorage.SaveLocation(location);
 	}
 	

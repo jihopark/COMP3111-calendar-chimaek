@@ -17,6 +17,7 @@ public class LocationStorageMemory extends LocationStorage implements JsonStorab
 	private ArrayList<Location> list;
 	private int locationNumber = 0;
 	private Location initialLocation = new Location();
+	private int locationIDCount = 1;
 	
 	public LocationStorageMemory( User user )
 	{
@@ -58,7 +59,7 @@ public class LocationStorageMemory extends LocationStorage implements JsonStorab
 		if (checkForSameLocation(location)) {
 			location.setID(locationNumber++);
 			list.add(location);
-			System.out.println("Saved Location ID is: " + location.getID());
+			System.out.println("LocationStorageMemory/SaveLocation Saved Location #" + location.getID());
 			saveToJson();
 			return true;
 		}
@@ -105,6 +106,9 @@ public class LocationStorageMemory extends LocationStorage implements JsonStorab
 		}
 		return false;
 	}
+	
+	@Override
+	public int getIDCount(){ return locationIDCount++; }
 	
 	
 	//Additional Functions for Checking

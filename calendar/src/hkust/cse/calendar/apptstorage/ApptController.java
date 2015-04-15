@@ -18,7 +18,7 @@ public class ApptController {
 
 	/* Applying Singleton Structure */
 	private static ApptController instance = null;
-	private static int apptIDCount = 1;
+	//private static int apptIDCount = 1;
 	public static final int DAILY = 1, WEEKLY = 2, MONTHLY = 3;
 	@Deprecated
 	public final static int REMOVE = 1;
@@ -91,7 +91,7 @@ public class ApptController {
 	//Save Appt with Notification
 	public boolean saveNewAppt(User user, Appt appt, 
 			boolean flagOne, boolean flagTwo, boolean flagThree, boolean flagFour){
-		appt.setID(apptIDCount++);
+		appt.setID(mApptStorage.getIDCount());
 		if (flagOne || flagTwo || flagThree || flagFour)
 			setNotificationForAppt(appt, flagOne, flagTwo, flagThree, flagFour);
 		boolean tmp = mApptStorage.SaveAppt(user, appt);
@@ -104,7 +104,7 @@ public class ApptController {
 
 	//Register appt as New Appt of user. Return true if successfully registered
 	public boolean saveNewAppt(User user, Appt appt){
-		appt.setID(apptIDCount++);
+		appt.setID(mApptStorage.getIDCount());
 		boolean tmp = mApptStorage.SaveAppt(user, appt);
 
 		if (tmp) updateDiskStorage();

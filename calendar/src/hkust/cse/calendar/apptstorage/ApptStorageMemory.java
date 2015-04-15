@@ -23,7 +23,8 @@ public class ApptStorageMemory extends ApptStorage implements JsonStorable {
 
 	//private LinkedList<Appt> list;
  	private int apptNumber = 0;
-	
+	private int apptIDCount = 1;
+ 	
 	public ApptStorageMemory( User user )
 	{
 		defaultUser = user;
@@ -170,6 +171,9 @@ public class ApptStorageMemory extends ApptStorage implements JsonStorable {
 	public int getTotalApptCount(){
 		return apptNumber;
 	}
+	
+	@Override
+	public int getIDCount(){ return apptIDCount++; }
 	
 	/*
 	 * For Disk Storage
