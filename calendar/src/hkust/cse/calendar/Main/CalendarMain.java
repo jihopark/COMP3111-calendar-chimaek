@@ -13,7 +13,7 @@ import hkust.cse.calendar.apptstorage.ApptStorageMemory;
 import hkust.cse.calendar.gui.LoginDialog;
 import hkust.cse.calendar.gui.TimeMachineDialog;
 import hkust.cse.calendar.locationstorage.LocationController;
-import hkust.cse.calendar.locationstorage.LocationStorageNullImpl;
+import hkust.cse.calendar.locationstorage.LocationStorageMemory;
 import hkust.cse.calendar.notification.NotificationController;
 import hkust.cse.calendar.notification.NotificationStorageNullImpl;
 import hkust.cse.calendar.unit.Notification;

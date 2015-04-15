@@ -2,7 +2,7 @@ package hkust.cse.calendar.gui;
 
 import hkust.cse.calendar.apptstorage.ApptController;
 import hkust.cse.calendar.locationstorage.LocationController;
-import hkust.cse.calendar.locationstorage.LocationStorageNullImpl;
+import hkust.cse.calendar.locationstorage.LocationStorageMemory;
 import hkust.cse.calendar.time.TimeController;
 import hkust.cse.calendar.unit.Appt;
 import hkust.cse.calendar.unit.Location;
@@ -412,7 +412,7 @@ ComponentListener {
 		//GUI for location list.
 		//test for location combobox.
 
-		LocationController.getInstance().initLocationStorage(new LocationStorageNullImpl(UserController.getInstance().getDefaultUser()));
+		LocationController.getInstance().initLocationStorage(new LocationStorageMemory(UserController.getInstance().getDefaultUser()));
 		ArrayList<Location> locationList = new ArrayList<Location>();
 		for(int i=0; i<LocationController.getInstance().getLocationList().getSize(); i++){
 			locationList.add(LocationController.getInstance().getLocationList().getElementAt(i));

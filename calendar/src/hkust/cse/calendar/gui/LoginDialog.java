@@ -3,7 +3,7 @@
 import hkust.cse.calendar.apptstorage.ApptController;
 import hkust.cse.calendar.apptstorage.ApptStorageMemory;
 import hkust.cse.calendar.locationstorage.LocationController;
-import hkust.cse.calendar.locationstorage.LocationStorageNullImpl;
+import hkust.cse.calendar.locationstorage.LocationStorageMemory;
 import hkust.cse.calendar.notification.NotificationController;
 import hkust.cse.calendar.notification.NotificationStorageNullImpl;
 import hkust.cse.calendar.unit.User;
@@ -138,7 +138,7 @@ public class LoginDialog extends JFrame implements ActionListener
 			return false;
 		
 		ApptController.getInstance().initApptStorage(new ApptStorageMemory(user));
-		LocationController.getInstance().initLocationStorage(new LocationStorageNullImpl(user));
+		LocationController.getInstance().initLocationStorage(new LocationStorageMemory(user));
 		NotificationController.getInstance().initNotificationStorage(new NotificationStorageNullImpl(user));
 		CalGrid grid = new CalGrid();
 		setVisible( false );

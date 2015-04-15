@@ -5,7 +5,7 @@ import hkust.cse.calendar.unit.User;
 import hkust.cse.calendar.apptstorage.ApptController;
 import hkust.cse.calendar.apptstorage.ApptStorageMemory;
 import hkust.cse.calendar.locationstorage.LocationController;
-import hkust.cse.calendar.locationstorage.LocationStorageNullImpl;
+import hkust.cse.calendar.locationstorage.LocationStorageMemory;
 import hkust.cse.calendar.tests.GUITest;
 
 import java.awt.*;
@@ -33,7 +33,7 @@ public class ManageLocationDialog extends JPanel
 
     public ManageLocationDialog() {
         super(new BorderLayout());
-        /////////////////////delete when ¿¬µ¿/////////////////
+        /////////////////////delete when ï¿½ï¿½ï¿½ï¿½/////////////////
         /*
         User user = new User( "noname", "nopass");
 		LocationController.getInstance().initLocationStorage(new LocationStorageNullImpl(user));

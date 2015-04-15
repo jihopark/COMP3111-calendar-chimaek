@@ -1,5 +1,7 @@
 package hkust.cse.calendar.locationstorage;
 
+import hkust.cse.calendar.apptstorage.ApptStorageMemory;
+import hkust.cse.calendar.diskstorage.FileManager;
 import hkust.cse.calendar.diskstorage.JsonStorable;
 import hkust.cse.calendar.unit.Location;
 import hkust.cse.calendar.unit.User;
@@ -8,18 +10,15 @@ import java.util.ArrayList;
 
 import javax.swing.DefaultListModel;
 
-import sun.org.mozilla.javascript.internal.InterfaceAdapter;
+import com.google.gson.Gson;
 
-import com.google.gson.GsonBuilder;
+public class LocationStorageMemory extends LocationStorage implements JsonStorable {
 
-public class LocationStorageNullImpl extends LocationStorage implements JsonStorable {
-
-	private User defaultUser = null;
 	private ArrayList<Location> list;
 	private int locationNumber = 0;
 	private Location initialLocation = new Location();
 	
-	public LocationStorageNullImpl( User user )
+	public LocationStorageMemory( User user )
 	{
 		defaultUser = user;
 		list = new ArrayList<Location>();
@@ -88,6 +87,7 @@ public class LocationStorageNullImpl extends LocationStorage implements JsonStor
 			if (a.equals(location)){
 				list.remove(a);
 				list.add(location);
+				saveToJson();
 				return true;
 			}
 		}
@@ -100,6 +100,7 @@ public class LocationStorageNullImpl extends LocationStorage implements JsonStor
 		
 		if(index<list.size() && index>-1) {
 			list.remove(index);
+			saveToJson();
 			return true;
 		}
 		return false;
@@ -117,15 +118,19 @@ public class LocationStorageNullImpl extends LocationStorage implements JsonStor
 	 * */
 	
 	public String getFileName(){
-		return "Location.txt";
+		return "DISK_LOCATION.txt";
 	}
 	
 	public Object loadFromJson(){
-		return null;
+		Gson gson = new Gson();
+		String json = FileManager.getInstance().loadFromFile(getFileName());
+		if (json.equals("")) return null;
+		return gson.fromJson(json, LocationStorageMemory.class);
 	}
 	
 	public void saveToJson(){
-		
+		Gson gson = new Gson();
+		FileManager.getInstance().writeToFile(gson.toJson(this), getFileName());
 	}
 
 
