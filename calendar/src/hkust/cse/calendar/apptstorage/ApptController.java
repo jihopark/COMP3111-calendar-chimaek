@@ -8,6 +8,7 @@ import hkust.cse.calendar.unit.Appt;
 import hkust.cse.calendar.unit.Notification;
 import hkust.cse.calendar.unit.TimeSpan;
 import hkust.cse.calendar.unit.User;
+import hkust.cse.calendar.user.UserController;
 
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -294,7 +295,7 @@ public class ApptController {
 		System.out.println("ApptController/setNotificationForAppt Notification For " + appt.TimeSpan());
 		Notification noti = new Notification(appt, appt.getTitle(), appt.getTimeSpan().StartTime(),
 				flagOne, flagTwo, flagThree, flagFour);
-		boolean tmp = NotificationController.getInstance().saveNewNotification(noti);
+		boolean tmp = NotificationController.getInstance().saveNewNotification(UserController.getInstance().getDefaultUser(), noti);
 		if (tmp)
 			appt.setNotification(noti);
 		return tmp;

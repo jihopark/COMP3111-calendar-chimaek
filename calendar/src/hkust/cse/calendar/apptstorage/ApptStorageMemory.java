@@ -152,14 +152,14 @@ public class ApptStorageMemory extends ApptStorage implements JsonStorable {
 	@Override
 	public void removeNotification(Notification noti){
 		if (noti!=null){
-			NotificationController.getInstance().removeNotification(noti);
+			NotificationController.getInstance().removeNotification(defaultUser, noti);
 		}
 	}
 	
 	@Override
 	public void saveNotification(Notification noti){
 		if (noti!=null){
-			NotificationController.getInstance().saveNewNotification(noti);
+			NotificationController.getInstance().saveNewNotification(defaultUser, noti);
 		}
 	}
 

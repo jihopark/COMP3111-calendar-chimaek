@@ -3,6 +3,7 @@ package hkust.cse.calendar.notification;
 import hkust.cse.calendar.gui.CalGrid;
 import hkust.cse.calendar.time.TimeController;
 import hkust.cse.calendar.unit.Notification;
+import hkust.cse.calendar.user.UserController;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -29,7 +30,7 @@ public class NotificationCheckThread extends Thread {
 				currentTime = TimeController.getInstance().getCurrentTimeInDate();
 				calGrid.updateCalGridTitleClock(currentTime);
 				//System.out.println("Current Time is: " + currentTime);
-				List<NotificationTime> notifications = NotificationController.getInstance().retrieveNotification(currentTime);
+				List<NotificationTime> notifications = NotificationController.getInstance().retrieveNotification(UserController.getInstance().getDefaultUser(), currentTime);
 				if (notifications.size()!=0){
 					for (NotificationTime time : notifications){
 						if (!deliveredNotification.contains(time)){

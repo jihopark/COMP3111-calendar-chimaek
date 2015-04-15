@@ -43,8 +43,8 @@ public class NotificationController {
 		}
 		
 		//Retrieve Notification with currentTime. returns empty arraylist if no notification
-		public List<NotificationTime> retrieveNotification(Date currentTime) {
-			return mNotificationStorage.RetrieveNotification(currentTime);
+		public List<NotificationTime> retrieveNotification(User user, Date currentTime) {
+			return mNotificationStorage.RetrieveNotification(user, currentTime);
 		}
 		
 		public List<NotificationTime> retrieveAllNotificationTimes(Notification notification){
@@ -53,20 +53,20 @@ public class NotificationController {
 		
 		//Update
 		public boolean updateNotification(User user, Notification notification){
-			return mNotificationStorage.UpdateNotification(notification);
+			return mNotificationStorage.UpdateNotification(user, notification);
 		}
 		
 		//Save New
-		public boolean saveNewNotification(Notification notification){
+		public boolean saveNewNotification(User user, Notification notification){
 			notification.setID(notificationIDCount++);
 			System.out.println("NotificationController/saveNewNotification Saved. ID is " + notification.getID());
-			return mNotificationStorage.SaveNotification(notification);
+			return mNotificationStorage.SaveNotification(user, notification);
 		}
 		
 		//remove
-		public boolean removeNotification(Notification notification){
+		public boolean removeNotification(User user, Notification notification){
 			System.out.println("NotificationController/removeNewNotification Removed");
-			return mNotificationStorage.RemoveNotification(notification);
+			return mNotificationStorage.RemoveNotification(user, notification);
 		}
 		
 		public Notification getNotificationByID(int id){

@@ -6,26 +6,29 @@ import hkust.cse.calendar.unit.User;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 
 public class NotificationStorageNullImpl extends NotificationStorage implements JsonStorable {
 	
-	private User defaultUser = null;
-	private LinkedList<Notification> list;
+	//private LinkedList<Notification> list;
 	private int notificationNumber = 0;
+	private HashMap<String, LinkedList<Notification>> notifications;
 	
 	public NotificationStorageNullImpl(User user)
 	{
-		defaultUser = user;
-		list = new LinkedList<Notification>();
+		notifications = new HashMap<String, LinkedList<Notification>>();
+		//list = new LinkedList<Notification>();
 	}
 
 	@Override
-	public boolean SaveNotification(Notification notification) { 
-		if(notificationIsValid(notification)) {
-			list.add(notification);
-			System.out.println("NotificationStorageNullImpl/SaveNotification Notification added. Total " + list.size());
+	public boolean SaveNotification(User user, Notification notification) { 
+		if(notificationIsValid(notification)){
+			if (notifications.get(user.toString()) == null)
+				notifications.put(user.toString(), new LinkedList<Notification>());
+			notifications.get(user.toString()).add(notification);
+			System.out.println("NotificationStorageNullImpl/SaveNotification Notification added.");
 			notificationNumber++;
 			return true;
 		}
@@ -36,10 +39,10 @@ public class NotificationStorageNullImpl extends NotificationStorage implements 
 
 
 	@Override
-	public boolean RemoveNotification(Notification notification) {
-		for (Notification a : list){
+	public boolean RemoveNotification(User user, Notification notification) {
+		for (Notification a : notifications.get(user.toString())){
 			if (a.equals(notification) && notificationIsValid(notification)) {
-				list.remove(a);
+				notifications.get(user.toString()).remove(a);
 				notificationNumber--;
 				return true;
 			}
@@ -49,10 +52,12 @@ public class NotificationStorageNullImpl extends NotificationStorage implements 
 
 	@Override
 	public Notification RetrieveNotification(int notificationID) {
-		for (Notification a : list){
-			if (a.getID() == notificationID){
-				System.out.println("NotificationStorageNullImpl/RetriveNotification ID is " + a.getID());
-				return a;
+		for (String key : notifications.keySet()){
+			for (Notification a : notifications.get(key)){
+				if (a.getID() == notificationID){
+					System.out.println("NotificationStorageNullImpl/RetriveNotification ID is " + a.getID());
+					return a;
+				}
 			}
 		}
 		//if can't find location in the list
@@ -60,9 +65,11 @@ public class NotificationStorageNullImpl extends NotificationStorage implements 
 	}
 	
 	@Override
-	public List<NotificationTime> RetrieveNotification(Date currentTime) {
+	public List<NotificationTime> RetrieveNotification(User user, Date currentTime) {
 		ArrayList<NotificationTime> notis = new ArrayList<NotificationTime>();
-		for (Notification a : list){ //for each notification
+		if (notifications.get(user.toString()) == null)
+			return notis;
+		for (Notification a : notifications.get(user.toString())){ //for each notification
 			for(NotificationTime time : a.getTimes()) { //check each alarm
 				if (time!=null && time.getNotificationTime().getTime()/1000 == currentTime.getTime()/1000){
 					notis.add(time);
@@ -83,11 +90,11 @@ public class NotificationStorageNullImpl extends NotificationStorage implements 
 	}
 		
 	@Override
-	public boolean UpdateNotification(Notification notification) {
-		for (Notification a : list){
+	public boolean UpdateNotification(User user, Notification notification) {
+		for (Notification a : notifications.get(user.toString())){
 			if (a.equals(notification)){
-				list.remove(a);
-				list.add(notification);
+				notifications.get(user.toString()).remove(a);
+				notifications.get(user.toString()).add(notification);
 				return true;
 			}
 		}
