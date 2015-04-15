@@ -64,9 +64,9 @@ public class Appt implements Serializable {
 	}
 	
 	public void setLocation(Location location){
-		location.addCountForLocation();
+		LocationController.getInstance().increaseLocationCount(location);
 		if(location_id!=-1)
-			getLocation().subtractCountForLocation();
+			LocationController.getInstance().decreaseLocationCount(getLocation());
 		location_id= location.getID();
 		System.out.println("Appt/setLocation " + "Set Location " + location_id);
 	}

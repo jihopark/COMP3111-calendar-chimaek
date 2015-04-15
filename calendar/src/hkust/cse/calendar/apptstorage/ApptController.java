@@ -1,6 +1,7 @@
 package hkust.cse.calendar.apptstorage;
 
 import hkust.cse.calendar.diskstorage.JsonStorable;
+import hkust.cse.calendar.locationstorage.LocationController;
 import hkust.cse.calendar.notification.NotificationController;
 import hkust.cse.calendar.time.TimeController;
 import hkust.cse.calendar.unit.Appt;
@@ -257,7 +258,7 @@ public class ApptController {
 		if (!TimeController.getInstance().isNotPast(appt)){
 			return false;
 		}
-		appt.getLocation().subtractCountForLocation();
+		LocationController.getInstance().decreaseLocationCount(appt.getLocation());
 		if (appt.isRepeated()){
 			System.out.println("ApptController/removeAppt Remove Repeated!");
 			Appt iterator = appt.getNextRepeatedAppt();

@@ -13,14 +13,12 @@ public class Location {
 		_appointmentCount = 0;
 	}
 	
-	public void addCountForLocation() {
+	public void increaseCountForLocation() {
 		_appointmentCount++;
-		System.out.println(_appointmentCount);
 	}
 	
-	public void subtractCountForLocation() {
+	public void decreaseCountForLocation() {
 		_appointmentCount--;
-		System.out.println(_appointmentCount);
 	}
 	
 	public int getAppointmentCount() {

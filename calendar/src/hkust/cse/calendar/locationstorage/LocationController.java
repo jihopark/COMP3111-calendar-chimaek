@@ -50,6 +50,18 @@ public class LocationController {
 		return mLocationStorage.RetrieveLocations(locationString);
 	}
 	
+	public void increaseLocationCount(Location location){
+		location.increaseCountForLocation();
+		System.out.println("LocationController/increaseLocationCount");
+		updateDiskStorage();
+	}
+	
+	public void decreaseLocationCount(Location location){
+		location.decreaseCountForLocation();
+		System.out.println("LocationController/decreaseLocationCount");
+		updateDiskStorage();
+	}
+	
 	//save new location
 	public boolean saveNewLocation(Location location){
 		location.setID(locationIDCount++);
@@ -79,6 +91,11 @@ public class LocationController {
 		for(int i=0; i<mLocationStorage.getListSize(); i++){
 			System.out.println(mLocationStorage.getLocationList().getElementAt(i));
 		}
+	}
+	
+	public void updateDiskStorage(){
+		if (mLocationStorage instanceof JsonStorable)
+			((JsonStorable) mLocationStorage).saveToJson();
 	}
 	
 	public Location getLocationByID(int id){
