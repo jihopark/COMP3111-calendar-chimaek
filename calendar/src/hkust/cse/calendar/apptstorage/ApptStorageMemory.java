@@ -132,11 +132,12 @@ public class ApptStorageMemory extends ApptStorage implements JsonStorable {
 
 	@Override
 	public boolean RemoveAppt(User user, Appt appt) {
-		if (mAppts.get(user) == null)
+		if (mAppts.get(user.toString()) == null)
 			return false;
 		for (Appt a : mAppts.get(user.toString())){
 			if (a.equals(appt) && TimeController.getInstance().isNotPast(appt)){
-				mAppts.get(user.toString()).remove(a);
+				
+				System.out.println("ApptStorageMemory/RemoveAppt " + mAppts.get(user.toString()).remove(a));
 				apptNumber--;
 				System.out.println("ApptStorageMemory/RemoveAppt : Removed Appt #"+appt.getID());
 				removeNotification(a.getNotification());
