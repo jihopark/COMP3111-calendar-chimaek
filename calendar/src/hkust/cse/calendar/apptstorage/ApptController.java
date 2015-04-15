@@ -45,6 +45,10 @@ public class ApptController {
 	public boolean initApptStorage(ApptStorage storage){
 		if (mApptStorage == null){
 			mApptStorage = storage;
+			if (mApptStorage instanceof JsonStorable && mApptStorage instanceof ApptStorageMemory){
+				mApptStorage = (ApptStorageMemory) ((JsonStorable)mApptStorage).loadFromJson();
+				if (mApptStorage == null) mApptStorage = storage;
+			}
 			return true;
 		}
 		return false;
@@ -255,9 +259,10 @@ public class ApptController {
 		}
 		appt.getLocation().subtractCountForLocation();
 		if (appt.isRepeated()){
-			System.out.println("\nRemove Repeated!");
+			System.out.println("ApptController/removeAppt Remove Repeated!");
 			Appt iterator = appt.getNextRepeatedAppt();
 			while (iterator!=null){
+				System.out.println("ApptController/removeAppt Remove #" +iterator.getID());
 				mApptStorage.RemoveAppt(user, iterator);
 				iterator = iterator.getNextRepeatedAppt();
 			}
@@ -265,6 +270,7 @@ public class ApptController {
 			while (iterator!=null){
 				if (!TimeController.getInstance().isNotPast(iterator))
 					break;
+				System.out.println("ApptController/removeAppt Remove #" +iterator.getID());
 				mApptStorage.RemoveAppt(user, iterator);
 				iterator = iterator.getPreviousRepeatedAppt();
 			}

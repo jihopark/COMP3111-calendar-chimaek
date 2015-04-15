@@ -120,8 +120,8 @@ public class LocationStorageNullImpl extends LocationStorage implements JsonStor
 		return "Location.txt";
 	}
 	
-	public void loadFromJson(){
-		
+	public Object loadFromJson(){
+		return null;
 	}
 	
 	public void saveToJson(){

@@ -108,8 +108,8 @@ public class NotificationStorageNullImpl extends NotificationStorage implements 
 		return "Notification.txt";
 	}
 	
-	public void loadFromJson(){
-		
+	public Object loadFromJson(){
+		return null;
 	}
 	
 	public void saveToJson(){

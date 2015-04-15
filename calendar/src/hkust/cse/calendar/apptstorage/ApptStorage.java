@@ -12,7 +12,6 @@ import java.util.List;
 
 public abstract class ApptStorage {
 
-	public HashMap<User, LinkedList<Appt>> mAppts;		//a hashmap to save every thing to it, write to memory by the memory based storage implementation	
 	public int mAssignedApptID;	//a global appointment ID for each appointment record
 
 	public ApptStorage() {	//default constructor

@@ -4,7 +4,7 @@ public interface JsonStorable {
 	
 	public String getFileName();
 	
-	public void loadFromJson();
+	public Object loadFromJson();
 	
 	public void saveToJson();
 }
