@@ -29,10 +29,14 @@ public class ManageLocationDialog extends JPanel
     private DefaultListModel<Location> retrievedLocationList;
 	private JList displayList;
     private JButton deleteButton;
+    private JLabel capacityLabel;
+    private int selectedLocationCapacity = 0;
     private JTextField locationName;
+    private JTextField locationCapacity;
 
     public ManageLocationDialog() {
         super(new BorderLayout());
+		
         /////////////////////delete when ¿¬µ¿/////////////////
         /*
         User user = new User( "noname", "nopass");
@@ -41,10 +45,18 @@ public class ManageLocationDialog extends JPanel
         */
         retrievedLocationList = LocationController.getInstance().getLocationList();
         displayList = new JList <Location>(retrievedLocationList);
-       
+        MouseListener mouseListener = new MouseAdapter() {
+        	public void mouseClicked(MouseEvent e) {
+        		if(e.getClickCount() == 2 ) {
+        			Location selectedItem = (Location) displayList.getSelectedValue();
+                    capacityLabel.setText("Capacity is: " + selectedItem.getCapacity());
+        		}
+        	}
+        };
+        displayList.addMouseListener(mouseListener);
         //Create the list and put it in a scroll pane//
         JScrollPane listScrollPane = new JScrollPane(displayList);
-
+		
         JButton addButton = new JButton(AddButtonString);
         AddListener addListener = new AddListener(addButton);
         addButton.setActionCommand(AddButtonString);
@@ -58,7 +70,11 @@ public class ManageLocationDialog extends JPanel
         locationName = new JTextField(10);
         locationName.addActionListener(addListener);
         locationName.getDocument().addDocumentListener(addListener);
-
+        
+        locationCapacity = new JTextField(3);
+        locationCapacity.setEnabled(false);
+        
+        capacityLabel = new JLabel("Capacity is: " + selectedLocationCapacity);
         //Create a panel that uses BoxLayout.
         JPanel buttonPane = new JPanel();
         buttonPane.setLayout(new BoxLayout(buttonPane,
@@ -70,13 +86,16 @@ public class ManageLocationDialog extends JPanel
         buttonPane.add(locationName);
         buttonPane.add(addButton);
         buttonPane.add(deleteButton);
+        buttonPane.add(locationCapacity);
+        
         if(retrievedLocationList.getSize()==0 || 
         		((retrievedLocationList.getSize()==1) && (retrievedLocationList.getElementAt(0).getName().equals("-") ))) {
             deleteButton.setEnabled(false);
         }
         buttonPane.setBorder(BorderFactory.createEmptyBorder(5,5,5,5));
-
+		
         add(listScrollPane, BorderLayout.CENTER);
+        add(capacityLabel, BorderLayout.LINE_END);
         add(buttonPane, BorderLayout.PAGE_END);
     }
     
@@ -129,11 +148,12 @@ public class ManageLocationDialog extends JPanel
         //Required by ActionListener.
         public void actionPerformed(ActionEvent e) {
             String name = locationName.getText();
-
-            //User didn't type in a unique name...
-            if (name.equals("") || alreadyInList(name)) {
+            String capacity = locationCapacity.getText();
+            
+            //User didn't type in a unique name...or didn't type any capacity
+            if (capacity.equals("") || name.equals("") || alreadyInList(name)) {
                 Toolkit.getDefaultToolkit().beep();
-    			JOptionPane.showMessageDialog(locationName, "Input location already exists!",
+    			JOptionPane.showMessageDialog(locationName, "Please fill all required fields correctly!",
     					"Input Error", JOptionPane.ERROR_MESSAGE);
                 locationName.requestFocusInWindow();
                 locationName.selectAll();
@@ -142,7 +162,7 @@ public class ManageLocationDialog extends JPanel
 
             
 
-            //adds new location at the end of the retrievedLocationList
+            // adds new location at the end of the retrievedLocationList
             // need to change later to be sorted in order
             Location newLocation = new Location();
             newLocation.setName(name);
@@ -159,6 +179,13 @@ public class ManageLocationDialog extends JPanel
             
             retrievedLocationList.addElement(newLocation);
             LocationController.getInstance().saveNewLocation(newLocation);
+            if(LocationController.getInstance().setLocationCapacity(newLocation.getName(), Integer.parseInt(locationCapacity.getText()))){
+                System.out.println("ManageLocation/setLocationCapacity: location capacity saved successful");
+                int tempLocationCapacity = LocationController.getInstance().getLocationCapacity(newLocation.getName());
+                System.out.println("ManageLocation/setLocationCapacity: new location Capcity is: " + tempLocationCapacity );
+            } else {
+            	System.out.println("ManageLocation/setLocationCapacity: location capacity saved failed");
+            }
             
             //LocationController.getInstance().printList();
            
@@ -166,6 +193,7 @@ public class ManageLocationDialog extends JPanel
             //Reset the text field.
             locationName.requestFocusInWindow();
             locationName.setText("");
+            locationCapacity.setText("");
 
             int index = LocationController.getInstance().getListSize()-1; //get selected index
             
@@ -206,12 +234,14 @@ public class ManageLocationDialog extends JPanel
         private void enableButton() {
             if (!alreadyEnabled) {
                 button.setEnabled(true);
+                locationCapacity.setEnabled(true);
             }
         }
 
         private boolean handleEmptyTextField(DocumentEvent e) {
             if (e.getDocument().getLength() <= 0) {
                 button.setEnabled(false);
+                locationCapacity.setEnabled(false);
                 alreadyEnabled = false;
                 return true;
             }
@@ -226,6 +256,7 @@ public class ManageLocationDialog extends JPanel
             if (displayList.getSelectedIndex() == -1) {
             //No selection, disable fire button.
                 deleteButton.setEnabled(false);
+                
 
             } else {
             //Selection, enable the fire button.
