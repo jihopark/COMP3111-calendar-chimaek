@@ -53,14 +53,10 @@ public class LocationStorageNullImpl extends LocationStorage {
 	
 	@Override
 	public boolean SaveLocation(Location location) {
-		// TODO Auto-generated method stub
-		if (checkForSameLocation(location)) {
-			list.add(location);
-			locationNumber++;
-			System.out.println("Saved Location ID is: " + location.getID());
-			return true;
-		}
-		return false;
+		list.add(location);
+		locationNumber++;
+		System.out.println("Saved Location ID is: " + location.getID());
+		return true;
 	}
 
 	@Override
@@ -103,17 +99,19 @@ public class LocationStorageNullImpl extends LocationStorage {
 		return false;
 	}
 	
-	
-	//Additional Functions for Checking
-	private boolean checkForSameLocation(Location location) {
-	// need to implement if Location with same name exists
-		return true;
-	}
 
 	public int getLocationCapacity(String name) {
 		if(RetrieveLocations(name)!=null)
 			return RetrieveLocations(name).getCapacity();
 		return 0;
+	}
+
+	public boolean setLocationCapacity(String name, int num) {
+		if(RetrieveLocations(name)!=null) {
+			RetrieveLocations(name).setCapacity(num);
+			return true;
+		}
+		return false;
 	}
 
 }

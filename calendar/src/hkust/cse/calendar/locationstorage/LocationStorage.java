@@ -35,6 +35,8 @@ public abstract class LocationStorage {
 
 	public abstract int getLocationCapacity(String name);
 	
+	public abstract boolean setLocationCapacity(String name, int num);
+	
 	public abstract int getListSize();
 
 

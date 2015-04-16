@@ -56,6 +56,10 @@ public class LocationController {
 		return mLocationStorage.getLocationCapacity(name);
 	}
 	
+	public boolean setLocationCapacity(String name, int num){
+		return mLocationStorage.setLocationCapacity(name, num);
+	}
+	
 	//save new location
 	public boolean saveNewLocation(Location location){
 		location.setID(locationIDCount++);
