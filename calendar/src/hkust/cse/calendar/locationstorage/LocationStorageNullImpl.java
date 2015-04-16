@@ -110,7 +110,11 @@ public class LocationStorageNullImpl extends LocationStorage {
 		return true;
 	}
 
-
+	public int getLocationCapacity(String name) {
+		if(RetrieveLocations(name)!=null)
+			return RetrieveLocations(name).getCapacity();
+		return 0;
+	}
 
 }
 

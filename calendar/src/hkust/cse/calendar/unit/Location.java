@@ -6,11 +6,20 @@ public class Location {
 	private String _name;
 	private int _locationID;
 	private int _appointmentCount;
+	private int _capacity;
 	
 	public Location() {
 		_name = "";
 		_locationID = 0;
 		_appointmentCount = 0;
+		_capacity = 0;
+	}
+	
+	public Location(Location location) {
+		_name = location.getName();
+		_locationID = location.getID();
+		_appointmentCount = location.getAppointmentCount();
+		_capacity = location.getCapacity();
 	}
 	
 	public void addCountForLocation() {
@@ -27,11 +36,11 @@ public class Location {
 		return _appointmentCount;
 	}
 	
-	
-	public Location(Location location) {
-		_name = location.getName();
-		_locationID = location.getID();
-		_appointmentCount = location.getAppointmentCount();
+	public void setCapacity(int num) {
+		_capacity = num;
+	}
+	public int getCapacity() {
+		return _capacity;
 	}
 	
 	public String getName() {

@@ -146,7 +146,17 @@ public class ManageLocationDialog extends JPanel
             // need to change later to be sorted in order
             Location newLocation = new Location();
             newLocation.setName(name);
-
+            
+            /*
+            //single room
+            if()
+            newLocation.setCapacity(1);
+            
+            //group room
+            else if()
+            	newLocation.setCapacity( );
+            */
+            
             retrievedLocationList.addElement(newLocation);
             LocationController.getInstance().saveNewLocation(newLocation);
             

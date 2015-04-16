@@ -33,6 +33,8 @@ public abstract class LocationStorage {
 
 	public abstract Location RetrieveLocations(String locationString);
 
+	public abstract int getLocationCapacity(String name);
+	
 	public abstract int getListSize();
 
 
