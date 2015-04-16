@@ -2,6 +2,8 @@ package hkust.cse.calendar.gui;
 
 import hkust.cse.calendar.unit.Location;
 import hkust.cse.calendar.unit.User;
+import hkust.cse.calendar.userstorage.UserController;
+import hkust.cse.calendar.userstorage.UserStorageMemory;
 import hkust.cse.calendar.apptstorage.ApptController;
 import hkust.cse.calendar.apptstorage.ApptStorageMemory;
 import hkust.cse.calendar.locationstorage.LocationController;
@@ -24,6 +26,7 @@ public class RegisterDialog extends JFrame implements ActionListener {
 	private JPasswordField secondPassword;
 	private JButton backButton;
 	private JButton registerButton;
+	private JCheckBox adminCheckBox;
 	
 	public RegisterDialog() {
 		setTitle("Register");
@@ -73,6 +76,10 @@ public class RegisterDialog extends JFrame implements ActionListener {
 		registerButton.addActionListener(this);
 		bottom.add(registerButton);
 		
+		adminCheckBox = new JCheckBox("Admin Register");
+		bottom.add(adminCheckBox);
+		
+		
 		contentPane.add("South", bottom);
 		
 		pack();
@@ -99,12 +106,21 @@ public class RegisterDialog extends JFrame implements ActionListener {
 			}
 			System.out.println("RegisterDialog/actionPerformed: No Error and called UserController");
 			// call user controller and close
+			UserController.getInstance().initUserStorage(new UserStorageMemory());
+			if(adminCheckBox.isSelected()){
+				System.out.println("RegisterDialog/actionPerformed: Admin Checkbox is Checked and User is Saved");
 			
-			JOptionPane.showMessageDialog(this, "Registration Complete. Please Login using your credentials",
-					"Register Success", JOptionPane.OK_OPTION);
-			LoginDialog loginDialog = new LoginDialog();
-			setVisible(false);
-			dispose();
+			} else {
+				if(UserController.getInstance().saveUser(userName.getText(), firstPassword.getText())) {
+					JOptionPane.showMessageDialog(this, "Registration Complete. Please Login using your credentials",
+							"Register Success", JOptionPane.OK_OPTION);
+					LoginDialog loginDialog = new LoginDialog();
+					setVisible(false);
+					dispose();
+				} else {
+					System.out.println("RegisterDialog/actionPerformed: UserController calls error. Data can not be saved");
+				}
+			}
 		}
 	}
 
