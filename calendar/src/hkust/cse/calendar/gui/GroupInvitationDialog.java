@@ -1,5 +1,9 @@
 package hkust.cse.calendar.gui;
 
+import hkust.cse.calendar.unit.Location;
+import hkust.cse.calendar.unit.User;
+import hkust.cse.calendar.userstorage.UserController;
+
 import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.Container;
@@ -10,12 +14,14 @@ import java.awt.event.ActionListener;
 import java.awt.event.MouseListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.util.List;
 
 import javax.swing.BoxLayout;
 import javax.swing.DefaultListModel;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JList;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 
@@ -29,6 +35,8 @@ public class GroupInvitationDialog extends JFrame implements ActionListener {
 	private JButton rightButton;
 	private DefaultListModel leftListModel;
 	private DefaultListModel rightListModel;
+	private List<User> userList;
+	private JList displayList;
 	
 	public GroupInvitationDialog(){
 		setTitle("Group Event Invitation Dialog");
@@ -39,11 +47,10 @@ public class GroupInvitationDialog extends JFrame implements ActionListener {
 
 		leftListModel = new DefaultListModel();
 		// get user data from user controller currently temp data 
-			leftListModel.addElement("User 1");
-			leftListModel.addElement("User 1");
-			leftListModel.addElement("User 1");
-			leftListModel.addElement("User 1");
-			leftListModel.addElement("User 1");
+		userList = UserController.getInstance().getUserList();
+		for(User a : userList) {
+			leftListModel.addElement(a.getID());
+		}
 		//end
 			
 			
@@ -125,7 +132,16 @@ public class GroupInvitationDialog extends JFrame implements ActionListener {
 			
 		}else if(e.getSource() == okButton){
 			//get data from rightUserBox and add it to userController
-			
+			if(rightListModel.getSize() <= 0){
+				JOptionPane.showMessageDialog(this, "Please choose at least one user before sending the invitation",
+						"Input Error", JOptionPane.ERROR_MESSAGE);
+				return;
+			}
+			for(int i = 0; i<rightListModel.getSize();i++){
+				sendGroupInvitation(rightListModel.get(i).toString());
+			}
+			setVisible(false);
+			dispose();
 		}else if(e.getSource() == cancelButton){
 			setVisible(false);
 			dispose();
@@ -133,12 +149,20 @@ public class GroupInvitationDialog extends JFrame implements ActionListener {
 		
 	}
 
+	private void sendGroupInvitation(String user) {
+		// TODO Auto-generated method stub
+		System.out.println("GroupInvitationDialog/sendGroupInvitation: Invitation sent to " + user);
+		//need to connect to groupInvitation send logic
+	}
+
 	private void checkButtonActivity() {
 		// TODO Auto-generated method stub
 		if(rightListModel.isEmpty()){
 			leftButton.setEnabled(false);
+			rightButton.setEnabled(true);
 		} else if(leftListModel.isEmpty()){
 			rightButton.setEnabled(false);
+			leftButton.setEnabled(true);
 		} else{
 			rightButton.setEnabled(true);
 			leftButton.setEnabled(true);
