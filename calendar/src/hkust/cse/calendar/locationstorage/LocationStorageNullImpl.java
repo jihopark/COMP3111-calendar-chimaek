@@ -107,7 +107,7 @@ public class LocationStorageNullImpl extends LocationStorage {
 	}
 
 	public boolean setLocationCapacity(String name, int num) {
-		if(RetrieveLocations(name)!=null) {
+		if(RetrieveLocations(name)!=null || num<=0) {
 			RetrieveLocations(name).setCapacity(num);
 			return true;
 		}
