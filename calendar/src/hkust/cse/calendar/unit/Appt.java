@@ -25,20 +25,11 @@ public class Appt implements Serializable {
 	
 	private int location_id = -1, notification_id = -1;
 	
-	private LinkedList<String> attend;			// The Attendant list
-	
-	private LinkedList<String> reject;			// The reject list
-	
-	private LinkedList<String> waiting;			// The waiting list
-	
 	public Appt() {								// A default constructor used to set all the attribute to default values
 		mApptID = 0;
 		mTimeSpan = null;
 		mTitle = "Untitled";
 		mInfo = "";
-		attend = new LinkedList<String>();
-		reject = new LinkedList<String>();
-		waiting = new LinkedList<String>();
 	}
 	
 	public Appt(Appt appt){
@@ -46,9 +37,6 @@ public class Appt implements Serializable {
 		mTimeSpan = appt.getTimeSpan();
 		mTitle = appt.getTitle();
 		mInfo = appt.getInfo();
-		attend = appt.getAttendList();
-		reject = appt.getRejectList();
-		waiting = appt.getWaitingList();
 		repeatType = appt.getRepeatType();
 		location_id = appt.getLocationID();
 	}
@@ -146,88 +134,6 @@ public class Appt implements Serializable {
 	}
 
 
-	// Getter of the attend LinkedList<String>
-	public LinkedList<String> getAttendList(){
-		return attend;
-	}
-	
-	// Getter of the reject LinkedList<String>
-	public LinkedList<String> getRejectList(){
-		return reject;
-	}
-	
-	// Getter of the waiting LinkedList<String>
-	public LinkedList<String> getWaitingList(){
-		return waiting;
-	}
-	
-	public LinkedList<String> getAllPeople(){
-		LinkedList<String> allList = new LinkedList<String>();
-		allList.addAll(attend);
-		allList.addAll(reject);
-		allList.addAll(waiting);
-		return allList;
-	}
-	
-	public void addAttendant(String addID){
-		if (attend == null)
-			attend = new LinkedList<String>();
-		attend.add(addID);
-	}
-	
-	public void addReject(String addID){
-		if (reject == null)
-			reject = new LinkedList<String>();
-		reject.add(addID);
-	}
-	
-	public void addWaiting(String addID){
-		if (waiting == null)
-			waiting = new LinkedList<String>();
-		waiting.add(addID);
-	}
-	
-	public void setWaitingList(LinkedList<String> waitingList){
-		waiting = waitingList;
-	}
-	
-	public void setWaitingList(String[] waitingList){
-		LinkedList<String> tempLinkedList = new LinkedList<String>();
-		if (waitingList !=null){
-			for (int a=0; a<waitingList.length; a++){
-				tempLinkedList.add(waitingList[a].trim());
-			}
-		}
-		waiting = tempLinkedList;
-	}
-	
-	public void setRejectList(LinkedList<String> rejectLinkedList) {
-		reject = rejectLinkedList;
-	}
-	
-	public void setRejectList(String[] rejectList){
-		LinkedList<String> tempLinkedList = new LinkedList<String>();
-		if (rejectList !=null){
-			for (int a=0; a<rejectList.length; a++){
-				tempLinkedList.add(rejectList[a].trim());
-			}
-		}
-		reject = tempLinkedList;
-	}
-	
-	public void setAttendList(LinkedList<String> attendLinkedList) {
-		attend = attendLinkedList;
-	}
-	
-	public void setAttendList(String[] attendList){
-		LinkedList<String> tempLinkedList = new LinkedList<String>();
-		if (attendList !=null){
-			for (int a=0; a<attendList.length; a++){
-				tempLinkedList.add(attendList[a].trim());
-			}
-		}
-		attend = tempLinkedList;
-	}
 	// Getter of the appointment title
 	public String toString() {
 		return mTitle;
