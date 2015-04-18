@@ -69,10 +69,6 @@ public class LoginDialog extends JFrame implements ActionListener
 		password = new JPasswordField(15);
 		pwPanel.add(password);
 		top.add(pwPanel);
-		
-		////////////////set default id&pw /////////////////
-		userName.setText("huamin");
-		password.setText("comp3111");
 
 		
 		JPanel signupPanel = new JPanel();

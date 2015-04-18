@@ -50,19 +50,24 @@ public class UserController {
 	}
 	
 	public User getAdmin(){
-		return mUserStorage.getAdmin();
+		return currentUser;
 	}
 	
 	public List<User> getUserList(){
 		return mUserStorage.getUserList();
 	}
 	
-	public boolean saveUser(String id, String pw) {
-		return mUserStorage.SaveUser(id,  pw);
+	public boolean saveUser(String id, String pw, String fName, String lName, String email, Boolean admin) {
+		return mUserStorage.SaveUser(id, pw, fName, lName, email, admin);
 	}
 	
 	public boolean removeUser(String id){
 		return mUserStorage.RemoveUser(id);
+	}
+
+	public boolean modifyUser(User current, User before) {
+		// TODO Auto-generated method stub
+		return mUserStorage.ModifyUser(current, before);
 	}
 
 }

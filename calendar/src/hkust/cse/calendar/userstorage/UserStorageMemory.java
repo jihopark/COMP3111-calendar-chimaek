@@ -15,11 +15,9 @@ public class UserStorageMemory extends UserStorage implements JsonStorable{
 	
 	private LinkedList<User> list;
  	private int userNumber = 1;
-	private User admin= new User("huamin","comp3111");	
 	
 	public UserStorageMemory() {
 		list = new LinkedList<User>();
-		list.add(admin);
 	}
 	
 	public User getUserFromCredential(String id, String pw) {
@@ -31,17 +29,33 @@ public class UserStorageMemory extends UserStorage implements JsonStorable{
 	}
 
 	
-	public boolean SaveUser(String id, String pw){
+	public boolean SaveUser(String id, String pw, String fName, String lName, String email, Boolean admin){
 		if(!isDuplicate(id)){
-			User user = new User(id, pw);
+			User user = new User(id, pw, fName, lName, email, admin);
 			list.add(user);
 			userNumber++;
 			saveToJson();
 			return true;
 		}
+		return false;	
+	}	
+	
+	@Override
+	public boolean ModifyUser(User current, User before) {
+		// TODO Auto-generated method stub
+		for(User a: list){
+			if(a.equals(current)){
+				a.setEmailAddress(before.getEmailAddress());
+				a.setFirstName(before.getFirstName());
+				a.setLastName(before.getLastName());
+				a.Password(before.getPW());
+				saveToJson();
+				return true;
+			}
+		}
 		return false;
-		
 	}
+	
 	
 	private boolean isDuplicate(String id) {
 		for(User u : list){
@@ -71,11 +85,6 @@ public class UserStorageMemory extends UserStorage implements JsonStorable{
 		return false;
 	}
 	
-
-	@Override
-	public User getAdmin() {
-		return admin;
-	}
 	
 	/*
 	 * For Disk Storage
@@ -96,5 +105,6 @@ public class UserStorageMemory extends UserStorage implements JsonStorable{
 		Gson gson = new Gson();
 		FileManager.getInstance().writeToFile(gson.toJson(this), getFileName());
 	}
+
 
 }

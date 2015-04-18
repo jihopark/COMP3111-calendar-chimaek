@@ -21,8 +21,11 @@ import javax.swing.event.*;
 public class RegisterDialog extends JFrame implements ActionListener {
 	
 	private JTextField userName;
+	private JTextField firstName;
+	private JTextField lastName;
 	private JPasswordField firstPassword;
 	private JPasswordField secondPassword;
+	private JTextField emailAddress;
 	private JButton backButton;
 	private JButton registerButton;
 	private JCheckBox adminCheckBox;
@@ -31,7 +34,9 @@ public class RegisterDialog extends JFrame implements ActionListener {
 		setTitle("Register");
 		addWindowListener(new WindowAdapter() {
 			public void windowClosing(WindowEvent e) {
-				System.exit(0);
+				LoginDialog loginDialog = new LoginDialog();
+				setVisible(false);
+				dispose();
 			}
 		});
 		Container contentPane;
@@ -50,6 +55,18 @@ public class RegisterDialog extends JFrame implements ActionListener {
 		userNamePanel.add(userName);
 		top.add(userNamePanel);
 		
+		JPanel firstNamePanel = new JPanel();
+		firstNamePanel.add(new JLabel("      First Name:        "));
+		firstName = new JTextField(15);
+		firstNamePanel.add(firstName);
+		top.add(firstNamePanel);
+		
+		JPanel lastNamePanel = new JPanel();
+		lastNamePanel.add(new JLabel("      Last Name:        "));
+		lastName = new JTextField(15);
+		lastNamePanel.add(lastName);
+		top.add(lastNamePanel);
+		
 		JPanel firstPasswordPanel = new JPanel();
 		firstPasswordPanel.add(new JLabel("      Password:         "));
 		firstPassword = new JPasswordField(15);
@@ -61,6 +78,12 @@ public class RegisterDialog extends JFrame implements ActionListener {
 		secondPassword = new JPasswordField(15);
 		secondPasswordPanel.add(secondPassword);
 		top.add(secondPasswordPanel);
+		
+		JPanel emailPanel = new JPanel();
+		emailPanel.add(new JLabel("   Email Address:     "));
+		emailAddress = new JTextField(15);
+		emailPanel.add(emailAddress);
+		top.add(emailPanel);
 		
 		contentPane.add("North", top);
 		
@@ -108,10 +131,18 @@ public class RegisterDialog extends JFrame implements ActionListener {
 			UserController.getInstance().initUserStorage(new UserStorageMemory());
 			if(adminCheckBox.isSelected()){
 				System.out.println("RegisterDialog/actionPerformed: Admin Checkbox is Checked and User is Saved");
-			
+				if(UserController.getInstance().saveUser(userName.getText(), firstPassword.getText(), firstName.getText(), lastName.getText(), emailAddress.getText(), true)) {				
+					JOptionPane.showMessageDialog(this, "Admin Registration Complete. Please Login using your credentials",
+							"Register Success", JOptionPane.OK_OPTION);
+					LoginDialog loginDialog = new LoginDialog();
+					setVisible(false);
+					dispose();
+				} else {
+					System.out.println("RegisterDialog/actionPerformed: UserController calls error. Data can not be saved");
+				}
 			} else {
-				if(UserController.getInstance().saveUser(userName.getText(), firstPassword.getText())) {
-					JOptionPane.showMessageDialog(this, "Registration Complete. Please Login using your credentials",
+				if(UserController.getInstance().saveUser(userName.getText(), firstPassword.getText(), firstName.getText(), lastName.getText(), emailAddress.getText(), false)) {
+					JOptionPane.showMessageDialog(this, "Normal Registration Complete. Please Login using your credentials",
 							"Register Success", JOptionPane.OK_OPTION);
 					LoginDialog loginDialog = new LoginDialog();
 					setVisible(false);

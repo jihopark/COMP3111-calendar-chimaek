@@ -16,7 +16,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 public class ApptControllerTest {
-	User defaultUser = new User("user","user");
+	User defaultUser = new User("user","user", "","","",true);
 	
 	@Before
 	public void initiateApptController(){

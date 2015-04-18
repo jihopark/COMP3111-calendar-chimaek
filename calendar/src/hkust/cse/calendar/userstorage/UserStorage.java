@@ -12,11 +12,12 @@ public abstract class UserStorage {
 
 		public abstract User getUserFromCredential(String id, String pw);
 		
-		public abstract boolean SaveUser(String id, String pw);	//abstract method to save an appointment record
+		public abstract boolean SaveUser(String id, String pw, String fName, String lName, String email, Boolean admin);	//abstract method to save an appointment record
 
 		public abstract List<User> getUserList();
 
 		public abstract boolean RemoveUser(String id);	//abstract method to remove an appointment record
+
+		public abstract boolean ModifyUser(User current, User before);
 		
-		public abstract User getAdmin();		//abstract method to return the current user object
 }

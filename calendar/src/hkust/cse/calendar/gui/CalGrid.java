@@ -415,6 +415,44 @@ public class CalGrid extends JFrame implements ActionListener {
 			}
 		});
 		
+		JMenu UserInfo = (JMenu) menuBar.add(new JMenu("UserInfo"));
+		UserInfo.setMnemonic('U');
+		UserInfo.getAccessibleContext().setAccessibleDescription(
+				"Manage User Information");
+		//if user is admin
+		if(UserController.getInstance().getCurrentUser().isAdmin()){
+			mi = (JMenuItem) UserInfo.add(new JMenuItem("Manage Users Data"));
+			mi.setMnemonic('U');
+			mi.getAccessibleContext().setAccessibleDescription("Manage All Users Data");	
+			mi.addActionListener(listener);
+			mi.addActionListener(new ActionListener() {	
+				public void actionPerformed(ActionEvent arg0) {
+					//System.out.println(UserController.getInstance().getCurrentUser().isAdmin());
+					//TimeMachineDialog TimeMachineTest = new TimeMachineDialog();
+					//TimeMachineTest.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+					//manage all users data dialog
+					System.out.println("CalGrid/UserInfo: Current User is Admin");
+					
+				}
+			});
+		} else {
+			//if user is not admin
+			mi = (JMenuItem) UserInfo.add(new JMenuItem("Manage My Data"));
+			mi.setMnemonic('A');
+			mi.getAccessibleContext().setAccessibleDescription("Manage My Credentials");	
+			mi.addActionListener(listener);
+			mi.addActionListener(new ActionListener() {	
+				public void actionPerformed(ActionEvent arg0) {
+					//TimeMachineDialog TimeMachineTest = new TimeMachineDialog();
+					//TimeMachineTest.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+					System.out.println("CalGrid/UserInfo: Current User is NOT Admin");
+					ManageMyDataDialog manageMyDataDialog = new ManageMyDataDialog();
+					
+				}
+			});
+		}
+
+		
 		return menuBar;
 	}
 	
