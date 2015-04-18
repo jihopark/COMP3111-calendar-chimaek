@@ -1,7 +1,9 @@
 package hkust.cse.calendar.userstorage;
 
 
+import hkust.cse.calendar.diskstorage.JsonStorable;
 import hkust.cse.calendar.unit.User;
+
 import java.util.List;
 
 public class UserController {
@@ -26,6 +28,10 @@ public class UserController {
 	public boolean initUserStorage(UserStorage storage) {
 		if(mUserStorage == null) {
 			mUserStorage = storage;
+			if (mUserStorage instanceof UserStorageMemory && mUserStorage instanceof JsonStorable){
+				mUserStorage = (UserStorageMemory) ((JsonStorable)mUserStorage).loadFromJson();
+				if (mUserStorage == null) mUserStorage = storage;
+			}
 			return true;
 		}
 		return false;
