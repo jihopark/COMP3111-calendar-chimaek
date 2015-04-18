@@ -21,7 +21,6 @@ public class LocationStorageMemory extends LocationStorage implements JsonStorab
 	
 	public LocationStorageMemory( User user )
 	{
-		defaultUser = user;
 		list = new ArrayList<Location>();
 		initialLocation.setName("-");
 		initialLocation.setID(0);

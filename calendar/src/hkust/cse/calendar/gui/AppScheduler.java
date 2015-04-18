@@ -876,9 +876,9 @@ ComponentListener {
 					flagOne, flagTwo, flagThree, flagFour);	
 		}*/
 		if (isModifying)
-			return ApptController.getInstance().modifyRepeatedNewAppt(UserController.getInstance().getAdmin(), currentAppt, endAtDate,
+			return ApptController.getInstance().modifyRepeatedNewAppt(UserController.getInstance().getCurrentUser(), currentAppt, endAtDate,
 					false, false, false, false);
-		return ApptController.getInstance().saveRepeatedNewAppt(UserController.getInstance().getAdmin(), currentAppt, endAtDate);	
+		return ApptController.getInstance().saveRepeatedNewAppt(UserController.getInstance().getCurrentUser(), currentAppt, endAtDate);	
 	}
 
 	private boolean saveFrequencyWithoutEndAt()
@@ -895,9 +895,9 @@ ComponentListener {
 					flagOne, flagTwo, flagThree, flagFour);
 		}*/
 		if (isModifying)
-			return ApptController.getInstance().modifyAppt(UserController.getInstance().getAdmin(), currentAppt,
+			return ApptController.getInstance().modifyAppt(UserController.getInstance().getCurrentUser(), currentAppt,
 					false, false, false, false);
-		return ApptController.getInstance().saveNewAppt(UserController.getInstance().getAdmin(), currentAppt);
+		return ApptController.getInstance().saveNewAppt(UserController.getInstance().getCurrentUser(), currentAppt);
 	}
 
 
