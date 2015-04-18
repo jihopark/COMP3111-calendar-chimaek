@@ -73,7 +73,6 @@ public class ApptController {
 
 	/* Manage the Appt in the storage
 	 * parameters: the Appt involved, the action to take on the Appt */
-	@Deprecated
 	/*public void ManageAppt(Appt appt, int action) {
 
 		if (action == NEW) {				// Save the Appt into the storage if it is new and non-null
@@ -89,7 +88,9 @@ public class ApptController {
 		} 
 	}*/
 
+	/*
 	//Save Appt with Notification
+	@Deprecated
 	public boolean saveNewAppt(User user, Appt appt, 
 			boolean flagOne, boolean flagTwo, boolean flagThree, boolean flagFour){
 		appt.setID(mApptStorage.getIDCount());
@@ -100,6 +101,17 @@ public class ApptController {
 		
 		if (tmp) updateDiskStorage();
 		
+		return tmp;
+	}*/
+	
+	public boolean saveNewAppt(User user,Appt appt, boolean notificationEnabled,
+			int notificationHoursBefore, int notificationMinutesBefore){
+		appt.setID(mApptStorage.getIDCount());
+		if(notificationEnabled)
+			setNotificationForAppt(appt,notificationHoursBefore,notificationMinutesBefore);
+		boolean tmp = mApptStorage.SaveAppt(user, appt);
+		
+		if(tmp) updateDiskStorage();
 		return tmp;
 	}
 
@@ -112,7 +124,9 @@ public class ApptController {
 		return tmp;
 	}
 	
+	/*
 	//Save Repeated Appt with Notification
+	@Deprecated
 	public boolean saveRepeatedNewAppt(User user, Appt appt, Date repeatEndDate, 
 			boolean flagOne, boolean flagTwo, boolean flagThree, boolean flagFour){
 		List<Appt> tmpList;
@@ -124,6 +138,24 @@ public class ApptController {
 				return false;
 			if (flagOne || flagTwo || flagThree || flagFour)
 				setNotificationForAppt(a, flagOne, flagTwo, flagThree, flagFour);
+		}
+		linkRepeatedAppt(tmpList);
+		updateDiskStorage();
+		return true;
+	}*/
+	
+	
+	public boolean saveRepeatedNewAppt(User user, Appt appt, Date repeatEndDate, 
+			boolean notificationEnabled, int notificationHoursBefore, int notificationMinutesBefore){
+		List<Appt> tmpList;
+		tmpList = getRepeatedApptList(appt, repeatEndDate);
+		if (mApptStorage.checkOverlaps(user,tmpList))
+			return false;
+		for (Appt a : tmpList){
+			if (!saveNewAppt(user, a))
+				return false;
+			if(notificationEnabled)
+				setNotificationForAppt(a,notificationHoursBefore,notificationMinutesBefore);
 		}
 		linkRepeatedAppt(tmpList);
 		updateDiskStorage();
@@ -206,8 +238,10 @@ public class ApptController {
 
 		return false;
 	}*/
-	
-	public boolean modifyAppt(User user,  Appt appt, 
+
+	/*
+	@Deprecated
+	public boolean modifyAppt(User user, Appt appt, 
 			boolean flagOne, boolean flagTwo, boolean flagThree, boolean flagFour){
 		if (!TimeController.getInstance().isNotPast(appt)){
 			return false;
@@ -221,7 +255,26 @@ public class ApptController {
 		}
 
 		return false;
+	}*/
+	
+	
+	public boolean modifyAppt(User user, Appt appt, 
+			boolean notificationEnabled, int notificationHoursBefore, int notificationMinutesBefore){
+		if (!TimeController.getInstance().isNotPast(appt)){
+			return false;
+		}
+		//Remove Appt First
+		if (removeAppt(user, appt)){
+			if (notificationEnabled)
+				return saveNewAppt(user, appt, notificationEnabled,notificationHoursBefore, notificationMinutesBefore);
+			else 
+				return saveNewAppt(user, appt);
+		}
+
+		return false;
 	}
+	
+	
 	
 	/*public boolean modifyRepeatedNewAppt(User user, Appt appt, Date repeatEndDate,
 			boolean flagOne, boolean flagTwo, boolean flagThree, boolean flagFour){
@@ -238,6 +291,8 @@ public class ApptController {
 		return saveRepeatedNewAppt(user, appt, repeatEndDate);		
 	}*/
 
+	/*
+	@Deprecated
 	public boolean modifyRepeatedNewAppt(User user, Appt appt, Date repeatEndDate,
 			boolean flagOne, boolean flagTwo, boolean flagThree, boolean flagFour){
 		//If repeated, then modify all repeated appts. However, past appts will not be modified
@@ -251,7 +306,24 @@ public class ApptController {
 		if (flagOne || flagTwo || flagThree || flagFour)
 			return saveRepeatedNewAppt(user, appt, repeatEndDate, flagOne, flagTwo, flagThree, flagFour);
 		return saveRepeatedNewAppt(user, appt, repeatEndDate);		
+	}*/
+
+	public boolean modifyRepeatedNewAppt(User user, Appt appt, Date repeatEndDate,
+			boolean notificationEnabled, int notificationHoursBefore, int notificationMinutesBefore){
+		//If repeated, then modify all repeated appts. However, past appts will not be modified
+		if (!TimeController.getInstance().isNotPast(appt)){
+			return false;
+		}
+		//Remove Appt First
+		removeAppt(user, appt);
+
+		//Save Modified Appt
+		if (notificationEnabled)
+			return saveRepeatedNewAppt(user, appt, repeatEndDate, notificationEnabled,
+					notificationHoursBefore, notificationMinutesBefore);
+		return saveRepeatedNewAppt(user, appt, repeatEndDate);		
 	}
+	
 
 	//Remove appt of user. Return true if successfully removed
 	public boolean removeAppt(User user, Appt appt){
@@ -290,14 +362,26 @@ public class ApptController {
 			((JsonStorable) mApptStorage).saveToJson();
 	}
 
+	/*
+	@Deprecated
 	public boolean setNotificationForAppt(Appt appt, 
 			boolean flagOne, boolean flagTwo, boolean flagThree, boolean flagFour){
 		System.out.println("ApptController/setNotificationForAppt Notification For " + appt.TimeSpan());
 		Notification noti = new Notification(appt, appt.getTitle(), appt.getTimeSpan().StartTime(),
 				flagOne, flagTwo, flagThree, flagFour);
-		boolean tmp = NotificationController.getInstance().saveNewNotification(UserController.getInstance().getAdmin(), noti);
+		boolean tmp = NotificationController.getInstance().saveNewNotification(UserController.getInstance().getCurrentUser(), noti);
 		if (tmp)
 			appt.setNotification(noti);
+		return tmp;
+	}*/
+	
+	public boolean setNotificationForAppt(Appt appt, int notificationHoursBefore, int notificationMinutesBefore)
+	{
+		Notification notification = new Notification(appt, appt.getTitle(),appt.getTimeSpan().StartTime(),
+				notificationHoursBefore, notificationMinutesBefore);
+		boolean tmp = NotificationController.getInstance().saveNewNotification(UserController.getInstance().getCurrentUser(), notification);
+		if(tmp)
+			appt.setNotification(notification);
 		return tmp;
 	}
 

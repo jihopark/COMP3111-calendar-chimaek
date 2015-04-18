@@ -112,17 +112,7 @@ public class DetailsDialog extends JFrame implements ActionListener {
 		//NOTIFICATION DETAILS
 		if(appt.getNotification() != null)
 		{
-			List<Boolean> alarmFlagList = appt.getNotification().getFlags();
-			area.append("Notifications: ");
-			if(alarmFlagList.get(0))
-				area.append("1 hour   ");
-			if(alarmFlagList.get(1))
-				area.append("3 hours   ");
-			if(alarmFlagList.get(2))
-				area.append("12 hours   ");
-			if(alarmFlagList.get(3))
-				area.append("24 hours   ");
-			area.append("\n");
+			area.append("Notifications at: " + appt.getNotification().getNotificationTimeObj().getNotificationTime());
 		}
 		else
 		{

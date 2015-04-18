@@ -65,7 +65,11 @@ public class ApptStorageMemory extends ApptStorage implements JsonStorable {
 				System.out.println("ApptStorageMemory/SaveAppt : Saved Appt #"+appt.getID());
 				if(!appt.getLocation().getName().equals("-"))
 					appt.getLocation().increaseCountForLocation();
-				
+				//saveNotification(appt.getNotification());
+				//Save Notification if any
+				//if (appt.getNotification()!=null)
+					//NotificationController.getInstance().saveNewNotification(appt.getNotification());
+
 				return true;
 			}
 		}

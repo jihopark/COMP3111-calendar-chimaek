@@ -21,10 +21,13 @@ public abstract class NotificationStorage {
 	public abstract boolean UpdateNotification(User user, Notification notification);
 
 	public abstract Notification RetrieveNotification(int notificationID);
-	
-	public abstract List<NotificationTime> RetrieveNotification(User user, Date currentTime);
 
-	public abstract List<NotificationTime> RetrieveAllNotificationTimes(Notification notification);
+	//public abstract List<NotificationTime> RetrieveAllNotificationTimes(Notification notification);
 	
 	public abstract int getIDCount();
+	
+	public abstract List<NotificationTime> RetrieveNotificationAtCurrentTime(User user, Date currentTime);
+
+	public abstract NotificationTime RetrieveNotificationTime(Notification notification);
+
 }

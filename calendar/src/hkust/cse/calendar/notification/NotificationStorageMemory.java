@@ -44,8 +44,6 @@ public class NotificationStorageMemory extends NotificationStorage implements Js
 		}
 	}
 	
-
-
 	@Override
 	public boolean RemoveNotification(User user, Notification notification) {
 		for (Notification a : notifications.get(user.toString())){
@@ -75,21 +73,24 @@ public class NotificationStorageMemory extends NotificationStorage implements Js
 	}
 	
 	@Override
-	public List<NotificationTime> RetrieveNotification(User user, Date currentTime) {
+	public List<NotificationTime> RetrieveNotificationAtCurrentTime(User user, Date currentTime) {
 		ArrayList<NotificationTime> notis = new ArrayList<NotificationTime>();
 		if (notifications.get(user.toString()) == null)
 			return notis;
 		for (Notification a : notifications.get(user.toString())){ //for each notification
-			for(NotificationTime time : a.getTimes()) { //check each alarm
-				if (time!=null && time.getNotificationTime().getTime()/1000 == currentTime.getTime()/1000){
-					notis.add(time);
-					break;
-				}
+			NotificationTime tempNotificationObj = a.getNotificationTimeObj();	
+			if(tempNotificationObj != null && (tempNotificationObj.getNotificationTime().getTime()/1000 == currentTime.getTime()/1000))
+			{	
+				System.out.println("Notification Time: " + tempNotificationObj.getNotificationTime().getTime());
+				System.out.println("Current Time: " + currentTime.getTime());
+				notis.add(tempNotificationObj);
 			}
 		}
 		return notis;
 	}
 
+	/*
+	@Deprecated
 	@Override
 	public LinkedList<NotificationTime> RetrieveAllNotificationTimes(Notification notification) {
 		LinkedList<NotificationTime> valueToReturn = new LinkedList<NotificationTime>();
@@ -98,7 +99,8 @@ public class NotificationStorageMemory extends NotificationStorage implements Js
 		}
 		return valueToReturn;
 	}
-		
+	*/
+	
 	@Override
 	public boolean UpdateNotification(User user, Notification notification) {
 		for (Notification a : notifications.get(user.toString())){
@@ -141,6 +143,12 @@ public class NotificationStorageMemory extends NotificationStorage implements Js
 	public void saveToJson(){
 		Gson gson = new Gson();
 		FileManager.getInstance().writeToFile(gson.toJson(this), getFileName());
+	}
+
+	@Override
+	public NotificationTime RetrieveNotificationTime(Notification notification) {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 }

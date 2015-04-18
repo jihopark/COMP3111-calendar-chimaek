@@ -106,7 +106,7 @@ public class Appt implements Serializable {
 	}
 	
 	//Returns Repeat End Date
-	public Timestamp getRepeateEndDate(){
+	public Timestamp getRepeatedEndDate(){
 		if (isRepeated()){
 			Appt temp = this;
 			while (temp.nextRepeatedAppt_id!=-1)

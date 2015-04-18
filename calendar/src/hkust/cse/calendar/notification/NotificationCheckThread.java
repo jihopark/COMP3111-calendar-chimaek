@@ -29,11 +29,20 @@ public class NotificationCheckThread extends Thread {
 				currentTime = TimeController.getInstance().getCurrentTimeInDate();
 				calGrid.updateCalGridTitleClock(currentTime);
 				//System.out.println("Current Time is: " + currentTime);
+
 				List<NotificationTime> notifications = NotificationController.getInstance().retrieveNotification(UserController.getInstance().getAdmin(), currentTime);
+				if(notifications.size() == 0)
+				{
+					//System.out.println("There is no notification!");
+				}
 				if (notifications.size()!=0){
 					for (NotificationTime time : notifications){
 						if (!deliveredNotification.contains(time)){
-							JOptionPane.showMessageDialog(null, "You have an appointment!\n" + time.getParent().getName() + " at " + time.getParent().getAppt().TimeSpan());
+							System.out.println((time == null)+"");
+							System.out.println((time.getParent()==null)+"");
+							System.out.println((time.getParent().getAppt()==null)+"");				
+							
+							JOptionPane.showMessageDialog(null, "You have an appointment!\n" + time.getParent().getName() + "at " + time.getParent().getAppt().TimeSpan());
 							deliveredNotification.add(time);
 						}
 					}

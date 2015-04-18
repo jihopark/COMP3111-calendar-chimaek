@@ -516,7 +516,6 @@ ComponentListener {
 		CancelBut.addActionListener(this);
 	}
 	private void initiateGroupEventButton() {
-		// TODO Auto-generated method stub
 		groupEventButton = new JButton("Save as Group Event");
 		groupEventButton.addActionListener(this);
 	}
@@ -582,7 +581,6 @@ ComponentListener {
 	}
 	
 	private void groupEventButtonResponse() {
-		// TODO Auto-generated method stub
 		GroupInvitationDialog groupInvitationDialog = new GroupInvitationDialog();
 	}
 
@@ -730,8 +728,9 @@ ComponentListener {
 		//SAVE ALL THE RELEVENT INFORMATION TO THE NEWAPPT.
 		int[] validDate = getValidDate(yearField,monthField,dayField);
 		int[] validTimeInterval = getValidTimeInterval();
-
-		if(validDate == null || validTimeInterval == null)
+		boolean validNotificationTime = checkValidNotificationTime();
+		
+		if(validDate == null || validTimeInterval == null || validNotificationTime == false)
 		{
 			return;
 		}
@@ -766,13 +765,9 @@ ComponentListener {
 			{
 				endAtDate = intArrayToDate(validEndAtDate);
 		
-				if(saveFrequencyWithEndAt(endAtDate))
+				if(saveApptWithEndAt(endAtDate))
 				{
 					//SAVE NOTIFICATION
-					/*if(checkForNotification())
-					{
-						saveResponseFromNotification();
-					}*/
 					JOptionPane.showMessageDialog(this, "Saved appointment successfully!");				
 					dispose();
 				}
@@ -785,67 +780,91 @@ ComponentListener {
 		//CASE: ONE-TIME
 		else
 		{
-			if (saveFrequencyWithoutEndAt()){
+			if (saveApptWithoutEndAt()){
 				JOptionPane.showMessageDialog(this, "Saved appointment successfully");
 				dispose();
 			}
-			else
+			else{
 				JOptionPane.showMessageDialog(this, "Failed to save appointment!");
+			}
 		}
 	}
 	
+	/*
 	private void saveResponseFromNotification()
 	{
-
 		boolean flagOne = false;
 		boolean flagTwo = false;
 		boolean flagThree = false;
 		boolean flagFour = false;
-
+		
 		if(oneHourCheckBox.isSelected())
 		{
-			flagOne = true;
+			flagOne= true;
 		}
-
 		if(threeHourCheckBox.isSelected())
 		{
-			flagTwo = true;
+			flagTwo= true;
 		}
-
 		if(twelveHourCheckBox.isSelected())
 		{
-			flagThree = true;
+			flagThree= true;
 		}
-
 		if(twentyfourHourCheckBox.isSelected())
 		{
-			flagFour = true;
+			flagFour= true;
 		}
-
-
-		/*if(ApptController.getInstance().setNotificationForAppt(currentAppt, flagOne, flagTwo, flagThree, flagFour))
+		
+		
+		if(ApptController.getInstance().setNotificationForAppt(currentAppt, flagOne, flagTwo, flagThree, flagFour))
 		{
 			JOptionPane.showMessageDialog(this, "Saved notification successfully");
 		}
 		else
 		{
 			JOptionPane.showMessageDialog(this, "Failed to save notification");
-		}*/
-	}
-
+		}
+	}*/
 
 	private boolean checkForNotification()
 	{
-		if(oneHourCheckBox.isSelected() || threeHourCheckBox.isSelected() || 
-				twelveHourCheckBox.isSelected() || twentyfourHourCheckBox.isSelected())
+		if(notificationEnableBox.isSelected())
 		{
 			return true;
 		}
-
-		return false;
+		else
+		{
+			return false;
+		}
 	}
-
-	private boolean saveFrequencyWithEndAt(Date endAtDate)
+	
+	private boolean checkValidNotificationTime()
+	{
+		if(notificationEnableBox.isSelected())
+		{
+			int notificationHour = Utility.getNumber(notificationHourField.getText());
+			int notificationMinute = Utility.getNumber(notificationMinuteField.getText());
+			if(notificationHour < 0 || notificationHour > 24)
+			{
+				JOptionPane.showMessageDialog(this, "Notification hour range from 0-24!", "Input Error",JOptionPane.ERROR_MESSAGE);
+				return false;
+			}
+			if(notificationMinute < 0 || notificationMinute > 59)
+			{
+				JOptionPane.showMessageDialog(this, "Notification minute range from 0-59!", "Input Error", JOptionPane.ERROR_MESSAGE);
+				return false;
+			}
+			
+			return true;
+		}
+		else
+		{
+			return true;
+		}
+	}
+	
+	
+	private boolean saveApptWithEndAt(Date endAtDate)
 	{
 		System.out.println("Current Appt Time: " + currentAppt.getTimeSpan().StartTime().getTime());
 		
@@ -853,6 +872,9 @@ ComponentListener {
 				|| (currentAppt.getTimeSpan().StartTime().getTime() > endAtDate.getTime())){
 			return false;
 		}
+		
+		int notificationHoursBefore = Utility.getNumber(notificationHourField.getText());
+		int notificationMinutesBefore = Utility.getNumber(notificationMinuteField.getText());
 		
 		int repeatType;
 		if(dailyButton.isSelected())
@@ -866,41 +888,41 @@ ComponentListener {
 
 		currentAppt.setRepeatType(repeatType);
 		
-		/*if (checkForNotification()){
-			boolean flagOne = oneHourCheckBox.isSelected();
-			boolean flagTwo = threeHourCheckBox.isSelected();
-			boolean flagThree = twelveHourCheckBox.isSelected();
-			boolean flagFour = twentyfourHourCheckBox.isSelected();
-			
-			if (isModifying)
+		if (checkForNotification()){
+			if (isModifying){
 				return ApptController.getInstance().modifyRepeatedNewAppt(UserController.getInstance().getAdmin(), currentAppt, endAtDate,
-						flagOne, flagTwo, flagThree, flagFour);
+						checkForNotification(),notificationHoursBefore,notificationMinutesBefore);
+			}
 			return ApptController.getInstance().saveRepeatedNewAppt(UserController.getInstance().getAdmin(), currentAppt, endAtDate,
-					flagOne, flagTwo, flagThree, flagFour);	
-		}*/
-		if (isModifying)
-			return ApptController.getInstance().modifyRepeatedNewAppt(UserController.getInstance().getCurrentUser(), currentAppt, endAtDate,
-					false, false, false, false);
-		return ApptController.getInstance().saveRepeatedNewAppt(UserController.getInstance().getCurrentUser(), currentAppt, endAtDate);	
+					checkForNotification(),notificationHoursBefore,notificationMinutesBefore);	
+		}
+		if (isModifying){
+			return ApptController.getInstance().modifyRepeatedNewAppt(UserController.getInstance().getAdmin(), currentAppt, endAtDate,
+					checkForNotification(),notificationHoursBefore,notificationMinutesBefore);
+		}
+		return ApptController.getInstance().saveRepeatedNewAppt(UserController.getInstance().getAdmin(), currentAppt, endAtDate);	
 	}
 
-	private boolean saveFrequencyWithoutEndAt()
+	private boolean saveApptWithoutEndAt()
 	{
-		/*if (checkForNotification()){
-			boolean flagOne = oneHourCheckBox.isSelected();
-			boolean flagTwo = threeHourCheckBox.isSelected();
-			boolean flagThree = twelveHourCheckBox.isSelected();
-			boolean flagFour = twentyfourHourCheckBox.isSelected();
-			if (isModifying)
+
+		int notificationHoursBefore = Utility.getNumber(notificationHourField.getText());
+		int notificationMinutesBefore = Utility.getNumber(notificationMinuteField.getText());
+		
+		if (checkForNotification()){
+			
+			if (isModifying){
 				return ApptController.getInstance().modifyAppt(UserController.getInstance().getAdmin(), currentAppt,
-						flagOne, flagTwo, flagThree, flagFour);
+						checkForNotification(),notificationHoursBefore,notificationMinutesBefore);
+			}
 			return ApptController.getInstance().saveNewAppt(UserController.getInstance().getAdmin(), currentAppt,
-					flagOne, flagTwo, flagThree, flagFour);
-		}*/
-		if (isModifying)
-			return ApptController.getInstance().modifyAppt(UserController.getInstance().getCurrentUser(), currentAppt,
-					false, false, false, false);
-		return ApptController.getInstance().saveNewAppt(UserController.getInstance().getCurrentUser(), currentAppt);
+					checkForNotification(),notificationHoursBefore,notificationMinutesBefore);
+		}
+		if (isModifying){
+			return ApptController.getInstance().modifyAppt(UserController.getInstance().getAdmin(), currentAppt,
+					checkForNotification(),notificationHoursBefore,notificationMinutesBefore);
+		}	
+		return ApptController.getInstance().saveNewAppt(UserController.getInstance().getAdmin(), currentAppt);
 	}
 
 
@@ -963,7 +985,7 @@ ComponentListener {
 
 		//If Current Appt is Repeated
 		if (currentAppt.isRepeated()){
-			Timestamp endAtTime = currentAppt.getRepeateEndDate();
+			Timestamp endAtTime = currentAppt.getRepeatedEndDate();
 			endAtYearField.setText(""+(TimeController.getInstance().getYearFrom(endAtTime)));
 			endAtMonthField.setText(""+(TimeController.getInstance().getMonthFrom(endAtTime)));
 			endAtDayField.setText(""+(TimeController.getInstance().getDateFrom(endAtTime)));
@@ -984,53 +1006,15 @@ ComponentListener {
 			}
 
 		}
-
-
+		
 		//Load data on notification.
-		/*if(currentAppt.getNotification() != null)
+		if(currentAppt.getNotification() != null)
 		{
-			List<Boolean> flagList = currentAppt.getNotification().getFlags();
-			if(flagList.get(0).booleanValue() == true)
-			{
-				oneHourCheckBox.setSelected(true);
-			}
-			else
-			{
-				oneHourCheckBox.setSelected(false);
-			}
-
-			if(flagList.get(1).booleanValue() == true)
-			{
-				threeHourCheckBox.setSelected(true);
-			}
-			else
-			{
-				threeHourCheckBox.setSelected(false);
-			}
-
-			if(flagList.get(2).booleanValue() == true)
-			{
-				twelveHourCheckBox.setSelected(true);
-			}
-			else
-			{
-				twelveHourCheckBox.setSelected(false);
-			}
-
-			if(flagList.get(3).booleanValue() == true)
-			{
-				twentyfourHourCheckBox.setSelected(true);
-			}
-			else
-			{
-				twentyfourHourCheckBox.setSelected(false);
-			}
-		}*/
-
-		//endAtYearField.setText(Integer.toString(NewAppt.getEndAtTime));
-		//endAtMonthField.setText(Integer.toString(NewAppt.getEndAtTime));
-		//endAtDayField.setText(Integer.toString(NewAppt.getEndAtTime));
-
+			notificationEnableBox.setSelected(true);
+			notificationHourField.setText(Integer.toString(currentAppt.getNotification().getHoursBefore()));
+			notificationMinuteField.setText(Integer.toString(currentAppt.getNotification().getMinutesBefore()));
+		}
+		
 		titleField.setText(currentAppt.getTitle());
 		detailArea.setText(currentAppt.getInfo());	
 	}

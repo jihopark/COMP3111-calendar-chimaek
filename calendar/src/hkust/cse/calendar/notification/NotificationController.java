@@ -47,12 +47,19 @@ public class NotificationController {
 		}
 		
 		//Retrieve Notification with currentTime. returns empty arraylist if no notification
+
 		public List<NotificationTime> retrieveNotification(User user, Date currentTime) {
-			return mNotificationStorage.RetrieveNotification(user, currentTime);
+			return mNotificationStorage.RetrieveNotificationAtCurrentTime(user, currentTime);
 		}
 		
+		/*
+		@Deprecated
 		public List<NotificationTime> retrieveAllNotificationTimes(Notification notification){
 			return mNotificationStorage.RetrieveAllNotificationTimes(notification);
+		}*/
+		
+		public NotificationTime retrieveNotificationTime(Notification notification){
+			return mNotificationStorage.RetrieveNotificationTime(notification);
 		}
 		
 		//Update
