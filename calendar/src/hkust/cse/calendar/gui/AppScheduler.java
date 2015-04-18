@@ -551,17 +551,6 @@ ComponentListener {
 			groupEventButtonResponse();
 
 		}
-		else if (e.getSource() == rejectBut)
-		{
-			if (JOptionPane.showConfirmDialog(this, "Reject this joint appointment?", "Confirmation", JOptionPane.YES_NO_OPTION) == 0)
-			{
-				currentAppt.addReject(getCurrentUser());
-				currentAppt.getAttendList().remove(getCurrentUser());
-				currentAppt.getWaitingList().remove(getCurrentUser());
-				this.setVisible(false);
-				dispose();
-			}
-		}
 		else if(e.getSource() == oneTimeButton)
 		{
 			enableEndAtFields(false);
