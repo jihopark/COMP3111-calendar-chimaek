@@ -36,6 +36,7 @@ import javax.swing.JTextField;
 public class ManageAdminDataDialog extends JFrame implements ActionListener {
 
 	private JButton cancelButton;
+	private JButton removeButton;
 	private JButton okButton;
 	private JPanel listPanel;
 	private JPanel topPanel;
@@ -52,7 +53,6 @@ public class ManageAdminDataDialog extends JFrame implements ActionListener {
 	private JLabel firstPassword;
 	private JLabel secondPassword;
 	private JLabel emailAddress;
-	private User temp;
 	
 	private JLabel userNameBox;
 	private JTextField firstNameBox;
@@ -90,11 +90,11 @@ public class ManageAdminDataDialog extends JFrame implements ActionListener {
         			//Location selectedItem = (Location) displayList.getSelectedValue();
                     //capacityLabel.setText("Capacity is: " + selectedItem.getCapacity());
         			String ID = (String) userListBox.getSelectedValue();
-        			temp = UserController.getInstance().getUser(ID);
-        			userNameBox.setText(" " + temp.getID());
-        			firstNameBox.setText(temp.getFirstName());
-        			lastNameBox.setText(temp.getLastName());
-        			emailAddressBox.setText(temp.getEmailAddress());
+        			user = UserController.getInstance().getUser(ID);
+        			userNameBox.setText(" " + user.getID());
+        			firstNameBox.setText(user.getFirstName());
+        			lastNameBox.setText(user.getLastName());
+        			emailAddressBox.setText(user.getEmailAddress());
         		}
         	}
         };
@@ -161,6 +161,10 @@ public class ManageAdminDataDialog extends JFrame implements ActionListener {
 		cancelButton.addActionListener(this);
 		bottomPanel.add(cancelButton);
 		
+		removeButton = new JButton("Remove");
+		removeButton.addActionListener(this);
+		bottomPanel.add(removeButton);
+		
 		okButton = new JButton("Modify Data");
 		okButton.addActionListener(this);
 		bottomPanel.add(okButton);
@@ -185,19 +189,40 @@ public class ManageAdminDataDialog extends JFrame implements ActionListener {
 			} else {
 				JOptionPane.showMessageDialog(this, "Modified Successed! Thank you!",
 						"Modify Successed", JOptionPane.PLAIN_MESSAGE);
-				User newDataUser = temp;
+				User newDataUser = user;
 				newDataUser.Password(firstPasswordBox.getText());
 				newDataUser.setEmailAddress(emailAddressBox.getText());
 				newDataUser.setFirstName(firstNameBox.getText());
 				newDataUser.setLastName(lastNameBox.getText());
-				UserController.getInstance().modifyUser(temp, newDataUser);
+				UserController.getInstance().modifyUser(user, newDataUser);
 				
 				setVisible(false);
 				dispose();
 			}
 			
 			
-		}else if(e.getSource() == cancelButton){
+		}else if(e.getSource() == removeButton){
+			User newDataUser = user;
+			if(newDataUser == UserController.getInstance().getCurrentUser()){
+				JOptionPane.showMessageDialog(this, "Could not Delete Yourself!",
+						"Remove UnSuccessful", JOptionPane.OK_CANCEL_OPTION);
+				return;
+			}
+			if(UserController.getInstance().removeUser(newDataUser.getID())){
+				JOptionPane.showMessageDialog(this, "You have Deleted User: " + newDataUser.getID() + "!",
+						"Remove Successful", JOptionPane.OK_CANCEL_OPTION);
+				userListModel.clear();
+				userList = UserController.getInstance().getUserList();
+				for(User a : userList) {
+					userListModel.addElement(a.getID());
+				}
+			} else {
+				JOptionPane.showMessageDialog(this, "Could Not Delete the Specific User.",
+						"Remove UnSuccessful", JOptionPane.OK_CANCEL_OPTION);
+			}
+			
+			
+		} else if(e.getSource() == cancelButton){
 			setVisible(false);
 			dispose();
 		}
