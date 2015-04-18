@@ -115,6 +115,19 @@ public class ApptStorageMemory extends ApptStorage implements JsonStorable {
 		
 		return retrieveList;
 	}
+	
+	@Override
+	public List<Appt> RetrieveApptsInList(User user) {
+		ArrayList<Appt> retrieveList = new ArrayList<Appt>();
+		if (mAppts.get(user.toString()) != null){
+			for (Appt a : mAppts.get(user.toString())){
+				retrieveList.add(a);
+				//System.out.println("ApptStorageMemory/RetrieveApptsInList : Retrive Appt #"+a.getID());
+			}
+		}
+		
+		return retrieveList;
+	}
 
 	@Override
 	@Deprecated	
@@ -197,4 +210,6 @@ public class ApptStorageMemory extends ApptStorage implements JsonStorable {
 		Gson gson = new Gson();
 		FileManager.getInstance().writeToFile(gson.toJson(this), getFileName());
 	}
+
+
 }

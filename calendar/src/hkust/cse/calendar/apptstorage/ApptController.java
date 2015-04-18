@@ -66,6 +66,10 @@ public class ApptController {
 	public List<Appt> RetrieveApptsInList(User user, TimeSpan time){
 		return mApptStorage.RetrieveApptsInList(user, time);
 	}
+	
+	public List<Appt> RetrieveApptsInList(User user) {
+		return mApptStorage.RetrieveApptsInList(user);
+	}
 
 	public Appt RetrieveAppt(int apptID) {
 		return mApptStorage.RetrieveAppts(apptID);
@@ -398,4 +402,5 @@ public class ApptController {
 	public void createNewGroupAppt(){
 		//create new group appt
 	}
+
 }

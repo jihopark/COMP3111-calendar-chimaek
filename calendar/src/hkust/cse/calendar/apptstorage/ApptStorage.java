@@ -44,4 +44,6 @@ public abstract class ApptStorage {
 	 * Add other methods if necessary
 	 */
 
+	public abstract List<Appt> RetrieveApptsInList(User user);
+
 }
