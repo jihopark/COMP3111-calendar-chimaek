@@ -20,7 +20,7 @@ public class ApptControllerTest {
 	
 	@Before
 	public void initiateApptController(){
-		ApptController.getInstance().initApptStorage(new ApptStorageMemory(defaultUser));
+		ApptController.getInstance().initApptStorage(new ApptStorageMemory());
 	}
 	
 	@Test

@@ -1,11 +1,14 @@
 package hkust.cse.calendar.apptstorage;
 
+import hkust.cse.calendar.diskstorage.JsonStorable;
+import hkust.cse.calendar.locationstorage.LocationController;
 import hkust.cse.calendar.notification.NotificationController;
 import hkust.cse.calendar.time.TimeController;
 import hkust.cse.calendar.unit.Appt;
 import hkust.cse.calendar.unit.Notification;
 import hkust.cse.calendar.unit.TimeSpan;
 import hkust.cse.calendar.unit.User;
+import hkust.cse.calendar.userstorage.UserController;
 
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -16,7 +19,7 @@ public class ApptController {
 
 	/* Applying Singleton Structure */
 	private static ApptController instance = null;
-	private static int apptIDCount = 1;
+	//private static int apptIDCount = 1;
 	public static final int DAILY = 1, WEEKLY = 2, MONTHLY = 3;
 	@Deprecated
 	public final static int REMOVE = 1;
@@ -44,6 +47,10 @@ public class ApptController {
 	public boolean initApptStorage(ApptStorage storage){
 		if (mApptStorage == null){
 			mApptStorage = storage;
+			if (mApptStorage instanceof JsonStorable && mApptStorage instanceof ApptStorageMemory){
+				mApptStorage = (ApptStorageMemory) ((JsonStorable)mApptStorage).loadFromJson();
+				if (mApptStorage == null) mApptStorage = storage;
+			}
 			return true;
 		}
 		return false;
@@ -57,18 +64,17 @@ public class ApptController {
 	}
 
 	public List<Appt> RetrieveApptsInList(User user, TimeSpan time){
-		return mApptStorage.RetrieveApptsInList(time);
+		return mApptStorage.RetrieveApptsInList(user, time);
 	}
 
-	// overload method to retrieve appointment with the given joint appointment id
-	public Appt RetrieveAppts(int joinApptID) {
-		return mApptStorage.RetrieveAppts(joinApptID);
+	public Appt RetrieveAppt(int apptID) {
+		return mApptStorage.RetrieveAppts(apptID);
 	}
 
 	/* Manage the Appt in the storage
 	 * parameters: the Appt involved, the action to take on the Appt */
 	@Deprecated
-	public void ManageAppt(Appt appt, int action) {
+	/*public void ManageAppt(Appt appt, int action) {
 
 		if (action == NEW) {				// Save the Appt into the storage if it is new and non-null
 			if (appt == null)
@@ -81,21 +87,29 @@ public class ApptController {
 		} else if (action == REMOVE) {		// Remove the Appt from the storage if it should be removed
 			mApptStorage.RemoveAppt(appt);
 		} 
-	}
+	}*/
 
 	//Save Appt with Notification
 	public boolean saveNewAppt(User user, Appt appt, 
 			boolean flagOne, boolean flagTwo, boolean flagThree, boolean flagFour){
-		appt.setID(apptIDCount++);
+		appt.setID(mApptStorage.getIDCount());
 		if (flagOne || flagTwo || flagThree || flagFour)
 			setNotificationForAppt(appt, flagOne, flagTwo, flagThree, flagFour);
-		return mApptStorage.SaveAppt(appt);
+		boolean tmp = mApptStorage.SaveAppt(user, appt);
+		
+		
+		if (tmp) updateDiskStorage();
+		
+		return tmp;
 	}
 
 	//Register appt as New Appt of user. Return true if successfully registered
 	public boolean saveNewAppt(User user, Appt appt){
-		appt.setID(apptIDCount++);
-		return mApptStorage.SaveAppt(appt);
+		appt.setID(mApptStorage.getIDCount());
+		boolean tmp = mApptStorage.SaveAppt(user, appt);
+
+		if (tmp) updateDiskStorage();
+		return tmp;
 	}
 	
 	//Save Repeated Appt with Notification
@@ -103,7 +117,7 @@ public class ApptController {
 			boolean flagOne, boolean flagTwo, boolean flagThree, boolean flagFour){
 		List<Appt> tmpList;
 		tmpList = getRepeatedApptList(appt, repeatEndDate);
-		if (mApptStorage.checkOverlaps(tmpList))
+		if (mApptStorage.checkOverlaps(user, tmpList))
 			return false;
 		for (Appt a : tmpList){
 			if (!saveNewAppt(user, a))
@@ -111,19 +125,36 @@ public class ApptController {
 			if (flagOne || flagTwo || flagThree || flagFour)
 				setNotificationForAppt(a, flagOne, flagTwo, flagThree, flagFour);
 		}
+		linkRepeatedAppt(tmpList);
+		updateDiskStorage();
 		return true;
 	}
 	
 	public boolean saveRepeatedNewAppt(User user, Appt appt, Date repeatEndDate){
 		List<Appt> tmpList;
 		tmpList = getRepeatedApptList(appt, repeatEndDate);
-		if (mApptStorage.checkOverlaps(tmpList))
+		if (mApptStorage.checkOverlaps(user, tmpList))
 			return false;
+		Appt tmp = null;
 		for (Appt a : tmpList){
 			if (!saveNewAppt(user, a))
 				return false;
 		}
+		
+		linkRepeatedAppt(tmpList);
+		updateDiskStorage();
 		return true;
+	}
+	
+	private void linkRepeatedAppt(List<Appt> list){
+		Appt tmp = null;
+		for (Appt a : list){
+			if (tmp!=null){
+				a.setPreviousRepeatedAppt(tmp);
+				tmp.setNextRepeatedAppt(a);
+			}
+			tmp = a;
+		}
 	}
 
 
@@ -135,8 +166,6 @@ public class ApptController {
 		endTime.setTime(new Date(appt.getTimeSpan().EndTime().getTime()));
 
 		Appt i = new Appt(appt);
-		i.setNextRepeatedAppt(null);
-		i.setPreviousRepeatedAppt(null);
 		list.add(i);
 
 		Appt j = new Appt(appt);
@@ -156,9 +185,6 @@ public class ApptController {
 			if (endTime.getTime().after(repeatEndDate))
 				break;
 			j.setTimeSpan(new TimeSpan(startTime.getTimeInMillis(), endTime.getTimeInMillis()));
-			j.setNextRepeatedAppt(null);
-			i.setNextRepeatedAppt(j);
-			j.setPreviousRepeatedAppt(i);
 			list.add(j);
 			i = j;
 			j = new Appt(i);
@@ -233,25 +259,35 @@ public class ApptController {
 		if (!TimeController.getInstance().isNotPast(appt)){
 			return false;
 		}
-		appt.getLocation().subtractCountForLocation();
+		LocationController.getInstance().decreaseLocationCount(appt.getLocation());
 		if (appt.isRepeated()){
-			System.out.println("\nRemove Repeated!");
+			System.out.println("ApptController/removeAppt Remove Repeated!");
 			Appt iterator = appt.getNextRepeatedAppt();
 			while (iterator!=null){
-				mApptStorage.RemoveAppt(iterator);
+				System.out.println("ApptController/removeAppt Remove #" +iterator.getID());
+				mApptStorage.RemoveAppt(user, iterator);
 				iterator = iterator.getNextRepeatedAppt();
 			}
 			iterator = appt.getPreviousRepeatedAppt();
 			while (iterator!=null){
 				if (!TimeController.getInstance().isNotPast(iterator))
 					break;
-				mApptStorage.RemoveAppt(iterator);
+				System.out.println("ApptController/removeAppt Remove #" +iterator.getID());
+				mApptStorage.RemoveAppt(user, iterator);
 				iterator = iterator.getPreviousRepeatedAppt();
 			}
-			mApptStorage.RemoveAppt(appt);
+			mApptStorage.RemoveAppt(user, appt);
+			updateDiskStorage();
 			return true;
 		}
-		return mApptStorage.RemoveAppt(appt);
+		boolean tmp = mApptStorage.RemoveAppt(user, appt);
+		updateDiskStorage();
+		return tmp;
+	}
+	
+	private void updateDiskStorage(){
+		if (mApptStorage instanceof JsonStorable)
+			((JsonStorable) mApptStorage).saveToJson();
 	}
 
 	public boolean setNotificationForAppt(Appt appt, 
@@ -259,17 +295,14 @@ public class ApptController {
 		System.out.println("ApptController/setNotificationForAppt Notification For " + appt.TimeSpan());
 		Notification noti = new Notification(appt, appt.getTitle(), appt.getTimeSpan().StartTime(),
 				flagOne, flagTwo, flagThree, flagFour);
-		appt.setNotification(noti);
-		return NotificationController.getInstance().saveNewNotification(noti);
+		boolean tmp = NotificationController.getInstance().saveNewNotification(UserController.getInstance().getAdmin(), noti);
+		if (tmp)
+			appt.setNotification(noti);
+		return tmp;
 	}
 
 	/* Get the defaultUser of mApptStorage */
 	public User getDefaultUser() {
-		return mApptStorage.getDefaultUser();
-	}
-
-	// method used to load appointment from xml record into hash map
-	public void LoadApptFromXml(){
-		mApptStorage.LoadApptFromXml();
+		return UserController.getInstance().getCurrentUser();
 	}
 }

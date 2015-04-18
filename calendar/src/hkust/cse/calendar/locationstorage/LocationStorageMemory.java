@@ -1,23 +1,25 @@
 package hkust.cse.calendar.locationstorage;
 
+import hkust.cse.calendar.apptstorage.ApptStorageMemory;
+import hkust.cse.calendar.diskstorage.FileManager;
+import hkust.cse.calendar.diskstorage.JsonStorable;
+import hkust.cse.calendar.unit.Location;
+import hkust.cse.calendar.unit.User;
+
 import java.util.ArrayList;
-import java.util.List;
 
 import javax.swing.DefaultListModel;
 
-import hkust.cse.calendar.unit.Appt;
-import hkust.cse.calendar.unit.Location;
-import hkust.cse.calendar.unit.TimeSpan;
-import hkust.cse.calendar.unit.User;
+import com.google.gson.Gson;
 
-public class LocationStorageNullImpl extends LocationStorage {
+public class LocationStorageMemory extends LocationStorage implements JsonStorable {
 
-	private User defaultUser = null;
 	private ArrayList<Location> list;
 	private int locationNumber = 0;
 	private Location initialLocation = new Location();
+	private int locationIDCount = 1;
 	
-	public LocationStorageNullImpl( User user )
+	public LocationStorageMemory( User user )
 	{
 		defaultUser = user;
 		list = new ArrayList<Location>();
@@ -53,10 +55,15 @@ public class LocationStorageNullImpl extends LocationStorage {
 	
 	@Override
 	public boolean SaveLocation(Location location) {
-		list.add(location);
-		locationNumber++;
-		System.out.println("Saved Location ID is: " + location.getID());
-		return true;
+		// TODO Auto-generated method stub
+		if (checkForSameLocation(location)) {
+			location.setID(locationNumber++);
+			list.add(location);
+			System.out.println("LocationStorageMemory/SaveLocation Saved Location #" + location.getID());
+			saveToJson();
+			return true;
+		}
+		return false;
 	}
 
 	@Override
@@ -72,7 +79,7 @@ public class LocationStorageNullImpl extends LocationStorage {
 	@Override
 	public int getListSize() {
 		return list.size();
-	}
+	} 
 	
 	@Override
 	public boolean UpdateLocation(Location location) {
@@ -81,6 +88,7 @@ public class LocationStorageNullImpl extends LocationStorage {
 			if (a.equals(location)){
 				list.remove(a);
 				list.add(location);
+				saveToJson();
 				return true;
 			}
 		}
@@ -93,12 +101,41 @@ public class LocationStorageNullImpl extends LocationStorage {
 		
 		if(index<list.size() && index>-1) {
 			list.remove(index);
-			locationNumber--;
+			saveToJson();
 			return true;
 		}
 		return false;
 	}
 	
+	@Override
+	public int getIDCount(){ return locationIDCount++; }
+	
+	
+	//Additional Functions for Checking
+	private boolean checkForSameLocation(Location location) {
+	// need to implement if Location with same name exists
+		return true;
+	}
+	
+	/*
+	 * For Disk Storage
+	 * */
+	
+	public String getFileName(){
+		return "DISK_LOCATION.txt";
+	}
+	
+	public Object loadFromJson(){
+		Gson gson = new Gson();
+		String json = FileManager.getInstance().loadFromFile(getFileName());
+		if (json.equals("")) return null;
+		return gson.fromJson(json, LocationStorageMemory.class);
+	}
+	
+	public void saveToJson(){
+		Gson gson = new Gson();
+		FileManager.getInstance().writeToFile(gson.toJson(this), getFileName());
+	}
 
 	public int getLocationCapacity(String name) {
 		if(RetrieveLocations(name)!=null)

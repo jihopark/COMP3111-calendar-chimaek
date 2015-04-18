@@ -38,7 +38,8 @@ public abstract class LocationStorage {
 	public abstract boolean setLocationCapacity(String name, int num);
 	
 	public abstract int getListSize();
-
+	
+	public abstract int getIDCount();
 
 	/*
 	 * Add other methods if necessary

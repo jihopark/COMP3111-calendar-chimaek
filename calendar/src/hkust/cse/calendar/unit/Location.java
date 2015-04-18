@@ -22,14 +22,12 @@ public class Location {
 		_capacity = location.getCapacity();
 	}
 	
-	public void addCountForLocation() {
+	public void increaseCountForLocation() {
 		_appointmentCount++;
-		System.out.println(_appointmentCount);
 	}
 	
-	public void subtractCountForLocation() {
+	public void decreaseCountForLocation() {
 		_appointmentCount--;
-		System.out.println(_appointmentCount);
 	}
 	
 	public int getAppointmentCount() {

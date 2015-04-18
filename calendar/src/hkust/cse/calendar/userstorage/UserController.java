@@ -9,6 +9,7 @@ public class UserController {
 	private static UserController instance = null;
 	private static int userIDCount = 1;
 	private static UserStorage mUserStorage = null;
+	private User currentUser = null;
 	
 	public UserController(){
 		
@@ -28,6 +29,14 @@ public class UserController {
 			return true;
 		}
 		return false;
+	}
+	
+	public User getCurrentUser(){
+		return currentUser;
+	}
+	
+	public void setCurrentUser(User user){
+		currentUser = user;
 	}
 	
 	public User getUserFromCredential(String id, String pw){

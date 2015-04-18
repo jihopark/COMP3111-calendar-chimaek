@@ -8,6 +8,7 @@ import hkust.cse.calendar.time.TimeController;
 import hkust.cse.calendar.unit.Appt;
 import hkust.cse.calendar.unit.TimeSpan;
 import hkust.cse.calendar.unit.User;
+import hkust.cse.calendar.userstorage.UserController;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
@@ -428,8 +429,7 @@ public class CalGrid extends JFrame implements ActionListener {
 
 	private void initializeSystem() {
 
-		mCurrUser = ApptController.getInstance().getDefaultUser();	//get User from ApptController.getInstance().
-		ApptController.getInstance().LoadApptFromXml();
+		mCurrUser = UserController.getInstance().getCurrentUser();	//get User from ApptController.getInstance().
 		notificationCheckThread.start();
 		// Fix Me !
 		// Load the saved appointments from disk

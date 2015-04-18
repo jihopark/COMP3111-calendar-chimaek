@@ -18,7 +18,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 public class ApptStorageTest {
-	private static long currentTime = Calendar.getInstance().getTimeInMillis(); 
+/*	private static long currentTime = Calendar.getInstance().getTimeInMillis(); 
 	private static final long ONE_HOUR = 60*60*1000;
 	private static final long FIFTEEN_MINS = 15*60*1000;
 	
@@ -52,7 +52,7 @@ public class ApptStorageTest {
 		tmp = createRandomPastAppt();
 		memory.SavePastAppt(tmp);
 		assertFalse("Should Not Modify Past Appt", memory.UpdateAppt(tmp));
-	}*/
+	}
 
 	@Test
 	public void shouldNotRemovePastAppt(){
@@ -186,5 +186,5 @@ public class ApptStorageTest {
 
 	public Appt createRandomOverlappingEvent(){
 		return null;
-	}
+	}*/
 }	

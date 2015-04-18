@@ -1,23 +1,17 @@
 package hkust.cse.calendar.locationstorage;
 
-import java.util.ArrayList;
-import java.util.List;
+import hkust.cse.calendar.apptstorage.ApptStorageMemory;
+import hkust.cse.calendar.diskstorage.JsonStorable;
+import hkust.cse.calendar.unit.Location;
 
 import javax.swing.DefaultListModel;
-
-import hkust.cse.calendar.apptstorage.ApptController;
-import hkust.cse.calendar.apptstorage.ApptStorage;
-import hkust.cse.calendar.unit.Appt;
-import hkust.cse.calendar.unit.Location;
-import hkust.cse.calendar.unit.TimeSpan;
-import hkust.cse.calendar.unit.User;
 
 public class LocationController {
 	
 	/* Applying Singleton Structure */
 	private static LocationController instance = null;
 
-	private static int locationIDCount = 0;
+	//private static int locationIDCount = 0;
 		
 	/* The Location storage */
 	private static LocationStorage mLocationStorage;
@@ -38,6 +32,10 @@ public class LocationController {
 	public boolean initLocationStorage(LocationStorage storage){
 		if (mLocationStorage == null){
 			mLocationStorage = storage;
+			if (mLocationStorage instanceof LocationStorageMemory && mLocationStorage instanceof JsonStorable){
+				mLocationStorage = (LocationStorageMemory) ((JsonStorable)mLocationStorage).loadFromJson();
+				if (mLocationStorage == null) mLocationStorage = storage;
+			}
 			return true;
 		}
 		return false;
@@ -59,10 +57,21 @@ public class LocationController {
 	public boolean setLocationCapacity(String name, int num){
 		return mLocationStorage.setLocationCapacity(name, num);
 	}
+	public void increaseLocationCount(Location location){
+		location.increaseCountForLocation();
+		System.out.println("LocationController/increaseLocationCount");
+		updateDiskStorage();
+	}
+	
+	public void decreaseLocationCount(Location location){
+		location.decreaseCountForLocation();
+		System.out.println("LocationController/decreaseLocationCount");
+		updateDiskStorage();
+	}
 	
 	//save new location
 	public boolean saveNewLocation(Location location){
-		location.setID(locationIDCount++);
+		location.setID(mLocationStorage.getIDCount());
 		return mLocationStorage.SaveLocation(location);
 	}
 	
@@ -89,5 +98,14 @@ public class LocationController {
 		for(int i=0; i<mLocationStorage.getListSize(); i++){
 			System.out.println(mLocationStorage.getLocationList().getElementAt(i));
 		}
+	}
+	
+	public void updateDiskStorage(){
+		if (mLocationStorage instanceof JsonStorable)
+			((JsonStorable) mLocationStorage).saveToJson();
+	}
+	
+	public Location getLocationByID(int id){
+		return mLocationStorage.RetrieveLocations(id);
 	}
 }

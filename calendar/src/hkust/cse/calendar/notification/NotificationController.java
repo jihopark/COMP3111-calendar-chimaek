@@ -1,17 +1,16 @@
 package hkust.cse.calendar.notification;
 
+import hkust.cse.calendar.diskstorage.JsonStorable;
 import hkust.cse.calendar.unit.Notification;
 import hkust.cse.calendar.unit.User;
 
 import java.util.Date;
-import java.util.LinkedList;
 import java.util.List;
 
 public class NotificationController {
 
 		//Singleton Structure
 		private static NotificationController instance = null;
-		private static int notificationIDCount = 1;
 		
 		//Notification Storage
 		private static NotificationStorage mNotificationStorage = null;
@@ -31,6 +30,11 @@ public class NotificationController {
 		public boolean initNotificationStorage(NotificationStorage storage){
 			if (mNotificationStorage == null){
 				mNotificationStorage = storage;
+				if (mNotificationStorage instanceof JsonStorable && mNotificationStorage instanceof NotificationStorageMemory){
+					mNotificationStorage = (NotificationStorageMemory) ((JsonStorable)mNotificationStorage).loadFromJson();
+					if (mNotificationStorage == null) mNotificationStorage = storage; 
+				}
+					
 				return true;
 			}
 			return false;
@@ -43,8 +47,8 @@ public class NotificationController {
 		}
 		
 		//Retrieve Notification with currentTime. returns empty arraylist if no notification
-		public List<NotificationTime> retrieveNotification(Date currentTime) {
-			return mNotificationStorage.RetrieveNotification(currentTime);
+		public List<NotificationTime> retrieveNotification(User user, Date currentTime) {
+			return mNotificationStorage.RetrieveNotification(user, currentTime);
 		}
 		
 		public List<NotificationTime> retrieveAllNotificationTimes(Notification notification){
@@ -53,19 +57,23 @@ public class NotificationController {
 		
 		//Update
 		public boolean updateNotification(User user, Notification notification){
-			return mNotificationStorage.UpdateNotification(notification);
+			return mNotificationStorage.UpdateNotification(user, notification);
 		}
 		
 		//Save New
-		public boolean saveNewNotification(Notification notification){
-			notification.setID(notificationIDCount++);
-			System.out.println("NotificationController/saveNewNotification Saved");
-			return mNotificationStorage.SaveNotification(notification);
+		public boolean saveNewNotification(User user, Notification notification){
+			notification.setID(mNotificationStorage.getIDCount());
+			System.out.println("NotificationController/saveNewNotification Saved. ID is " + notification.getID());
+			return mNotificationStorage.SaveNotification(user, notification);
 		}
 		
 		//remove
-		public boolean removeNotification(Notification notification){
+		public boolean removeNotification(User user, Notification notification){
 			System.out.println("NotificationController/removeNewNotification Removed");
-			return mNotificationStorage.RemoveNotification(notification);
+			return mNotificationStorage.RemoveNotification(user, notification);
+		}
+		
+		public Notification getNotificationByID(int id){
+			return mNotificationStorage.RetrieveNotification(id);
 		}
 }

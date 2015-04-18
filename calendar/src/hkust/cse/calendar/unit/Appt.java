@@ -1,5 +1,9 @@
 package hkust.cse.calendar.unit;
 
+import hkust.cse.calendar.apptstorage.ApptController;
+import hkust.cse.calendar.locationstorage.LocationController;
+import hkust.cse.calendar.notification.NotificationController;
+
 import java.io.Serializable;
 import java.sql.Timestamp;
 import java.util.Date;
@@ -16,11 +20,10 @@ public class Appt implements Serializable {
 
 	private int mApptID;						// The appointment id	
 	
-	private Appt nextRepeatedAppt = null;						
-	private Appt previousRepeatedAppt = null;
-
-	private Location location;
-	private Notification notification;
+	private int nextRepeatedAppt_id = -1;						
+	private int previousRepeatedAppt_id = -1;
+	
+	private int location_id = -1, notification_id = -1;
 	
 	private LinkedList<String> attend;			// The Attendant list
 	
@@ -47,7 +50,7 @@ public class Appt implements Serializable {
 		reject = appt.getRejectList();
 		waiting = appt.getWaitingList();
 		repeatType = appt.getRepeatType();
-		location = appt.getLocation();
+		location_id = appt.getLocationID();
 	}
 	
 	public int getRepeatType(){ return repeatType; }
@@ -57,22 +60,32 @@ public class Appt implements Serializable {
 	}
 	
 	public void setNotification(Notification notification){
-		this.notification = notification;
+		notification_id = notification.getID();
 	}
 	
 	public void setLocation(Location location){
-		location.addCountForLocation();
-		if(this.location!=null)
-			this.location.subtractCountForLocation();
-		this.location= location;
+		LocationController.getInstance().increaseLocationCount(location);
+		if(location_id!=-1)
+			LocationController.getInstance().decreaseLocationCount(getLocation());
+		location_id= location.getID();
+		System.out.println("Appt/setLocation " + "Set Location " + location_id);
 	}
 	
+	public int getLocationID(){ return location_id; }
+	public int getNotificationID(){ return notification_id; }
+	
+	
 	public Location getLocation(){
-		return location;
+		System.out.println("Appt/getLocation " + "Get Location " + location_id);
+		if (location_id == -1)
+			return null;
+		
+		return LocationController.getInstance().getLocationByID(location_id);
 	}
 	
 	public Notification getNotification(){
-		return notification;
+		System.out.println("Appt/getNotification " + "Get Notification " + notification_id );
+		return NotificationController.getInstance().getNotificationByID(notification_id);
 	}
 
 	// Getter of the mTimeSpan
@@ -99,30 +112,40 @@ public class Appt implements Serializable {
 	public Timestamp getRepeateEndDate(){
 		if (isRepeated()){
 			Appt temp = this;
-			while (temp.nextRepeatedAppt!=null)
-				temp = temp.nextRepeatedAppt;
+			while (temp.nextRepeatedAppt_id!=-1)
+				temp = ApptController.getInstance().RetrieveAppt(temp.nextRepeatedAppt_id);
 			return temp.getTimeSpan().EndTime();
 		}
 		return null;
 	}
 	
 	public Appt getNextRepeatedAppt(){
-		return nextRepeatedAppt;
+		return ApptController.getInstance().RetrieveAppt(nextRepeatedAppt_id);
 	}
 	
 	public Appt getPreviousRepeatedAppt(){
-		return previousRepeatedAppt;
+		return ApptController.getInstance().RetrieveAppt(previousRepeatedAppt_id);
 	}
 	
 	public void setPreviousRepeatedAppt(Appt appt){
-		previousRepeatedAppt = appt;
+		if (appt == null)
+			previousRepeatedAppt_id = -1;
+		else{
+			previousRepeatedAppt_id = appt.getID();
+			System.out.println("Appt/setNextRepeatedAppt " + previousRepeatedAppt_id + " set to previous repeated appt for " + getID());
+		}
 	}
 	public void setNextRepeatedAppt(Appt appt){
-		nextRepeatedAppt = appt;
+		if (appt == null)
+			nextRepeatedAppt_id = -1;
+		else{
+			nextRepeatedAppt_id = appt.getID();
+			System.out.println("Appt/setNextRepeatedAppt " + nextRepeatedAppt_id + " set to next repeated appt for " + getID());
+		}
 	}
 	
 	public boolean isRepeated(){
-		return !(previousRepeatedAppt == null && nextRepeatedAppt == null);
+		return !(previousRepeatedAppt_id == -1 && nextRepeatedAppt_id == -1);
 	}
 
 
