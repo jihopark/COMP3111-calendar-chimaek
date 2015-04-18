@@ -69,8 +69,8 @@ public class CalGrid extends JFrame implements ActionListener {
 	private int currentCol;
 	private Date currentTime;
 	
-	private BasicArrowButton monthRightArrowButton;
-	private BasicArrowButton monthLeftArrowButton;
+	private BasicArrowButton yearRightArrowButton;
+	private BasicArrowButton yearLeftArrowButton;
 	private JLabel yearLabel;
 	private JComboBox monthComboBox;
 	private NotificationCheckThread notificationCheckThread = new NotificationCheckThread(this);
@@ -164,12 +164,12 @@ public class CalGrid extends JFrame implements ActionListener {
 
 		panelMonthYearAndImportantDays.add(panelImportantDays, BorderLayout.CENTER);
 
-		monthRightArrowButton = new BasicArrowButton(SwingConstants.EAST);
-		monthRightArrowButton.setEnabled(true);
-		monthRightArrowButton.addActionListener(this);
-		monthLeftArrowButton = new BasicArrowButton(SwingConstants.WEST);
-		monthLeftArrowButton.setEnabled(true);
-		monthLeftArrowButton.addActionListener(this);
+		yearRightArrowButton = new BasicArrowButton(SwingConstants.EAST);
+		yearRightArrowButton.setEnabled(true);
+		yearRightArrowButton.addActionListener(this);
+		yearLeftArrowButton = new BasicArrowButton(SwingConstants.WEST);
+		yearLeftArrowButton.setEnabled(true);
+		yearLeftArrowButton.addActionListener(this);
 
 		yearLabel = new JLabel(new Integer(currentlySelectedYear).toString());
 		monthComboBox = new JComboBox();
@@ -182,9 +182,9 @@ public class CalGrid extends JFrame implements ActionListener {
 		JPanel yearGroup = new JPanel();
 		yearGroup.setLayout(new FlowLayout());
 		yearGroup.setBorder(new Flush3DBorder());
-		yearGroup.add(monthLeftArrowButton);
+		yearGroup.add(yearLeftArrowButton);
 		yearGroup.add(yearLabel);
-		yearGroup.add(monthRightArrowButton);
+		yearGroup.add(yearRightArrowButton);
 		yearGroup.add(monthComboBox);
 
 		panelMonthYearAndImportantDays.add(yearGroup, BorderLayout.NORTH);
@@ -475,7 +475,7 @@ public class CalGrid extends JFrame implements ActionListener {
 	}
 
 	public void actionPerformed(ActionEvent e) {
-		if (e.getSource() == monthRightArrowButton) {
+		if (e.getSource() == yearRightArrowButton) {
 			if (yearLabel == null)
 				return;
 			currentlySelectedYear = currentlySelectedYear + 1;
@@ -490,7 +490,7 @@ public class CalGrid extends JFrame implements ActionListener {
 
 			}
 			UpdateCal();
-		} else if (e.getSource() == monthLeftArrowButton) {
+		} else if (e.getSource() == yearLeftArrowButton) {
 			if (yearLabel == null)
 				return;
 			currentlySelectedYear = currentlySelectedYear - 1;
