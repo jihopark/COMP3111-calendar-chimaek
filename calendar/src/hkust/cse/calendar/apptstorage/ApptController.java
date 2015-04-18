@@ -207,7 +207,7 @@ public class ApptController {
 		return false;
 	}*/
 	
-	public boolean modifyAppt(User user, Appt appt, 
+	public boolean modifyAppt(User user,  Appt appt, 
 			boolean flagOne, boolean flagTwo, boolean flagThree, boolean flagFour){
 		if (!TimeController.getInstance().isNotPast(appt)){
 			return false;
@@ -259,7 +259,7 @@ public class ApptController {
 		if (!TimeController.getInstance().isNotPast(appt)){
 			return false;
 		}
-		LocationController.getInstance().decreaseLocationCount(appt.getLocation());
+
 		if (appt.isRepeated()){
 			System.out.println("ApptController/removeAppt Remove Repeated!");
 			Appt iterator = appt.getNextRepeatedAppt();

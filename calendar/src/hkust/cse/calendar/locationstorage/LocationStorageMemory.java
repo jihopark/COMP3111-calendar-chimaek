@@ -149,6 +149,11 @@ public class LocationStorageMemory extends LocationStorage implements JsonStorab
 		}
 		return false;
 	}
+	
+	public int getLocationApptCount(Location location){
+		return location.getAppointmentCount();
+	}
+
 
 }
 

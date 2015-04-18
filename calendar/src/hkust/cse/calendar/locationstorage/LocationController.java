@@ -100,6 +100,7 @@ public class LocationController {
 		}
 	}
 	
+
 	public void updateDiskStorage(){
 		if (mLocationStorage instanceof JsonStorable)
 			((JsonStorable) mLocationStorage).saveToJson();
@@ -107,5 +108,16 @@ public class LocationController {
 	
 	public Location getLocationByID(int id){
 		return mLocationStorage.RetrieveLocations(id);
+	}
+	public boolean canDeleteLocation(Location location){
+		int count = mLocationStorage.getLocationApptCount(location);
+		if(count<0) {
+			System.out.println("getLocationApptCount ERROR");
+			return false;
+		}
+		else if(count==0)
+			return true;
+		else
+			return false;
 	}
 }

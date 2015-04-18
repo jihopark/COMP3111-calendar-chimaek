@@ -27,6 +27,7 @@ public class Location {
 	}
 	
 	public void decreaseCountForLocation() {
+		if(this.getAppointmentCount()>0)
 		_appointmentCount--;
 	}
 	

@@ -104,9 +104,19 @@ public class ManageLocationDialog extends JPanel
             //there's a valid selection	
             //so go ahead and remove whatever's selected.
             int index = displayList.getSelectedIndex();
+        	//System.out.println(retrievedLocationList.getElementAt(index).getName()+": "+retrievedLocationList.getElementAt(index).getAppointmentCount());
+            
+            
+            
             if(!retrievedLocationList.getElementAt(index).getName().equals("-")) {
-            	retrievedLocationList.remove(index);
-            	LocationController.getInstance().removeLocation(index);
+            	if(LocationController.getInstance().canDeleteLocation(retrievedLocationList.getElementAt(index))) {
+            		retrievedLocationList.remove(index);
+            		LocationController.getInstance().removeLocation(index);
+            	}
+            	else {
+            		JOptionPane.showMessageDialog(locationName, "Appointment exists for this location!",
+            				"Error", JOptionPane.ERROR_MESSAGE);
+            	}
             }
             else {
             	//Print error message 
@@ -281,6 +291,7 @@ public class ManageLocationDialog extends JPanel
         //Display the window.
         frame.pack();
         frame.setVisible(true);
+        
     }
     
 	

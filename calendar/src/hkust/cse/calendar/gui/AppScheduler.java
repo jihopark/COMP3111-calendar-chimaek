@@ -749,6 +749,9 @@ ComponentListener {
 		//SAVE LOCATION
 		String locationString = (String) locationField.getSelectedItem();
 		Location locationObject = LocationController.getInstance().RetrieveLocations(locationString);
+		if(currentAppt.getLocation()!=null && !(currentAppt.getLocation().getName().equals(locationObject.getName()))){
+			currentAppt.getLocation().decreaseCountForLocation();
+		}
 		currentAppt.setLocation(locationObject);
 
 		//SAVE REPEATED APPOINTMENT

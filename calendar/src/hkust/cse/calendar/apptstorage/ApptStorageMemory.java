@@ -63,6 +63,9 @@ public class ApptStorageMemory extends ApptStorage implements JsonStorable {
 				mAppts.get(user.toString()).add(appt);
 				apptNumber++;
 				System.out.println("ApptStorageMemory/SaveAppt : Saved Appt #"+appt.getID());
+				if(!appt.getLocation().getName().equals("-"))
+					appt.getLocation().increaseCountForLocation();
+				
 				return true;
 			}
 		}
@@ -140,6 +143,9 @@ public class ApptStorageMemory extends ApptStorage implements JsonStorable {
 				System.out.println("ApptStorageMemory/RemoveAppt " + mAppts.get(user.toString()).remove(a));
 				apptNumber--;
 				System.out.println("ApptStorageMemory/RemoveAppt : Removed Appt #"+appt.getID());
+				if(!a.getLocation().getName().equals("-"))
+					a.getLocation().decreaseCountForLocation();
+				
 				removeNotification(a.getNotification());
 				return true;
 			}

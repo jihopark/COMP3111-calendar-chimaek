@@ -37,8 +37,6 @@ public abstract class LocationStorage {
 	
 	public abstract int getIDCount();
 
-	/*
-	 * Add other methods if necessary
-	 */
+	public abstract int getLocationApptCount(Location location);
 
 }
