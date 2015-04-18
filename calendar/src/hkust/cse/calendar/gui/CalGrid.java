@@ -399,6 +399,18 @@ public class CalGrid extends JFrame implements ActionListener {
 		});	
 		Appmenu.add(mi);
 		
+		//Add manage location to CalGrid
+		mi = new JMenuItem("View Users Public Appointments");	
+		mi.addActionListener(new ActionListener() {	
+			public void actionPerformed(ActionEvent arg0) {
+				//CalGrid grid = new CalGrid(new ApptStorageControllerImpl(new ApptStorageNullImpl(user)));
+				//ApptController.getInstance().initApptStorage(new ApptStorageMemory(user));
+				//CalGrid grid = new CalGrid();
+				
+				UserAppointmentViewDialog dlg = new UserAppointmentViewDialog();
+			}	
+		});	
+		Appmenu.add(mi);
 		
 		JMenu TimeMachine = (JMenu) menuBar.add(new JMenu("TimeMachine"));
 		TimeMachine.setMnemonic('T');
