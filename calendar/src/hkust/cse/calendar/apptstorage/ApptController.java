@@ -260,6 +260,9 @@ public class ApptController {
 	
 	public boolean modifyAppt(User user, Appt appt, 
 			boolean notificationEnabled, int notificationHoursBefore, int notificationMinutesBefore){
+		
+		//check if it is group appt
+		
 		if (!TimeController.getInstance().isNotPast(appt)){
 			return false;
 		}
@@ -328,6 +331,8 @@ public class ApptController {
 	//Remove appt of user. Return true if successfully removed
 	public boolean removeAppt(User user, Appt appt){
 		//If repeated, then remove all repeated appts. However, past appts will not be removed
+		
+		// check if group appt
 		if (!TimeController.getInstance().isNotPast(appt)){
 			return false;
 		}
@@ -388,5 +393,9 @@ public class ApptController {
 	/* Get the defaultUser of mApptStorage */
 	public User getDefaultUser() {
 		return UserController.getInstance().getCurrentUser();
+	}
+	
+	public void createNewGroupAppt(){
+		//create new group appt
 	}
 }
