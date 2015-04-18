@@ -19,8 +19,6 @@ public class InviteStorage {
 	}
 	
 	public LinkedList<GroupAppt> checkIfUserHasInvite(User user){
-		//need to implement
-		
 		return null;
 	}
 	

@@ -565,11 +565,13 @@ ComponentListener {
 		else if(e.getSource() == oneTimeButton)
 		{
 			enableEndAtFields(false);
-
+			enableGroupEventButton(true);
+			
 		}
 		else if(e.getSource() == dailyButton || e.getSource() == weeklyButton || e.getSource() == monthlyButton)
 		{
 			enableEndAtFields(true);
+			enableGroupEventButton(false);
 		}
 		else if(e.getSource() == notificationEnableBox)
 		{
@@ -603,6 +605,10 @@ ComponentListener {
 		endAtYearField.setEditable(b);
 		endAtMonthField.setEditable(b);
 		endAtDayField.setEditable(b);
+	}
+	
+	private void enableGroupEventButton(boolean b){
+		groupEventButton.setEnabled(b);
 	}
 
 	private JPanel createPartOperaPane() {
