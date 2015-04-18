@@ -19,5 +19,7 @@ public abstract class UserStorage {
 		public abstract boolean RemoveUser(String id);	//abstract method to remove an appointment record
 
 		public abstract boolean ModifyUser(User current, User before);
+
+		public abstract User getUser(String user);
 		
 }

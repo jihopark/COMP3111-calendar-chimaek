@@ -432,6 +432,7 @@ public class CalGrid extends JFrame implements ActionListener {
 					//TimeMachineTest.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 					//manage all users data dialog
 					System.out.println("CalGrid/UserInfo: Current User is Admin");
+					ManageAdminDataDialog manageAdminDataDialog = new ManageAdminDataDialog();
 					
 				}
 			});

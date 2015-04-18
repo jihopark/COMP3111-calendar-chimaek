@@ -27,6 +27,15 @@ public class UserStorageMemory extends UserStorage implements JsonStorable{
 		}
 		return null;
 	}
+	
+	@Override
+	public User getUser(String id) {
+		for(User u : list) {
+			if( (u.getID().equals(id)) )
+				return u;
+		}
+		return null;
+	}
 
 	
 	public boolean SaveUser(String id, String pw, String fName, String lName, String email, Boolean admin){
@@ -105,6 +114,8 @@ public class UserStorageMemory extends UserStorage implements JsonStorable{
 		Gson gson = new Gson();
 		FileManager.getInstance().writeToFile(gson.toJson(this), getFileName());
 	}
+
+
 
 
 }

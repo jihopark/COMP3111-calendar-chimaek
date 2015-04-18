@@ -41,6 +41,10 @@ public class UserController {
 		return currentUser;
 	}
 	
+	public User getUser(String user){
+		return mUserStorage.getUser(user);
+	}
+	
 	public void setCurrentUser(User user){
 		currentUser = user;
 	}
