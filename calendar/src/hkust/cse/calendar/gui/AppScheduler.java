@@ -130,17 +130,17 @@ ComponentListener {
 		contentPane = getContentPane();
 
 		//Initializing individual panels.
-		JPanel panelTop = initiateTopPanel();
-		JPanel panelDate = initiateDatePanel();
-		JPanel panelStartTime = initiateStartTimePanel();
-		JPanel panelEndTime = initiateEndTimePanel();
-		JPanel panelBothTime = initiateBothTimePanel();
-		JPanel panelDateAndTime = initiateDateAndTimePanel();
-		JPanel panelFreq = initiateFreqPanel();
-		JPanel panelNotification = initiateNotificationPanel();
-		JPanel panelFreqAndNotification = initiateFreqAndNotificationPanel();
-		JPanel panelFreqEndAt = initiateFreqEndAtPanel();
-		JPanel panelEndAtFreqAndNotification = initiateEndAtFreqAndNotificationPanel();
+		JPanel panelTop = initializeTopPanel();
+		JPanel panelDate = initializeDatePanel();
+		JPanel panelStartTime = initializeStartTimePanel();
+		JPanel panelEndTime = initializeEndTimePanel();
+		JPanel panelBothTime = initializeBothTimePanel();
+		JPanel panelDateAndTime = initializeDateAndTimePanel();
+		JPanel panelFreq = initializeFreqPanel();
+		JPanel panelNotification = initializeNotificationPanel();
+		JPanel panelFreqAndNotification = initiatializeFreqAndNotificationPanel();
+		JPanel panelFreqEndAt = initializeFreqEndAtPanel();
+		JPanel panelEndAtFreqAndNotification = initializeEndAtFreqAndNotificationPanel();
 
 		//Adding the panels to respective root panels.
 		panelBothTime.add(panelStartTime);
@@ -148,29 +148,21 @@ ComponentListener {
 		panelDateAndTime.add("North", panelDate);
 		panelDateAndTime.add("South", panelBothTime);
 		panelTop.add(panelDateAndTime, BorderLayout.NORTH);
-
 		panelFreqAndNotification.add(panelFreq);
 		panelFreqAndNotification.add(panelNotification);
 		panelEndAtFreqAndNotification.add("North",panelFreqAndNotification);
 		panelEndAtFreqAndNotification.add("South",panelFreqEndAt);
 		panelTop.add(panelEndAtFreqAndNotification, BorderLayout.CENTER);
-
-		JPanel panelTitleAndText = initiateTitleAndTextPanel();
-		panelDetail = initiateDetailPanel();
-		panelApptDescription = initiateApptDescriptionPanel(panelTitleAndText, panelDetail);
-
+		JPanel panelTitleAndText = initializeTitleAndTextPanel();
+		panelDetail = initializeDetailPanel();
+		panelApptDescription = initializeApptDescriptionPanel(panelTitleAndText, panelDetail);
 		panelTop.add(panelApptDescription, BorderLayout.SOUTH);
-
 		contentPane.add("North", panelTop);
 
 		currentAppt = new Appt();
 
 		JPanel panelBottom = new JPanel();
 		panelBottom.setLayout(new FlowLayout(FlowLayout.RIGHT));
-
-		//		inviteBut = new JButton("Invite");
-		//		inviteBut.addActionListener(this);
-		//		panelBottom.add(inviteBut);
 
 		//initiate buttons.
 		initiateSaveButton();
@@ -206,7 +198,7 @@ ComponentListener {
 	}
 
 
-	public JPanel initiateDatePanel()
+	public JPanel initializeDatePanel()
 	{
 		JPanel panelDate = new JPanel();
 		Border dateBorder = new TitledBorder(null, "DATE");
@@ -243,7 +235,7 @@ ComponentListener {
 
 	}*/
 
-	public JPanel initiateStartTimePanel()
+	public JPanel initializeStartTimePanel()
 	{
 
 		JPanel panelStartTime = new JPanel();
@@ -262,7 +254,7 @@ ComponentListener {
 
 	}
 
-	public JPanel initiateEndTimePanel()
+	public JPanel initializeEndTimePanel()
 	{
 		JPanel panelEndTime = new JPanel();
 		Border etimeBorder = new TitledBorder(null, "END TIME");
@@ -280,7 +272,7 @@ ComponentListener {
 
 	}
 
-	public JPanel initiateBothTimePanel()
+	public JPanel initializeBothTimePanel()
 	{
 		final int ROWS = 1;
 		final int COLUMNS = 2;
@@ -290,14 +282,14 @@ ComponentListener {
 
 	}
 
-	public JPanel initiateDateAndTimePanel()
+	public JPanel initializeDateAndTimePanel()
 	{
 		JPanel panelDateAndTime = new JPanel();
 		panelDateAndTime.setLayout(new BorderLayout());
 		return panelDateAndTime;
 	}
 
-	public JPanel initiateFreqPanel()
+	public JPanel initializeFreqPanel()
 	{
 		JPanel panelFreq = new JPanel();
 		Border freqBorder = new TitledBorder(null, "Frequency");
@@ -331,7 +323,7 @@ ComponentListener {
 
 	}
 
-	public JPanel initiateNotificationPanel()
+	public JPanel initializeNotificationPanel()
 	{
 		JPanel panelNotification = new JPanel();
 		Border notificationBorder = new TitledBorder(null, "Notification");
@@ -380,7 +372,7 @@ ComponentListener {
 
 	}
 
-	public JPanel initiateFreqAndNotificationPanel()
+	public JPanel initiatializeFreqAndNotificationPanel()
 	{
 		final int ROWS = 1;
 		final int COLUMNS = 2;
@@ -390,7 +382,7 @@ ComponentListener {
 		return panelFreqAndNotification;
 	}
 
-	public JPanel initiateFreqEndAtPanel()
+	public JPanel initializeFreqEndAtPanel()
 	{
 		JPanel panelFreqEndAt = new JPanel();
 		Border freqBorder = new TitledBorder(null, "Appointment Ends At");
@@ -418,7 +410,7 @@ ComponentListener {
 		return panelFreqEndAt;
 	}
 
-	public JPanel initiateEndAtFreqAndNotificationPanel()
+	public JPanel initializeEndAtFreqAndNotificationPanel()
 	{
 
 		JPanel panelEndAtFreqAndNotification = new JPanel();
@@ -427,7 +419,7 @@ ComponentListener {
 		return panelEndAtFreqAndNotification;
 	}
 
-	public JPanel initiateTopPanel()
+	public JPanel initializeTopPanel()
 	{
 		JPanel panelTop = new JPanel();
 		panelTop.setLayout(new BorderLayout());
@@ -436,7 +428,7 @@ ComponentListener {
 		return panelTop;
 	}
 
-	public JPanel initiateTitleAndTextPanel()
+	public JPanel initializeTitleAndTextPanel()
 	{
 		JPanel panelTitleAndText = new JPanel();
 		JLabel titleL = new JLabel("TITLE");
@@ -472,7 +464,7 @@ ComponentListener {
 		return panelTitleAndText;
 	}
 
-	public JPanel initiateDetailPanel()
+	public JPanel initializeDetailPanel()
 	{
 		JPanel tempPanelDetail = new JPanel();
 		tempPanelDetail.setLayout(new BorderLayout());
@@ -487,7 +479,7 @@ ComponentListener {
 		return tempPanelDetail;
 	}
 
-	public JSplitPane initiateApptDescriptionPanel(JPanel panelTitleAndText, JPanel tempPanelDetail)
+	public JSplitPane initializeApptDescriptionPanel(JPanel panelTitleAndText, JPanel tempPanelDetail)
 	{
 		JSplitPane tempPanelApptDescription = new JSplitPane(JSplitPane.VERTICAL_SPLIT, panelTitleAndText,
 				tempPanelDetail);
