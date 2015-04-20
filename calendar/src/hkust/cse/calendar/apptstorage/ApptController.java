@@ -30,6 +30,7 @@ public class ApptController {
 
 	/* The Appt storage */
 	private static ApptStorage mApptStorage = null;
+	private static boolean shouldSave = true;
 
 	/* Empty Constructor, since in singleton getInstance() is used instead*/
 	public ApptController() {
@@ -47,10 +48,7 @@ public class ApptController {
 	public boolean initApptStorage(ApptStorage storage){
 		if (mApptStorage == null){
 			mApptStorage = storage;
-			if (mApptStorage instanceof JsonStorable && mApptStorage instanceof ApptStorageMemory){
-				mApptStorage = (ApptStorageMemory) ((JsonStorable)mApptStorage).loadFromJson();
-				if (mApptStorage == null) mApptStorage = storage;
-			}
+			rollback();
 			return true;
 		}
 		return false;
@@ -267,7 +265,8 @@ public class ApptController {
 		
 		//check if it is group appt
 		
-		if (!TimeController.getInstance().isNotPast(appt)){
+		if (!TimeController.getInstance().isNotPast(appt) || mApptStorage.checkOverlaps(user, appt)){
+			rollback();
 			return false;
 		}
 		//Remove Appt First
@@ -324,19 +323,28 @@ public class ApptController {
 		
 		//Get the Start of the repeat
 		Appt start = appt.getRepeatStartAppt();
+		if (start==null) start = appt;
 		start.getTimeSpan().setTimeWithoutChangingDay(appt.getTimeSpan());
 		start.setLocation(appt.getLocation());
 		start.setTitle(appt.getTitle());
 		start.setInfo(appt.getInfo());
+		start.setRepeatType(appt.getRepeatType());
 		
+		shouldSave = false;
 		//Remove Appts First
 		removeAppt(user, appt);
-
+		
+		boolean tmp;
 		//Save Modified Appt
 		if (notificationEnabled)
-			return saveRepeatedNewAppt(user, start, repeatEndDate, notificationEnabled,
+			tmp = saveRepeatedNewAppt(user, start, repeatEndDate, notificationEnabled,
 					notificationHoursBefore, notificationMinutesBefore);
-		return saveRepeatedNewAppt(user, start, repeatEndDate);		
+		tmp = saveRepeatedNewAppt(user, start, repeatEndDate);
+		shouldSave = true;
+		if (!tmp) rollback();
+		else updateDiskStorage();
+		
+		return tmp;
 	}
 	
 
@@ -375,7 +383,7 @@ public class ApptController {
 	}
 	
 	private void updateDiskStorage(){
-		if (mApptStorage instanceof JsonStorable)
+		if (mApptStorage instanceof JsonStorable && shouldSave)
 			((JsonStorable) mApptStorage).saveToJson();
 	}
 
@@ -409,6 +417,17 @@ public class ApptController {
 	
 	public void createNewGroupAppt(){
 		//create new group appt
+	}
+	
+	/*
+	 * Load ApptStorage Again back from Disk
+	 * */
+	
+	public void rollback(){
+		if (mApptStorage instanceof JsonStorable && mApptStorage instanceof ApptStorageMemory){
+			ApptStorageMemory tmp = (ApptStorageMemory) ((JsonStorable)mApptStorage).loadFromJson();
+			if (tmp != null) mApptStorage = tmp;
+		}
 	}
 
 }
