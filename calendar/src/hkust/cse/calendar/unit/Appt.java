@@ -3,6 +3,7 @@ package hkust.cse.calendar.unit;
 import hkust.cse.calendar.apptstorage.ApptController;
 import hkust.cse.calendar.locationstorage.LocationController;
 import hkust.cse.calendar.notification.NotificationController;
+import hkust.cse.calendar.time.TimeController;
 
 import java.io.Serializable;
 import java.sql.Timestamp;
@@ -93,6 +94,23 @@ public class Appt implements Serializable {
 		return mApptID;
 	}
 	
+	//Returns Repeat Start Date
+	public Appt getRepeatStartAppt(){
+		if (isRepeated()){
+			Appt temp = this;
+			while (temp.previousRepeatedAppt_id!=-1){				
+				temp = ApptController.getInstance().RetrieveAppt(temp.previousRepeatedAppt_id);
+				if (!TimeController.getInstance().isNotPast(temp)){
+					temp = ApptController.getInstance().RetrieveAppt(temp.nextRepeatedAppt_id);
+					break;
+				}
+			}
+			return temp;
+		}
+		return null;
+
+	}
+	
 	//Returns Repeat End Date
 	public Timestamp getRepeatedEndDate(){
 		if (isRepeated()){
@@ -117,7 +135,7 @@ public class Appt implements Serializable {
 			previousRepeatedAppt_id = -1;
 		else{
 			previousRepeatedAppt_id = appt.getID();
-			System.out.println("Appt/setNextRepeatedAppt " + previousRepeatedAppt_id + " set to previous repeated appt for " + getID());
+			System.out.println("Appt/setPreviousRepeatedAppt " + previousRepeatedAppt_id + " set to previous repeated appt for " + getID());
 		}
 	}
 	public void setNextRepeatedAppt(Appt appt){
@@ -187,7 +205,5 @@ public class Appt implements Serializable {
 			return false;
 		return true;
 	}
-
-
 
 }

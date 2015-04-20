@@ -321,14 +321,22 @@ public class ApptController {
 		if (!TimeController.getInstance().isNotPast(appt)){
 			return false;
 		}
-		//Remove Appt First
+		
+		//Get the Start of the repeat
+		Appt start = appt.getRepeatStartAppt();
+		start.getTimeSpan().setTimeWithoutChangingDay(appt.getTimeSpan());
+		start.setLocation(appt.getLocation());
+		start.setTitle(appt.getTitle());
+		start.setInfo(appt.getInfo());
+		
+		//Remove Appts First
 		removeAppt(user, appt);
 
 		//Save Modified Appt
 		if (notificationEnabled)
-			return saveRepeatedNewAppt(user, appt, repeatEndDate, notificationEnabled,
+			return saveRepeatedNewAppt(user, start, repeatEndDate, notificationEnabled,
 					notificationHoursBefore, notificationMinutesBefore);
-		return saveRepeatedNewAppt(user, appt, repeatEndDate);		
+		return saveRepeatedNewAppt(user, start, repeatEndDate);		
 	}
 	
 

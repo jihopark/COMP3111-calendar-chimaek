@@ -71,4 +71,25 @@ public class TimeSpan implements Serializable {
 	public String toString(){
 		return "TimeSpan From " + dateFormat.format(new Date(mStartTime.getTime())) + " to " + dateFormat.format(new Date(mEndTime.getTime()));
 	}
+	
+	public void setTimeWithoutChangingDay(TimeSpan timespan){
+		Date start = new Date(StartTime().getTime());
+		Date newStart = new Date(timespan.StartTime().getTime());
+		Date end = new Date(EndTime().getTime());
+		Date newEnd = new Date(timespan.EndTime().getTime());
+		StartTime(TimeController.getInstance().dateInputToTimestamp(
+				TimeController.getInstance().getYearFrom(start), 
+				TimeController.getInstance().getMonthFrom(start), 
+				TimeController.getInstance().getDateFrom(start), 
+				TimeController.getInstance().getHourFrom(newStart), 
+				TimeController.getInstance().getMinuteFrom(newStart), 
+				TimeController.getInstance().getSecondFrom(newStart)));
+		EndTime(TimeController.getInstance().dateInputToTimestamp(
+				TimeController.getInstance().getYearFrom(end), 
+				TimeController.getInstance().getMonthFrom(end), 
+				TimeController.getInstance().getDateFrom(end), 
+				TimeController.getInstance().getHourFrom(newEnd), 
+				TimeController.getInstance().getMinuteFrom(newEnd), 
+				TimeController.getInstance().getSecondFrom(newEnd)));
+	}
 }
