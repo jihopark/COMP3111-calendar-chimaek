@@ -12,6 +12,8 @@ import java.util.LinkedList;
 
 public class Appt implements Serializable {
 	
+	protected boolean isPublic = false;
+	
 	protected int repeatType = 0;
 	protected TimeSpan mTimeSpan;					// Include day, start time and end time of the appointments
 
@@ -40,6 +42,14 @@ public class Appt implements Serializable {
 		mInfo = appt.getInfo();
 		repeatType = appt.getRepeatType();
 		location_id = appt.getLocationID();
+	}
+	
+	public boolean getisPublic(){
+		return isPublic;
+	}
+	
+	public void setisPublic(boolean privacy_setting){
+		isPublic=privacy_setting;
 	}
 	
 	public int getRepeatType(){ return repeatType; }
