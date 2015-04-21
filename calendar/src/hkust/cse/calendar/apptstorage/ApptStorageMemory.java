@@ -116,6 +116,8 @@ public class ApptStorageMemory extends ApptStorage implements JsonStorable {
 		return retrieveList;
 	}
 	
+	
+	
 	@Override
 	public List<Appt> RetrieveApptsInList(User user) {
 		ArrayList<Appt> retrieveList = new ArrayList<Appt>();

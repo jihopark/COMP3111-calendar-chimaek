@@ -23,6 +23,10 @@ public class User implements Serializable {
 	public String getLastName() {
 		return mLastName;
 	}
+	
+	public String getFullName() {
+		return (mFirstName+" "+mLastName); 
+	}
 	public String getEmailAddress(){
 		return mEmailAddress;
 	}

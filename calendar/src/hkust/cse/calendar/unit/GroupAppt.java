@@ -9,8 +9,49 @@ public class GroupAppt extends Appt {
 	
 	
 	public GroupAppt(){
-
+		mApptID = 0;
+		mTimeSpan = null;
+		mTitle = "Untitled";
+		mInfo = "";
+		
+		attend=null;
+		waiting=null;
+		owner_id=null;
 	}
+	
+	public GroupAppt(Appt appt, LinkedList<String> attendList, String ownerID){
+		mApptID=appt.getID();
+		mTimeSpan=appt.getTimeSpan();
+		mTitle = appt.getTitle();
+		mInfo= appt.getInfo();
+		attend = attendList;
+		waiting = attendList;
+		owner_id=ownerID;
+		
+	}
+	
+	public GroupAppt(int repeatType, TimeSpan timespan, String title, String info, int ApptID, int nextRepeatedApptID, int prevRepeatedApptID, int locationID, int notificationID, LinkedList<String> attendList, String ownerID){
+		
+		this.repeatType = repeatType;
+		this.mTimeSpan=timespan;					// Include day, start time and end time of the appointments
+
+		this.mTitle=title;						// The Title of the appointments
+
+		this.mInfo=info;						// Store the content of the appointments description
+
+		this.mApptID=ApptID;						// The appointment id	
+		
+		this.nextRepeatedAppt_id = nextRepeatedApptID;						
+		this.previousRepeatedAppt_id = prevRepeatedApptID;
+		
+		this.location_id = locationID;
+		this.notification_id = notificationID;
+		
+		this.attend = attendList;			// The Attendant list
+		this.waiting = attendList;			// The waiting list
+		this.owner_id = ownerID;
+	}
+
 	
 	public String getOwner(){
 		//need to implement

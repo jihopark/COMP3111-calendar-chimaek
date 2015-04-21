@@ -12,19 +12,19 @@ import java.util.LinkedList;
 
 public class Appt implements Serializable {
 	
-	private int repeatType = 0;
-	private TimeSpan mTimeSpan;					// Include day, start time and end time of the appointments
+	protected int repeatType = 0;
+	protected TimeSpan mTimeSpan;					// Include day, start time and end time of the appointments
 
-	private String mTitle;						// The Title of the appointments
+	protected String mTitle;						// The Title of the appointments
 
-	private String mInfo;						// Store the content of the appointments description
+	protected String mInfo;						// Store the content of the appointments description
 
-	private int mApptID;						// The appointment id	
+	protected int mApptID;						// The appointment id	
 	
-	private int nextRepeatedAppt_id = -1;						
-	private int previousRepeatedAppt_id = -1;
+	protected int nextRepeatedAppt_id = -1;						
+	protected int previousRepeatedAppt_id = -1;
 	
-	private int location_id = -1, notification_id = -1;
+	protected int location_id = -1, notification_id = -1;
 	
 	public Appt() {								// A default constructor used to set all the attribute to default values
 		mApptID = 0;
