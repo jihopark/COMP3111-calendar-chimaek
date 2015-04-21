@@ -72,6 +72,10 @@ public class ApptController {
 	public Appt RetrieveAppt(int apptID) {
 		return mApptStorage.RetrieveAppts(apptID);
 	}
+	
+	public List<Appt> RetrievePublicApptsInList(User user){
+		return mApptStorage.RetrievePublicApptsInList(user);
+	}
 
 	/* Manage the Appt in the storage
 	 * parameters: the Appt involved, the action to take on the Appt */

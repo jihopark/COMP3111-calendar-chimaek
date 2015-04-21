@@ -127,8 +127,18 @@ public class ApptStorageMemory extends ApptStorage implements JsonStorable {
 				//System.out.println("ApptStorageMemory/RetrieveApptsInList : Retrive Appt #"+a.getID());
 			}
 		}
-		
 		return retrieveList;
+	}
+	
+	public List<Appt> RetrievePublicApptsInList(User user) {
+		ArrayList<Appt> retrievePublicList = new ArrayList<Appt>();
+		if(mAppts.get(user.toString()) !=null){
+			for (Appt a: mAppts.get(user.toString())){
+				if(a.getisPublic())
+					retrievePublicList.add(a);
+			}
+		}
+		return retrievePublicList;
 	}
 
 	@Override

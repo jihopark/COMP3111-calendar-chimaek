@@ -40,10 +40,8 @@ public abstract class ApptStorage {
 	public abstract void removeNotification(Notification noti);
 	
 	public abstract int getIDCount();
-	/*
-	 * Add other methods if necessary
-	 */
 
 	public abstract List<Appt> RetrieveApptsInList(User user);
 
+	public abstract List<Appt> RetrievePublicApptsInList(User user);
 }
