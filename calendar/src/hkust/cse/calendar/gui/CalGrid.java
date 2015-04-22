@@ -792,8 +792,8 @@ public class CalGrid extends JFrame implements ActionListener {
 		Timestamp endTime = TimeController.getInstance().dateInputToTimestamp(2015, 6, 12, 12, 30, 0);
 		TimeSpan timespan = new TimeSpan(startTime,endTime);
 		LinkedList<String> list = new LinkedList<String>();
-		list.add("Nigga");
-		GroupAppt tempGroupAppt = new GroupAppt(0,timespan,"Untitled"," ",10,-1,-1,10,-1,list,"bk");
+		list.add("bk");
+		GroupAppt tempGroupAppt = new GroupAppt(0,timespan,"Untitled"," ",10,-1,-1,0,-1,list,"bk");
 		InvitationPopUpDialog newDia = new InvitationPopUpDialog(tempGroupAppt);
 	}
 }

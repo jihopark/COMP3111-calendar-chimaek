@@ -48,7 +48,7 @@ public class GroupAppt extends Appt {
 		this.notification_id = notificationID;
 		
 		this.attend = attendList;			// The Attendant list
-		this.waiting = attendList;			// The waiting list
+		this.waiting = new LinkedList<String>(attendList);			// The waiting list
 		this.owner_id = ownerID;
 	}
 

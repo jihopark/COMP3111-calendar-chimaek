@@ -55,6 +55,7 @@ public class InviteController {
 		if(response == true){		//when the user accepts
 			gAppt.removeWaiting(user.getID());
 			if(gAppt.checkAllConfirmed()){		//check if all attendees accepted.
+				System.out.println("All confirmed!!");
 				setConfirmedGroupAppt(gAppt);
 			}
 		}
@@ -66,7 +67,9 @@ public class InviteController {
 	
 	private void setConfirmedGroupAppt(GroupAppt gAppt){
 		mInviteStorage.removeGroupAppt(gAppt);
+		System.out.println(gAppt.getAttendList().size());
 		for(String attendee : gAppt.getAttendList()){
+			System.out.println("Moving to ApptStorage!!");
 			User attendingUser = UserController.getInstance().getUser(attendee);
 			ApptController.getInstance().saveNewAppt(attendingUser, gAppt);
 		}
