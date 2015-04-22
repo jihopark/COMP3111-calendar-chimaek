@@ -1,6 +1,7 @@
 package hkust.cse.calendar.time;
 
 import hkust.cse.calendar.unit.Appt;
+import hkust.cse.calendar.unit.TimeSpan;
 
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
@@ -68,6 +69,13 @@ public class TimeController {
 		if (currentTime <= appt.TimeSpan().StartTime().getTime())
 			return true;
 		System.out.println("\nTimeController/isNotPast: Past Time!");
+		return false;
+	}
+	
+	public boolean isNotPast(TimeSpan span){
+		long currentTime = getCurrentTimeInMillis(); 
+		if (currentTime <= span.StartTime().getTime())
+			return true;
 		return false;
 	}
 

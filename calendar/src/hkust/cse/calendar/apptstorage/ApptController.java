@@ -1,7 +1,6 @@
 package hkust.cse.calendar.apptstorage;
 
 import hkust.cse.calendar.diskstorage.JsonStorable;
-import hkust.cse.calendar.locationstorage.LocationController;
 import hkust.cse.calendar.notification.NotificationController;
 import hkust.cse.calendar.time.TimeController;
 import hkust.cse.calendar.unit.Appt;
@@ -13,6 +12,7 @@ import hkust.cse.calendar.userstorage.UserController;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.Iterator;
 import java.util.List;
 
 public class ApptController {
@@ -385,6 +385,54 @@ public class ApptController {
 		updateDiskStorage();
 		return tmp;
 	}
+	
+	//Return non-overlapping timeslot in one day
+	public List<TimeSpan> getSchedulableTimeSpan(List<User> users, Date scheduleDay){
+		ArrayList<TimeSpan> timeSlots = new ArrayList<TimeSpan>();
+		
+		//create timeslots in 15min interval of the whole day
+		Date startTime = new Date(scheduleDay.getTime());
+		TimeController.getInstance().setHour(startTime, 0);
+		TimeController.getInstance().setMinute(startTime, 0);
+		TimeController.getInstance().setSecond(startTime, 0);
+
+		Date endTime;
+		
+		do{
+			endTime = new Date(startTime.getTime()+TimeController.FIFTEEN_MINS);
+			TimeSpan span = new TimeSpan(startTime.getTime(), endTime.getTime());
+			if (TimeController.getInstance().isNotPast(span))
+				timeSlots.add(span);
+			startTime = new Date(endTime.getTime());
+		}while(TimeController.getInstance().getDateFrom(endTime)
+				==TimeController.getInstance().getDateFrom(scheduleDay));
+		
+		//remove all timeslots overlaps with the users existing schedule
+		startTime = new Date(scheduleDay.getTime());
+		TimeController.getInstance().setHour(startTime, 0);
+		TimeController.getInstance().setMinute(startTime, 0);
+		TimeController.getInstance().setSecond(startTime, 0);
+
+		endTime = new Date(startTime.getTime() + TimeController.ONE_HOUR*24);
+		TimeSpan oneDay = new TimeSpan(startTime.getTime(), endTime.getTime());
+		
+		for (User user : users){
+			System.out.println("ApptController/getSchedualableTimeSpan Iterating user " + user.toString());
+			for (Appt appt : mApptStorage.RetrieveApptsInList(user, oneDay)){
+				TimeSpan slot = timeSlots.get(0);
+				for (Iterator<TimeSpan> it = timeSlots.iterator(); it.hasNext() ; 
+						slot = it.next()){
+					if (appt.getTimeSpan().Overlap(slot)){
+						System.out.println("ApptController/getSchedualableTimeSpan Removed " + slot);
+						it.remove();						
+					}
+				}
+			}
+		}
+		System.out.println("ApptController/getSchedualableTimeSpan Removed " + timeSlots);
+		return timeSlots;
+	}
+	
 	
 	private void updateDiskStorage(){
 		if (mApptStorage instanceof JsonStorable && shouldSave)

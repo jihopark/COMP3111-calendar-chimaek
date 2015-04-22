@@ -45,9 +45,9 @@ public class TimeSpan implements Serializable {
 
 	/* Check whether a time span overlaps with this time span */
 	public boolean Overlap(TimeSpan d) {
-		if (d.EndTime().before(mStartTime) || d.EndTime().equals(mStartTime))	// If the time span ends before or at the starting time of this time span then these two time spans do not overlap
+		if (d.EndTime().before(mStartTime) || d.EndTime().getTime()/1000 == mStartTime.getTime()/1000)	// If the time span ends before or at the starting time of this time span then these two time spans do not overlap
 			return false;
-		if (d.StartTime().equals(mEndTime) || mEndTime.before(d.StartTime()))	// If the time span starts after or at the ending time of this time span then these two time spans do not overlap
+		if (d.StartTime().getTime()/1000 == mEndTime.getTime()/1000 || mEndTime.before(d.StartTime()))	// If the time span starts after or at the ending time of this time span then these two time spans do not overlap
 			return false;
 		return true;		// Else, the time span overlaps with this time span
 
