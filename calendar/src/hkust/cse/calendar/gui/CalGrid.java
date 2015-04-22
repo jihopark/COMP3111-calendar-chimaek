@@ -485,9 +485,7 @@ public class CalGrid extends JFrame implements ActionListener {
 
 		mCurrUser = UserController.getInstance().getCurrentUser();	//get User from ApptController.getInstance().
 		notificationCheckThread.start();
-		// Fix Me !
-		// Load the saved appointments from disk
-		checkUpdateJoinAppt();
+		checkAndShowAnyInvitation();
 	}
 
 	public void actionPerformed(ActionEvent e) {
@@ -775,9 +773,17 @@ public class CalGrid extends JFrame implements ActionListener {
 		}
 	}
 	
-	// check for any invite or update from join appointment
-	public void checkUpdateJoinAppt(){
-		// Fix Me!
+	// check for any invite from group appt.
+	public void checkAndShowAnyInvitation(){
+		LinkedList<GroupAppt> invitedGroupAppt = InviteController.getInstance().checkIfUserHasInvite(mCurrUser);
+		if(invitedGroupAppt != null){
+			for(GroupAppt gAppt: invitedGroupAppt){
+				InvitationPopUpDialog newInvite = new InvitationPopUpDialog(gAppt);
+			}
+		}
+		else{
+			System.out.println("There is no invitation!");
+		}
 	}
-
+	
 }
