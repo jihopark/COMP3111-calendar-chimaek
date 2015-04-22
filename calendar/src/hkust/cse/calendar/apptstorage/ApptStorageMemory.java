@@ -103,7 +103,6 @@ public class ApptStorageMemory extends ApptStorage implements JsonStorable {
 	@Override
 	public List<Appt> RetrieveApptsInList(User user, TimeSpan d) {
 		ArrayList<Appt> retrieveList = new ArrayList<Appt>();
-		user = UserController.getInstance().getCurrentUser(); //need to be removed later with UserController & Storage
 		if (mAppts.get(user.toString()) != null){
 			for (Appt a : mAppts.get(user.toString())){
 				if (a.TimeSpan().Overlap(d)){

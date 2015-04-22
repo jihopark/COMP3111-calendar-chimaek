@@ -594,7 +594,7 @@ public class CalGrid extends JFrame implements ActionListener {
 		//System.out.println("end date: "+TimeController.getInstance().numOfDaysInMonth());
 		
 		TimeSpan period = new TimeSpan(start, end);
-		return ApptController.getInstance().RetrieveApptsInList(mCurrUser, period);
+		return ApptController.getInstance().RetrieveApptsInList(UserController.getInstance().getCurrentUser(), period);
 	}
 	
 
