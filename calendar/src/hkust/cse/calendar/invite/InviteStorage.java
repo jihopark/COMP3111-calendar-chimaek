@@ -2,6 +2,9 @@ package hkust.cse.calendar.invite;
 
 import hkust.cse.calendar.apptstorage.ApptController;
 import hkust.cse.calendar.unit.Appt;
+import hkust.cse.calendar.apptstorage.ApptStorageMemory;
+import hkust.cse.calendar.diskstorage.FileManager;
+import hkust.cse.calendar.diskstorage.JsonStorable;
 import hkust.cse.calendar.unit.GroupAppt;
 import hkust.cse.calendar.unit.User;
 import hkust.cse.calendar.userstorage.UserController;
@@ -9,12 +12,14 @@ import hkust.cse.calendar.userstorage.UserController;
 import java.util.LinkedList;
 import java.util.List;
 
-public class InviteStorage {
+import com.google.gson.Gson;
+
+public class InviteStorage implements JsonStorable {
 	
 	public LinkedList<GroupAppt> invites;
 	
 	public InviteStorage(){
-		//need to implement
+		invites = new LinkedList<GroupAppt>();
 	}
 	
 	//make groupappt and put in storage
@@ -26,6 +31,14 @@ public class InviteStorage {
 			return groupappt;
 		}
 		return null;
+	}
+	
+	public void removeGroupAppt(GroupAppt gAppt){
+		invites.remove(gAppt);
+	}
+	
+	public void addGroupAppt(GroupAppt gAppt){
+		invites.add(gAppt);
 	}
 	
 	public LinkedList<GroupAppt> checkIfUserHasInvite(User user){
@@ -52,12 +65,20 @@ public class InviteStorage {
 		}
 	}
 	
-	public void setResponse(User user, GroupAppt appt, boolean response){
-		//record users response
+	public String getFileName(){
+		return "DISK_INVITE.txt";
 	}
 	
-	public void setConfirmedGroupAppt(GroupAppt appt){
-		//when everyone accepts evolve to group appt
+	public Object loadFromJson(){
+		Gson gson = new Gson();
+		String json = FileManager.getInstance().loadFromFile(getFileName());
+		if (json.equals("")) return null;
+		return gson.fromJson(json, InviteStorage.class);
+	}
+	
+	public void saveToJson(){
+		Gson gson = new Gson();
+		FileManager.getInstance().writeToFile(gson.toJson(this), getFileName());
 	}
 	
 	private boolean capacityCheck(Appt appt, LinkedList<String> attendList){

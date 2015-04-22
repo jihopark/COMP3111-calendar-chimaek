@@ -125,7 +125,7 @@ public class ApptController {
 	public boolean saveNewAppt(User user, Appt appt){
 		appt.setID(mApptStorage.getIDCount());
 		boolean tmp = mApptStorage.SaveAppt(user, appt);
-
+		
 		if (tmp) updateDiskStorage();
 		return tmp;
 	}

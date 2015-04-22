@@ -94,4 +94,11 @@ public class GroupAppt extends Appt {
 	public void setAttendList(LinkedList<String> attendLinkedList) {
 		attend = attendLinkedList;
 	}
+	
+	public boolean checkAllConfirmed(){
+		if(waiting.isEmpty()){
+			return true;
+		}
+		return false;
+	}
 }
