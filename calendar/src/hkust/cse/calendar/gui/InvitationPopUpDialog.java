@@ -1,6 +1,7 @@
 package hkust.cse.calendar.gui;
 
 import java.awt.BorderLayout;
+import java.awt.Container;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -24,7 +25,7 @@ public class InvitationPopUpDialog extends JFrame implements ActionListener{
 	final boolean ACCEPT = true;
 	final boolean DECLINE = false;
 	
-	private JPanel overallPanel;
+	private Container contentPane;
 	private JPanel topPanel;
 	private JPanel bottomPanel;
 	private JLabel apptTimeLabel;
@@ -39,7 +40,7 @@ public class InvitationPopUpDialog extends JFrame implements ActionListener{
 		_currentUser = UserController.getInstance().getCurrentUser();
 		
 		//initialize each components
-		overallPanel = initializeOverallPanel();
+		contentPane = getContentPane();
 		topPanel = initializeTopPanel();
 		bottomPanel = initializeBottomPanel();
 		apptTimeLabel = initializeApptTimeLabel();
@@ -56,20 +57,15 @@ public class InvitationPopUpDialog extends JFrame implements ActionListener{
 		bottomPanel.add(acceptButton);
 		bottomPanel.add(declineButton);
 		bottomPanel.add(pendingButton);
-		overallPanel.add(topPanel,BorderLayout.NORTH);
-		overallPanel.add(bottomPanel,BorderLayout.SOUTH);
+		contentPane.add("North",topPanel);
+		contentPane.add("South",bottomPanel);
 		
 		setTitle("New Invitation!");
 		setAlwaysOnTop(true);
 		setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
 		pack();
+		setLocationRelativeTo(null);
 		setVisible(true);
-	}
-	
-	private JPanel initializeOverallPanel() {
-		JPanel tempOverallPanel = new JPanel();
-		tempOverallPanel.setLayout(new BorderLayout());
-		return tempOverallPanel;
 	}
 
 	private JPanel initializeTopPanel()
@@ -116,7 +112,7 @@ public class InvitationPopUpDialog extends JFrame implements ActionListener{
 	
 	private JLabel initializeLocationLabel(){	
 		JLabel tempLocationLabel = new JLabel();
-		tempLocationLabel.setText("Location: " + _groupAppt.getLocation().getName());
+		tempLocationLabel.setText("Location: " ); //+ _groupAppt.getLocation().getName());
 		return tempLocationLabel;
 	}
 	
@@ -159,12 +155,15 @@ public class InvitationPopUpDialog extends JFrame implements ActionListener{
 	public void actionPerformed(ActionEvent e) {
 		if(e.getSource() == acceptButton){
 			acceptGroupAppt();
+			dispose();
 		}
 		if(e.getSource() == declineButton){
 			declineGroupAppt();
+			dispose();
 		}
 		if(e.getSource() == pendingButton){
 			pendingGroupAppt();
+			dispose();
 		}
 	}
 	
