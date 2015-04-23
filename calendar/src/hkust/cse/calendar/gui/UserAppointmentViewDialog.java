@@ -35,7 +35,8 @@ import javax.swing.JScrollPane;
 import javax.swing.JTextField;
 
 public class UserAppointmentViewDialog extends JFrame implements ActionListener {
-
+	private Container contentPane;
+	
 	private JButton okButton;
 	private JPanel listPanel;
 	private JPanel topPanel;
@@ -54,13 +55,14 @@ public class UserAppointmentViewDialog extends JFrame implements ActionListener 
 	
 	public UserAppointmentViewDialog(){
 		setTitle("View Public Appointments");
+		setSize(500, 300);
 		this.setAlwaysOnTop(true);
 		repeatedAppts = new JLabel("");
 		nonRepeatedAppts = new JLabel("");
 		
 		user = UserController.getInstance().getCurrentUser();
 				
-		Container contentPane;
+		
 		contentPane = getContentPane();
 		contentPane.setLayout(new BoxLayout(contentPane, BoxLayout.PAGE_AXIS));
 		
@@ -73,40 +75,64 @@ public class UserAppointmentViewDialog extends JFrame implements ActionListener 
 		listPanel = new JPanel();
 		listPanel.setLayout(new FlowLayout());
 		userListBox = new JList( userListModel );
-		userListBox.setFixedCellWidth(300);
+		userListBox.setFixedCellWidth(400);
 		userListBox.setFixedCellHeight(20);
 		MouseListener mouseListener = new MouseAdapter() {
         	public void mouseClicked(MouseEvent e) {
         		if(e.getClickCount() == 2 ) {
         			//Location selectedItem = (Location) displayList.getSelectedValue();
                     //capacityLabel.setText("Capacity is: " + selectedItem.getCapacity());
+        			int count = 0;
+        			if(contentPane.getComponentCount() != 3){
+        				//System.out.println("UserAppointmentViewDialog/mouseClick: Will delete " + contentPane.getComponent(4));
+        				//System.out.println("UserAppointmentViewDialog/mouseClick: Current Component Count is " + contentPane.getComponentCount());
+        				contentPane.getComponent(2).setVisible(false);
+        				contentPane.remove(2);
+        				nonRepeatedAppts.setText("");
+        				repeatedAppts.setText("");
+        			}
+        			JPanel newPane = new JPanel();
+        			newPane.setLayout(new BoxLayout(newPane, BoxLayout.Y_AXIS));
         			String ID = (String) userListBox.getSelectedValue();
         			user = UserController.getInstance().getUser(ID);
-        			appointmentList = ApptController.getInstance().RetrieveApptsInList(user);
-
-    				//System.out.println("Non-Repeated Appointments are: ");
-        			String nonRepeat = "Non-Repeated Appointments are: \n";
+        			appointmentList = ApptController.getInstance().RetrievePublicApptsInList(user);
+       			
+        			nonRepeatedAppts.setText("Non-Repeated Appointments are: ");
+        			nonRepeatedAppts.setAlignmentX(Component.CENTER_ALIGNMENT);
+        			newPane.add(nonRepeatedAppts);
         			for(Appt a : appointmentList){
         				if(!a.isRepeated()){
         					//System.out.println(a.getTitle() + " " + a.getTimeSpan().toString());
-        					nonRepeat += a.getTitle() + " " + a.getTimeSpan().toString() + "\n";
+        					JLabel temp = new JLabel("");
+        					temp.setAlignmentX(Component.CENTER_ALIGNMENT);
+        					temp.setText(a.getTitle() + " " + a.getTimeSpan().toString());
+        					newPane.add(temp);
+        					count++;
         				}
         			}
-    				//System.out.println("Repeated Appointments are: ");
-        			String repeat = "Repeated Appointments are: \n";
-        			int counter = 0;
+        			repeatedAppts.setText("Repeated Appointments are: ");
+        			repeatedAppts.setAlignmentX(Component.CENTER_ALIGNMENT);
+        			newPane.add(repeatedAppts);
         			for(Appt a : appointmentList){
-        				if(counter < 20 && a.isRepeated()){
+        				if(a.isRepeated()){
         					//System.out.println(a.getTitle() + " " + a.getTimeSpan().toString());
-        					repeat += a.getTitle() + " " + a.getTimeSpan().toString() + "\n";
-        					counter++;
+        					JLabel temp = new JLabel("");
+        					temp.setAlignmentX(Component.CENTER_ALIGNMENT);
+        					temp.setText(a.getTitle() + " " + a.getTimeSpan().toString());
+        					newPane.add(temp);
+        					count++;
         				}
         			}
+        			int lines = count;
+        			count = 300+count*15;
+        			System.out.println("UserAppointmentViewDatalog/mouseClick: There are total " + lines + " lines. So Dimension Will be set to (" +500+ "," + count  + ").");
+        			setSize(500, count);
+        			//System.out.println(nonRepeat);
+        			//System.out.println(repeat);
+        			contentPane.add(newPane, 2);
         			
         			//repeatedAppts.setText(repeat);
         			//nonRepeatedAppts.setText(nonRepeat);
-        			System.out.println(nonRepeat);
-        			System.out.println(repeat);
         			
         		}
         	}
@@ -136,7 +162,7 @@ public class UserAppointmentViewDialog extends JFrame implements ActionListener 
 		//visualization part
 		pack();
 		setLocationRelativeTo(null);
-		setVisible(true);	
+		setVisible(true);
 	}
 	
 	@Override
