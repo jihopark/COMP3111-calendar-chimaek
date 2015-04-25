@@ -49,7 +49,8 @@ public class GroupInvitationDialog extends JFrame implements ActionListener {
 		// get user data from user controller currently temp data 
 		userList = UserController.getInstance().getUserList();
 		for(User a : userList) {
-			leftListModel.addElement(a.getID());
+			if(!a.equals(UserController.getInstance().getCurrentUser()))
+				leftListModel.addElement(a.getID());
 		}
 		//end
 			
