@@ -46,6 +46,18 @@ public class InviteController {
 		}
 		return false;
 	}
+
+	public boolean saveNewGroupAppt(Appt appt, LinkedList<String> attendList, String ownerID){
+		GroupAppt tempAppt= mInviteStorage.createGroupApptInvite(appt, attendList, ownerID);
+		if(tempAppt == null){
+			return false;
+		}
+		else{
+			mInviteStorage.addGroupAppt(tempAppt);
+			updateDiskStorage();
+			return true;
+		}
+	}
 	
 	public LinkedList<GroupAppt> checkIfUserHasInvite(User user){
 		return mInviteStorage.checkIfUserHasInvite(user);

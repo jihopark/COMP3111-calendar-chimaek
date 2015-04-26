@@ -24,8 +24,11 @@ public class GroupAppt extends Appt {
 		mTimeSpan=appt.getTimeSpan();
 		mTitle = appt.getTitle();
 		mInfo= appt.getInfo();
+		location_id = appt.getLocationID();
+		notification_id = appt.getNotificationID();
 		attend = attendList;
-		waiting = attendList;
+		waiting = new LinkedList<String>(attendList);
+		waiting.remove(ownerID);
 		owner_id=ownerID;
 		
 	}
@@ -49,13 +52,13 @@ public class GroupAppt extends Appt {
 		
 		this.attend = attendList;			// The Attendant list
 		this.waiting = new LinkedList<String>(attendList);			// The waiting list
+		this.waiting.remove(ownerID);
 		this.owner_id = ownerID;
 	}
 
 	
 	public String getOwner(){
-		//need to implement
-		return "";
+		return owner_id;
 	}
 	
 	public void setOwner(String id){

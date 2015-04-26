@@ -26,6 +26,7 @@ public class Notification {
 	private int minutesBefore;
 	private int _notificationID; 
 	private boolean delivered = false;
+	private boolean isPending = true;
 	
 	// A default constructor
 	public Notification() {
@@ -121,6 +122,13 @@ public class Notification {
 		_notificationID = id;
 	}
 	
+	public boolean isPending(){
+		return isPending;
+	}
+	
+	public void setPending(boolean pending){
+		isPending = pending;
+	}
 	/*
 	@Deprecated
 	public void setAlarms(boolean flagOne, boolean flagTwo, boolean flagThree, boolean flagFour) {

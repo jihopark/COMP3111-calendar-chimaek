@@ -325,10 +325,9 @@ public class CalGrid extends JFrame implements ActionListener {
 		ActionListener listener = new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				if (e.getActionCommand().equals("Manual Scheduling")) {
-					AppScheduler defaultAppt = new AppScheduler("New", CalGrid.this);
-					defaultAppt.updateSettingAppt(hkust.cse.calendar.gui.Utility
-							.createDefaultAppt(currentlySelectedYear, currentlySelectedMonth, currentlySelectedDay,
-								mCurrUser));
+					Appt newAppt = Utility.createDefaultAppt(currentlySelectedYear, currentlySelectedMonth, currentlySelectedDay,mCurrUser);
+					AppScheduler defaultAppt = new AppScheduler("New", CalGrid.this,newAppt);
+					defaultAppt.updateSettingAppt(newAppt);
 					defaultAppt.setLocationRelativeTo(null);
 					defaultAppt.show();
 					TableModel t = prepareTableModel();
@@ -778,7 +777,7 @@ public class CalGrid extends JFrame implements ActionListener {
 		LinkedList<GroupAppt> invitedGroupAppt = InviteController.getInstance().checkIfUserHasInvite(mCurrUser);
 		if(invitedGroupAppt != null){
 			for(GroupAppt gAppt: invitedGroupAppt){
-				InvitationPopUpDialog newInvite = new InvitationPopUpDialog(gAppt);
+				InvitationPopUpDialog newInvite = new InvitationPopUpDialog(gAppt,this);
 			}
 		}
 		else{
@@ -794,6 +793,6 @@ public class CalGrid extends JFrame implements ActionListener {
 		LinkedList<String> list = new LinkedList<String>();
 		list.add("bk");
 		GroupAppt tempGroupAppt = new GroupAppt(0,timespan,"Untitled"," ",10,-1,-1,0,-1,list,"bk");
-		InvitationPopUpDialog newDia = new InvitationPopUpDialog(tempGroupAppt);
+		InvitationPopUpDialog newDia = new InvitationPopUpDialog(tempGroupAppt,this);
 	}
 }

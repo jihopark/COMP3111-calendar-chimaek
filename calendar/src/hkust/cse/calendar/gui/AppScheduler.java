@@ -159,7 +159,7 @@ ComponentListener {
 		panelTop.add(panelApptDescription, BorderLayout.SOUTH);
 		contentPane.add("North", panelTop);
 
-		currentAppt = new Appt();
+		//currentAppt = new Appt();
 
 		JPanel panelBottom = new JPanel();
 		panelBottom.setLayout(new FlowLayout(FlowLayout.RIGHT));
@@ -564,7 +564,27 @@ ComponentListener {
 	}
 	
 	private void groupEventButtonResponse() {
-		GroupInvitationDialog groupInvitationDialog = new GroupInvitationDialog();
+		
+		if(saveInfoToAppt() == false){//when the input for the appt is invalid.
+			return;
+		}
+		if(checkGroupEventConditions()){
+			GroupInvitationDialog groupInvitationDialog = new GroupInvitationDialog(currentAppt,this);
+		}
+	}
+	
+	private boolean checkGroupEventConditions(){
+		if(!oneTimeButton.isSelected()){//check if event is repeated.
+			JOptionPane.showMessageDialog(this, "Group Event can only be ONE-TIME!",
+					"Input Error", JOptionPane.ERROR_MESSAGE);
+			return false;
+		}
+		if(currentAppt.getLocation().getName().equals("-")){
+			JOptionPane.showMessageDialog(this, "Group Event must have a location!",
+					"Input Error", JOptionPane.ERROR_MESSAGE);
+			return false;
+		}
+		return true;
 	}
 
 	private void modifyNotificationField()
@@ -713,33 +733,10 @@ ComponentListener {
 	private void saveButtonResponse() {
 
 		//SAVE ALL THE RELEVENT INFORMATION TO THE NEWAPPT.
-		int[] validDate = getValidDate(yearField,monthField,dayField);
-		int[] validTimeInterval = getValidTimeInterval();
-		boolean validNotificationTime = checkValidNotificationTime();
-		
-		if(validDate == null || validTimeInterval == null || validNotificationTime == false)
-		{
+		if(saveInfoToAppt() == false){
 			return;
 		}
 		
-		Timestamp timestampForStartTime = CreateTimeStamp(validDate, validTimeInterval[0]);
-		Timestamp timestampForEndTime = CreateTimeStamp(validDate, validTimeInterval[1]);
-		
-		TimeSpan timeSpanForAppt = new TimeSpan(timestampForStartTime,timestampForEndTime);
-		
-		currentAppt.setTimeSpan(timeSpanForAppt);
-		currentAppt.setTitle(titleField.getText());
-		currentAppt.setInfo(detailArea.getText());
-
-
-		//SAVE LOCATION
-		String locationString = (String) locationField.getSelectedItem();
-		Location locationObject = LocationController.getInstance().RetrieveLocations(locationString);
-		if(currentAppt.getLocation()!=null && !(currentAppt.getLocation().getName().equals(locationObject.getName()))){
-			currentAppt.getLocation().decreaseCountForLocation();
-		}
-		currentAppt.setLocation(locationObject);
-
 		//SAVE REPEATED APPOINTMENT
 		//CASE: DAILY, WEEKLY, MONTHLY
 		if(!(oneTimeButton.isSelected()))
@@ -813,6 +810,42 @@ ComponentListener {
 		}
 	}*/
 
+	private boolean saveInfoToAppt(){
+		int[] validDate = getValidDate(yearField,monthField,dayField);
+		int[] validTimeInterval = getValidTimeInterval();
+		boolean validNotificationTime = checkValidNotificationTime();
+		
+		if(validDate == null || validTimeInterval == null || validNotificationTime == false)
+		{
+			return false;
+		}
+		
+		Timestamp timestampForStartTime = CreateTimeStamp(validDate, validTimeInterval[0]);
+		Timestamp timestampForEndTime = CreateTimeStamp(validDate, validTimeInterval[1]);
+		
+		TimeSpan timeSpanForAppt = new TimeSpan(timestampForStartTime,timestampForEndTime);
+		
+		if(!TimeController.getInstance().isNotPast(timeSpanForAppt)){
+			JOptionPane.showMessageDialog(this, "Input date is past date! ");
+			return false;
+		}
+		
+		currentAppt.setTimeSpan(timeSpanForAppt);
+		currentAppt.setTitle(titleField.getText());
+		currentAppt.setInfo(detailArea.getText());
+
+
+		//SAVE LOCATION
+		String locationString = (String) locationField.getSelectedItem();
+		Location locationObject = LocationController.getInstance().RetrieveLocations(locationString);
+		if(currentAppt.getLocation()!=null && !(currentAppt.getLocation().getName().equals(locationObject.getName()))){
+			currentAppt.getLocation().decreaseCountForLocation();
+		}
+		currentAppt.setLocation(locationObject);
+
+		return true;
+	}
+	
 	private boolean checkForNotification()
 	{
 		if(notificationEnableBox.isSelected())

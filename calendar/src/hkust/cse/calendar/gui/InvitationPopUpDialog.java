@@ -22,6 +22,7 @@ public class InvitationPopUpDialog extends JFrame implements ActionListener{
 	
 	private GroupAppt _groupAppt;
 	private User _currentUser;
+	private CalGrid _parent;
 	final boolean ACCEPT = true;
 	final boolean DECLINE = false;
 	
@@ -35,10 +36,10 @@ public class InvitationPopUpDialog extends JFrame implements ActionListener{
 	private JButton declineButton;
 	private JButton pendingButton;
 	
-	public InvitationPopUpDialog(GroupAppt groupAppt){
+	public InvitationPopUpDialog(GroupAppt groupAppt, CalGrid parent){
 		_groupAppt = groupAppt;
 		_currentUser = UserController.getInstance().getCurrentUser();
-		
+		_parent = parent;
 		//initialize each components
 		contentPane = getContentPane();
 		topPanel = initializeTopPanel();
@@ -155,6 +156,7 @@ public class InvitationPopUpDialog extends JFrame implements ActionListener{
 	public void actionPerformed(ActionEvent e) {
 		if(e.getSource() == acceptButton){
 			acceptGroupAppt();
+			_parent.UpdateCal();
 			dispose();
 		}
 		if(e.getSource() == declineButton){

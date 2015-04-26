@@ -28,6 +28,7 @@ public class InviteStorage implements JsonStorable {
 		//location capacity check
 		if(capacityCheck(appt, attendList) && timeclashCheck(appt, attendList)){
 			GroupAppt groupappt = new GroupAppt(appt, attendList, ownerID);
+			System.out.println("InviteStorage/createGroupApptInvite: Invitations sent");
 			return groupappt;
 		}
 		return null;

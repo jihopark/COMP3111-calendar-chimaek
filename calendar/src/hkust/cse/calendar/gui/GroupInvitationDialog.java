@@ -1,5 +1,7 @@
 package hkust.cse.calendar.gui;
 
+import hkust.cse.calendar.invite.InviteController;
+import hkust.cse.calendar.unit.Appt;
 import hkust.cse.calendar.unit.Location;
 import hkust.cse.calendar.unit.User;
 import hkust.cse.calendar.userstorage.UserController;
@@ -14,6 +16,7 @@ import java.awt.event.ActionListener;
 import java.awt.event.MouseListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.util.LinkedList;
 import java.util.List;
 
 import javax.swing.BoxLayout;
@@ -27,6 +30,7 @@ import javax.swing.JScrollPane;
 
 public class GroupInvitationDialog extends JFrame implements ActionListener {
 
+	private AppScheduler parentApptScheduler;
 	private JList leftUserBox;
 	private JList rightUserBox;
 	private JButton cancelButton;
@@ -37,8 +41,13 @@ public class GroupInvitationDialog extends JFrame implements ActionListener {
 	private DefaultListModel rightListModel;
 	private List<User> userList;
 	private JList displayList;
+	private Appt currentAppt;
 	
-	public GroupInvitationDialog(){
+	public GroupInvitationDialog(Appt curAppt,AppScheduler parent){
+		
+		currentAppt = curAppt;
+		parentApptScheduler = parent;
+		
 		setTitle("Group Event Invitation Dialog");
 		this.setAlwaysOnTop(true);
 		
@@ -137,11 +146,23 @@ public class GroupInvitationDialog extends JFrame implements ActionListener {
 						"Input Error", JOptionPane.ERROR_MESSAGE);
 				return;
 			}
+			//create invite list and send invitation.
+			LinkedList<String> inviteList = new LinkedList<String>();
 			for(int i = 0; i<rightListModel.getSize();i++){
-				sendGroupInvitation(rightListModel.get(i).toString());
+				inviteList.add(rightListModel.get(i).toString());
 			}
-			setVisible(false);
-			dispose();
+			inviteList.add(UserController.getInstance().getCurrentUser().getID());
+			if(InviteController.getInstance().saveNewGroupAppt(currentAppt,inviteList,
+					UserController.getInstance().getCurrentUser().getID())){
+				JOptionPane.showMessageDialog(this, "Saved group appointment!");
+				setVisible(false);
+				dispose();
+				parentApptScheduler.dispose();
+			}
+			else{
+				JOptionPane.showMessageDialog(this, "Failed to save group appointment!");
+			}
+			
 		}else if(e.getSource() == cancelButton){
 			setVisible(false);
 			dispose();
@@ -149,9 +170,13 @@ public class GroupInvitationDialog extends JFrame implements ActionListener {
 		
 	}
 
-	private void sendGroupInvitation(String user) {
+	
+	//can be replaced by InviteController.saveNewGroupAppt.
+	private void sendGroupInvitation(LinkedList<String> userList) {
 		// TODO Auto-generated method stub
-		System.out.println("GroupInvitationDialog/sendGroupInvitation: Invitation sent to " + user);
+		for(String user : userList){
+			System.out.println("GroupInvitationDialog/sendGroupInvitation: Invitation sent to " + user);
+		}
 		//need to connect to groupInvitation send logic
 	}
 

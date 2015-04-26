@@ -37,7 +37,7 @@ public class NotificationCheckThread extends Thread {
 				}
 				if (notifications.size()!=0){
 					for (NotificationTime time : notifications){
-						if (!deliveredNotification.contains(time)){
+						if (!deliveredNotification.contains(time) && time.getParent().isPending() != true){
 							System.out.println((time == null)+"");
 							System.out.println((time.getParent()==null)+"");
 							System.out.println((time.getParent().getAppt()==null)+"");				
