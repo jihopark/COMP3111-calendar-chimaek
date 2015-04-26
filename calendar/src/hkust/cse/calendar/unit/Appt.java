@@ -42,6 +42,7 @@ public class Appt implements Serializable {
 		mInfo = appt.getInfo();
 		repeatType = appt.getRepeatType();
 		location_id = appt.getLocationID();
+		isPublic = appt.getisPublic();
 	}
 	
 	public boolean getisPublic(){
