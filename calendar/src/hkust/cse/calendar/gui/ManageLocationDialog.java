@@ -188,7 +188,8 @@ public class ManageLocationDialog extends JPanel
             retrievedLocationList.addElement(newLocation);
             LocationController.getInstance().saveNewLocation(newLocation);
             if(LocationController.getInstance().setLocationCapacity(newLocation.getName(), Integer.parseInt(locationCapacity.getText()))){
-                System.out.println("ManageLocation/setLocationCapacity: location capacity saved successful");
+                LocationController.getInstance().modifyLocation(newLocation);
+            	System.out.println("ManageLocation/setLocationCapacity: location capacity saved successful");
                 int tempLocationCapacity = LocationController.getInstance().getLocationCapacity(newLocation.getName());
                 System.out.println("ManageLocation/setLocationCapacity: new location Capcity is: " + tempLocationCapacity );
             } else {

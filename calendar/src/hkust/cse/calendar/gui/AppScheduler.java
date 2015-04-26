@@ -569,7 +569,7 @@ ComponentListener {
 			return;
 		}
 		if(checkGroupEventConditions()){
-			GroupInvitationDialog groupInvitationDialog = new GroupInvitationDialog(currentAppt,this);
+			GroupInvitationListDialog_Manual groupInvitationDialog = new GroupInvitationListDialog_Manual(currentAppt,this);
 		}
 	}
 	
