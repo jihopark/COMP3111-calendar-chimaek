@@ -2,6 +2,7 @@ package hkust.cse.calendar.gui;
 
 import hkust.cse.calendar.unit.Location;
 import hkust.cse.calendar.unit.User;
+import hkust.cse.calendar.userstorage.UserController;
 import hkust.cse.calendar.apptstorage.ApptController;
 import hkust.cse.calendar.apptstorage.ApptStorageMemory;
 import hkust.cse.calendar.locationstorage.LocationController;
@@ -47,7 +48,11 @@ public class ManageLocationDialog extends JPanel
         	public void mouseClicked(MouseEvent e) {
         		if(e.getClickCount() == 2 ) {
         			Location selectedItem = (Location) displayList.getSelectedValue();
-                    capacityLabel.setText("Capacity is: " + selectedItem.getCapacity());
+        			if(selectedItem.getCapacity() < 2){
+                        capacityLabel.setText("This facility is not a group facility");
+        			} else {
+        				capacityLabel.setText("The Group Facility's Capacity is: " + selectedItem.getCapacity());
+        			}
         		}
         	}
         };
@@ -72,7 +77,7 @@ public class ManageLocationDialog extends JPanel
         locationCapacity = new JTextField(3);
         locationCapacity.setEnabled(false);
         
-        capacityLabel = new JLabel("Capacity is: " + selectedLocationCapacity);
+        capacityLabel = new JLabel("The Group Facility Capacity is: " + selectedLocationCapacity);
         //Create a panel that uses BoxLayout.
         JPanel buttonPane = new JPanel();
         buttonPane.setLayout(new BoxLayout(buttonPane,
@@ -95,6 +100,13 @@ public class ManageLocationDialog extends JPanel
         add(listScrollPane, BorderLayout.CENTER);
         add(capacityLabel, BorderLayout.LINE_END);
         add(buttonPane, BorderLayout.PAGE_END);
+        
+        if(!UserController.getInstance().getCurrentUser().isAdmin()){
+        	deleteButton.setEnabled(false);
+        	addButton.setEnabled(false);
+        	locationName.setEnabled(false);
+        	locationCapacity.setEnabled(false);
+        }
     }
     
     class DeleteListener implements ActionListener {
