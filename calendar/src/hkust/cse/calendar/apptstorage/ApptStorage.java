@@ -1,12 +1,11 @@
 package hkust.cse.calendar.apptstorage;//
 
 import hkust.cse.calendar.unit.Appt;
+import hkust.cse.calendar.unit.DeleteRequest;
 import hkust.cse.calendar.unit.Notification;
 import hkust.cse.calendar.unit.TimeSpan;
 import hkust.cse.calendar.unit.User;
 
-import java.util.HashMap;
-import java.util.LinkedList;
 import java.util.List;
 
 
@@ -44,4 +43,5 @@ public abstract class ApptStorage {
 	public abstract List<Appt> RetrieveApptsInList(User user);
 
 	public abstract List<Appt> RetrievePublicApptsInList(User user);
+
 }

@@ -3,6 +3,7 @@ package hkust.cse.calendar.userstorage;
 import java.util.HashMap;
 import java.util.List;
 
+import hkust.cse.calendar.unit.DeleteRequest;
 import hkust.cse.calendar.unit.User;
 
 public abstract class UserStorage {
@@ -21,5 +22,11 @@ public abstract class UserStorage {
 		public abstract boolean ModifyUser(User current, User before);
 
 		public abstract User getUser(String user);
+		
+		public abstract boolean addDeleteRequest(DeleteRequest request);
+		
+		public abstract boolean removeDeleteRequest(DeleteRequest request);
+		
+		public abstract List<DeleteRequest> getDeleteRequests(User user);
 		
 }
