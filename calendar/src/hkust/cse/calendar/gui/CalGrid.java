@@ -389,6 +389,8 @@ public class CalGrid extends JFrame implements ActionListener {
 		Appmenu.getAccessibleContext().setAccessibleDescription(
 				"Appointment Management");
 		mi = new JMenuItem("Manual Scheduling");
+		mi.setMnemonic(KeyEvent.VK_S);
+
 		mi.addActionListener(listener);
 		Appmenu.add(mi);
 		
@@ -421,6 +423,7 @@ public class CalGrid extends JFrame implements ActionListener {
 		
 		//Add manage location to CalGrid
 		mi = new JMenuItem("Manage Locations");	
+		mi.setMnemonic(KeyEvent.VK_L);
 		mi.addActionListener(new ActionListener() {	
 			public void actionPerformed(ActionEvent arg0) {
 				//CalGrid grid = new CalGrid(new ApptStorageControllerImpl(new ApptStorageNullImpl(user)));
@@ -437,6 +440,7 @@ public class CalGrid extends JFrame implements ActionListener {
 		
 		
 		mi = new JMenuItem("View Users Public Appointments");	
+		mi.setMnemonic(KeyEvent.VK_P);
 		mi.addActionListener(new ActionListener() {	
 			public void actionPerformed(ActionEvent arg0) {
 				//CalGrid grid = new CalGrid(new ApptStorageControllerImpl(new ApptStorageNullImpl(user)));
