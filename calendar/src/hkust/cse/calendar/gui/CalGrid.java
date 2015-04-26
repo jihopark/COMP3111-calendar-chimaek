@@ -42,6 +42,7 @@ import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
 import javax.swing.JTable;
 import javax.swing.JTextPane;
+import javax.swing.KeyStroke;
 import javax.swing.SwingConstants;
 import javax.swing.border.BevelBorder;
 import javax.swing.plaf.basic.BasicArrowButton;
@@ -54,6 +55,8 @@ import javax.swing.text.BadLocationException;
 import javax.swing.text.SimpleAttributeSet;
 import javax.swing.text.StyleConstants;
 import javax.swing.text.StyledDocument;
+
+import com.sun.glass.events.KeyEvent;
 
 
 public class CalGrid extends JFrame implements ActionListener {
@@ -98,7 +101,8 @@ public class CalGrid extends JFrame implements ActionListener {
 	private SimpleAttributeSet sabImportantDays = null;
 	// private boolean isLogin = false;
 	private JMenu Appmenu = new JMenu("Appointment");
-	
+	private JMenu groupapptsubmenu;
+	private JMenuItem viewTimeSlotMenuItem, voteTimeSlotMenuItem;
 	
 	private final String[] holidays = {
 			"New Years Day\nSpring Festival\n",
@@ -388,6 +392,33 @@ public class CalGrid extends JFrame implements ActionListener {
 		mi.addActionListener(listener);
 		Appmenu.add(mi);
 		
+
+		Appmenu.addSeparator();
+		groupapptsubmenu = new JMenu("Create GroupAppt");
+		groupapptsubmenu.setMnemonic(KeyEvent.VK_G);
+
+		viewTimeSlotMenuItem = new JMenuItem("View Available Timeslot");
+		viewTimeSlotMenuItem.setMnemonic(KeyEvent.VK_T);
+		groupapptsubmenu.add(viewTimeSlotMenuItem);
+
+		voteTimeSlotMenuItem = new JMenuItem("Vote Timeslot");
+		voteTimeSlotMenuItem.setMnemonic(KeyEvent.VK_V);
+
+		groupapptsubmenu.add(voteTimeSlotMenuItem);
+		Appmenu.add(groupapptsubmenu);
+		
+		
+		viewTimeSlotMenuItem.addActionListener(new ActionListener() {	
+			public void actionPerformed(ActionEvent arg0) {
+				GroupInvitationListDialog_TimeSlot dlg = new GroupInvitationListDialog_TimeSlot();
+			}	
+		});			
+		voteTimeSlotMenuItem.addActionListener(new ActionListener() {	
+			public void actionPerformed(ActionEvent arg0) {
+				//need to implement
+			}	
+		});	
+		
 		//Add manage location to CalGrid
 		mi = new JMenuItem("Manage Locations");	
 		mi.addActionListener(new ActionListener() {	
@@ -402,7 +433,9 @@ public class CalGrid extends JFrame implements ActionListener {
 		});	
 		Appmenu.add(mi);
 		
-		//Add manage location to CalGrid
+		
+		
+		
 		mi = new JMenuItem("View Users Public Appointments");	
 		mi.addActionListener(new ActionListener() {	
 			public void actionPerformed(ActionEvent arg0) {
@@ -413,7 +446,9 @@ public class CalGrid extends JFrame implements ActionListener {
 				UserAppointmentViewDialog dlg = new UserAppointmentViewDialog();
 			}	
 		});	
-		Appmenu.add(mi);
+		Appmenu.add(mi); 
+		
+		
 		
 		JMenu TimeMachine = (JMenu) menuBar.add(new JMenu("TimeMachine"));
 		TimeMachine.setMnemonic('T');

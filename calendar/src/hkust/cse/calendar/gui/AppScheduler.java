@@ -564,7 +564,7 @@ ComponentListener {
 	}
 	
 	private void groupEventButtonResponse() {
-		GroupInvitationDialog groupInvitationDialog = new GroupInvitationDialog();
+		GroupInvitationListDialog_Manual groupInvitationDialog = new GroupInvitationListDialog_Manual();
 	}
 
 	private void modifyNotificationField()

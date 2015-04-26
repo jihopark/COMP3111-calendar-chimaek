@@ -24,13 +24,15 @@ import javax.swing.JList;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
+import javax.swing.border.Border;
+import javax.swing.border.TitledBorder;
 
-public class GroupInvitationDialog extends JFrame implements ActionListener {
+public class GroupInvitationListDialog_Manual extends JFrame implements ActionListener {
 
 	private JList leftUserBox;
 	private JList rightUserBox;
 	private JButton cancelButton;
-	private JButton okButton;
+	private JButton okButton; 
 	private JButton leftButton;
 	private JButton rightButton;
 	private DefaultListModel leftListModel;
@@ -38,7 +40,9 @@ public class GroupInvitationDialog extends JFrame implements ActionListener {
 	private List<User> userList;
 	private JList displayList;
 	
-	public GroupInvitationDialog(){
+	public GroupInvitationListDialog_Manual(){
+		
+		
 		setTitle("Group Event Invitation Dialog");
 		this.setAlwaysOnTop(true);
 		
@@ -53,9 +57,7 @@ public class GroupInvitationDialog extends JFrame implements ActionListener {
 				leftListModel.addElement(a.getID());
 		}
 		//end
-			
-			
-		//top part
+		
 		JPanel top = new JPanel();
 		top.setLayout(new FlowLayout());
 		leftUserBox = new JList( leftListModel );
@@ -93,13 +95,13 @@ public class GroupInvitationDialog extends JFrame implements ActionListener {
 		bottom.setLayout(new FlowLayout());
 		cancelButton = new JButton("Cancel");
 		cancelButton.addActionListener(this);
-			bottom.add(cancelButton);
+		bottom.add(cancelButton);
 		
 		okButton = new JButton("Ok");
 		okButton.addActionListener(this);
-			bottom.add(okButton);
+		bottom.add(okButton);
 		
-				contentPane.add("South", bottom);
+		contentPane.add("South", bottom);
 		
 		//visualization part
 		pack();
@@ -131,6 +133,9 @@ public class GroupInvitationDialog extends JFrame implements ActionListener {
 			rightListModel.addElement(selected);
 			checkButtonActivity();
 			
+		}else if(e.getSource() == cancelButton){
+			setVisible(false);
+			dispose();
 		}else if(e.getSource() == okButton){
 			//get data from rightUserBox and add it to userController
 			if(rightListModel.getSize() <= 0){
@@ -141,9 +146,6 @@ public class GroupInvitationDialog extends JFrame implements ActionListener {
 			for(int i = 0; i<rightListModel.getSize();i++){
 				sendGroupInvitation(rightListModel.get(i).toString());
 			}
-			setVisible(false);
-			dispose();
-		}else if(e.getSource() == cancelButton){
 			setVisible(false);
 			dispose();
 		}
@@ -168,5 +170,15 @@ public class GroupInvitationDialog extends JFrame implements ActionListener {
 			rightButton.setEnabled(true);
 			leftButton.setEnabled(true);
 		}
+	}
+	
+	/// for type 1 (view available timeslot)
+	private JPanel initializeDatePanel()
+	{
+		JPanel panelDate = new JPanel();
+		panelDate.setLayout(new BorderLayout());
+		Border dateBorder = new TitledBorder(null, "DATE");
+		panelDate.setBorder(dateBorder);
+		return panelDate;
 	}
 }
