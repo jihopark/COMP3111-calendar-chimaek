@@ -821,7 +821,7 @@ public class CalGrid extends JFrame implements ActionListener {
 		}
 		else{
 			System.out.println("There is no invitation!");
-			testInvitePopUp();
+			//testInvitePopUp();
 		}
 	}
 	
