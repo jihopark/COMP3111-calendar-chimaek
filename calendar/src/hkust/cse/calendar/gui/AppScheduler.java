@@ -89,7 +89,8 @@ ComponentListener {
 
 	private DefaultListModel model;
 	private JTextField titleField;
-
+	private JCheckBox setPublicCheckBox;
+	
 	private JButton saveBut;
 	private JButton CancelBut;
 	private JButton inviteBut;
@@ -459,7 +460,7 @@ ComponentListener {
 		panelTitleNLocationNPublic.add(locationField);
 		
 		//set public checkbox
-		JCheckBox setPublicCheckBox = new JCheckBox("isPublic");
+		setPublicCheckBox = new JCheckBox("isPublic");
 		panelTitleNLocationNPublic.add(setPublicCheckBox);
 				
 		
@@ -835,7 +836,9 @@ ComponentListener {
 		currentAppt.setTimeSpan(timeSpanForAppt);
 		currentAppt.setTitle(titleField.getText());
 		currentAppt.setInfo(detailArea.getText());
-
+		if(setPublicCheckBox.isSelected()){
+			currentAppt.setIsPublic(true);
+		}
 
 		//SAVE LOCATION
 		String locationString = (String) locationField.getSelectedItem();
@@ -844,7 +847,7 @@ ComponentListener {
 			currentAppt.getLocation().decreaseCountForLocation();
 		}
 		currentAppt.setLocation(locationObject);
-
+		
 		return true;
 	}
 	

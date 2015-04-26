@@ -48,7 +48,7 @@ public class Appt implements Serializable {
 		return isPublic;
 	}
 	
-	public void setisPublic(boolean privacy_setting){
+	public void setIsPublic(boolean privacy_setting){
 		isPublic=privacy_setting;
 	}
 	
