@@ -153,9 +153,9 @@ ComponentListener {
 		panelEndAtFreqAndNotification.add("North",panelFreqAndNotification);
 		panelEndAtFreqAndNotification.add("South",panelFreqEndAt);
 		panelTop.add(panelEndAtFreqAndNotification, BorderLayout.CENTER);
-		JPanel panelTitleAndText = initializeTitleAndTextPanel();
+		JPanel panelTitleNLocationNPublic = initializeTitleNLocationNPublicPanel();
 		panelDetail = initializeDetailPanel();
-		panelApptDescription = initializeApptDescriptionPanel(panelTitleAndText, panelDetail);
+		panelApptDescription = initializeApptDescriptionPanel(panelTitleNLocationNPublic, panelDetail);
 		panelTop.add(panelApptDescription, BorderLayout.SOUTH);
 		contentPane.add("North", panelTop);
 
@@ -427,18 +427,18 @@ ComponentListener {
 
 		return panelTop;
 	}
-
-	public JPanel initializeTitleAndTextPanel()
+	
+	public JPanel initializeTitleNLocationNPublicPanel()
 	{
-		JPanel panelTitleAndText = new JPanel();
+		JPanel panelTitleNLocationNPublic = new JPanel();
+		
+		//title label and field.
 		JLabel titleL = new JLabel("TITLE");
-		titleField = new JTextField(15);
-		panelTitleAndText.add(titleL);
-		panelTitleAndText.add(titleField);
+		titleField = new JTextField(12);
+		panelTitleNLocationNPublic.add(titleL);
+		panelTitleNLocationNPublic.add(titleField);
 
-		//GUI for location list.
-		//test for location combobox.
-
+		//location list
 		LocationController.getInstance().initLocationStorage(new LocationStorageMemory(UserController.getInstance().getAdmin()));
 		ArrayList<Location> locationList = new ArrayList<Location>();
 		for(int i=0; i<LocationController.getInstance().getLocationList().getSize(); i++){
@@ -454,14 +454,16 @@ ComponentListener {
 		}
 
 		JLabel locationLabel = new JLabel("LOCATION");
-
-		//need to change the parameter in the constructor
-		//to load the list of locations.
 		locationField = new JComboBox(locationStringArray);
-		panelTitleAndText.add(locationLabel);
-		panelTitleAndText.add(locationField);
-
-		return panelTitleAndText;
+		panelTitleNLocationNPublic.add(locationLabel);
+		panelTitleNLocationNPublic.add(locationField);
+		
+		//set public checkbox
+		JCheckBox setPublicCheckBox = new JCheckBox("isPublic");
+		panelTitleNLocationNPublic.add(setPublicCheckBox);
+				
+		
+		return panelTitleNLocationNPublic;
 	}
 
 	public JPanel initializeDetailPanel()
