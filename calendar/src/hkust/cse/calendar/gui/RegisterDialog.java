@@ -133,7 +133,7 @@ public class RegisterDialog extends JFrame implements ActionListener {
 				System.out.println("RegisterDialog/actionPerformed: Admin Checkbox is Checked and User is Saved");
 				if(UserController.getInstance().saveUser(userName.getText(), firstPassword.getText(), firstName.getText(), lastName.getText(), emailAddress.getText(), true)) {				
 					JOptionPane.showMessageDialog(this, "Admin Registration Complete. Please Login using your credentials",
-							"Register Success", JOptionPane.OK_OPTION);
+							"Register Success", JOptionPane.PLAIN_MESSAGE);
 					LoginDialog loginDialog = new LoginDialog();
 					setVisible(false);
 					dispose();
@@ -143,7 +143,7 @@ public class RegisterDialog extends JFrame implements ActionListener {
 			} else {
 				if(UserController.getInstance().saveUser(userName.getText(), firstPassword.getText(), firstName.getText(), lastName.getText(), emailAddress.getText(), false)) {
 					JOptionPane.showMessageDialog(this, "Normal Registration Complete. Please Login using your credentials",
-							"Register Success", JOptionPane.OK_OPTION);
+							"Register Success", JOptionPane.PLAIN_MESSAGE);
 					LoginDialog loginDialog = new LoginDialog();
 					setVisible(false);
 					dispose();
