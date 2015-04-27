@@ -1,10 +1,11 @@
 package hkust.cse.calendar.userstorage;
 
+import hkust.cse.calendar.unit.DeleteRequest;
+import hkust.cse.calendar.unit.ModifyNotification;
+import hkust.cse.calendar.unit.User;
+
 import java.util.HashMap;
 import java.util.List;
-
-import hkust.cse.calendar.unit.DeleteRequest;
-import hkust.cse.calendar.unit.User;
 
 public abstract class UserStorage {
 
@@ -29,4 +30,9 @@ public abstract class UserStorage {
 		
 		public abstract List<DeleteRequest> getDeleteRequests(User user);
 		
+		public abstract List<ModifyNotification> getModifyNotificationList(User user);
+		
+		public abstract void addModifyNotification(ModifyNotification noti);
+		
+		public abstract void removeModifyNotification(ModifyNotification noti);
 }

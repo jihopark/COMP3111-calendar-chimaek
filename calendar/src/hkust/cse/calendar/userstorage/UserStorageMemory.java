@@ -3,7 +3,7 @@ package hkust.cse.calendar.userstorage;
 import hkust.cse.calendar.diskstorage.FileManager;
 import hkust.cse.calendar.diskstorage.JsonStorable;
 import hkust.cse.calendar.unit.DeleteRequest;
-import hkust.cse.calendar.unit.GroupAppt;
+import hkust.cse.calendar.unit.ModifyNotification;
 import hkust.cse.calendar.unit.User;
 
 import java.util.ArrayList;
@@ -19,9 +19,11 @@ public class UserStorageMemory extends UserStorage implements JsonStorable{
 	private LinkedList<User> list;
 	private int userNumber = 1;
 	private LinkedList<DeleteRequest> deleteRequestList;
+	private LinkedList<ModifyNotification> modifyNotificationList;
 
 	public UserStorageMemory() {
 		list = new LinkedList<User>();
+		modifyNotificationList = new LinkedList<ModifyNotification>();
 	}
 
 	public User getUserFromCredential(String id, String pw) {
@@ -162,8 +164,27 @@ public class UserStorageMemory extends UserStorage implements JsonStorable{
 		saveToJson();
 		return true;
 	}
-
-
+	
+	public List<ModifyNotification> getModifyNotificationList(User user){
+		ArrayList<ModifyNotification> list = new ArrayList<ModifyNotification>();
+		for (ModifyNotification noti : modifyNotificationList){
+			if (noti.getModifyUserID().equals(user.getID()))
+				list.add(noti);
+		}
+		return list;
+	}
+	
+	public void addModifyNotification(ModifyNotification noti){
+		System.out.println("UserStorageMemory/addModifyNotification " + noti);
+		modifyNotificationList.add(noti);
+		saveToJson();
+	}
+	
+	public void removeModifyNotification(ModifyNotification noti){
+		System.out.println("UserStorageMemory/removeModifyNotification " + noti);
+		modifyNotificationList.remove(noti);
+		saveToJson();
+	}
 	/*
 	 * For Disk Storage
 	 * */

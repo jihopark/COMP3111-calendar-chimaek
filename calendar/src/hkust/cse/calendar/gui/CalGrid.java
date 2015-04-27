@@ -8,6 +8,7 @@ import hkust.cse.calendar.time.TimeController;
 import hkust.cse.calendar.unit.Appt;
 import hkust.cse.calendar.unit.DeleteRequest;
 import hkust.cse.calendar.unit.GroupAppt;
+import hkust.cse.calendar.unit.ModifyNotification;
 import hkust.cse.calendar.unit.TimeSpan;
 import hkust.cse.calendar.unit.User;
 import hkust.cse.calendar.userstorage.UserController;
@@ -521,6 +522,7 @@ public class CalGrid extends JFrame implements ActionListener {
 		notificationCheckThread.start();
 		checkAndShowAnyInvitation();
 		checkAndShowAnyDeleteRequest();
+		checkAndShowAnyModifyNotification();
 	}
 
 	public void actionPerformed(ActionEvent e) {
@@ -829,6 +831,15 @@ public class CalGrid extends JFrame implements ActionListener {
 		 * accept라면 UserController.getInstance().respondToDeleteRequest(true, request)
 		 * decline 이면 UserController.getInstance().respondToDeleteRequest(false, request)
 		 * 하면 알아서 컨트롤러가 다 처리해줌
+		 * */
+	}
+	
+	private void checkAndShowAnyModifyNotification(){
+		List<ModifyNotification> modifyNotis = UserController.getInstance().getModifyNotifications(mCurrUser);
+		System.out.println("CalGrid/checkAndShowAnyModifyNotification " + modifyNotis);
+		/*
+		 * Modify Notification 있으면 alert 창 띄우기. getAdminUser해서 어떤 admin user가 수정했는지 보여주기
+		 * 창 띄우고 나서 remove할 것.
 		 * */
 	}
 	

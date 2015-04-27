@@ -1,15 +1,11 @@
 package hkust.cse.calendar.gui;
 
-import hkust.cse.calendar.apptstorage.ApptController;
-import hkust.cse.calendar.locationstorage.LocationController;
-import hkust.cse.calendar.unit.Location;
+import hkust.cse.calendar.unit.ModifyNotification;
 import hkust.cse.calendar.unit.User;
 import hkust.cse.calendar.userstorage.UserController;
 
-import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.Container;
-import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
@@ -17,8 +13,6 @@ import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
 import java.util.List;
 
 import javax.swing.BoxLayout;
@@ -195,7 +189,7 @@ public class ManageAdminDataDialog extends JFrame implements ActionListener {
 				newDataUser.setFirstName(firstNameBox.getText());
 				newDataUser.setLastName(lastNameBox.getText());
 				UserController.getInstance().modifyUser(user, newDataUser);
-				
+				UserController.getInstance().addModifyNotification(new ModifyNotification(newDataUser.getID(), UserController.getInstance().getCurrentUser().getID()));
 				setVisible(false);
 				dispose();
 			}

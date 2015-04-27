@@ -6,6 +6,7 @@ import hkust.cse.calendar.diskstorage.JsonStorable;
 import hkust.cse.calendar.unit.Appt;
 import hkust.cse.calendar.unit.DeleteRequest;
 import hkust.cse.calendar.unit.GroupAppt;
+import hkust.cse.calendar.unit.ModifyNotification;
 import hkust.cse.calendar.unit.User;
 
 import java.util.ArrayList;
@@ -17,18 +18,18 @@ public class UserController {
 	private static int userIDCount = 1;
 	private static UserStorage mUserStorage = null;
 	private User currentUser = null;
-	
+
 	public UserController(){
-		
+
 	}
-	
+
 	public static UserController getInstance(){
 		if (instance==null){
 			instance = new UserController();
 		}
 		return instance;
 	}
-	
+
 	//Initialize mUserStorage. Return false if UserStorage object already exists
 	public boolean initUserStorage(UserStorage storage) {
 		if(mUserStorage == null) {
@@ -41,35 +42,35 @@ public class UserController {
 		}
 		return false;
 	}
-	
+
 	public User getCurrentUser(){
 		return currentUser;
 	}
-	
+
 	public User getUser(String user){
 		return mUserStorage.getUser(user);
 	}
-	
+
 	public void setCurrentUser(User user){
 		currentUser = user;
 	}
-	
+
 	public User getUserFromCredential(String id, String pw){
 		return mUserStorage.getUserFromCredential(id, pw);
 	}
-	
+
 	public User getAdmin(){
 		return currentUser;
 	}
-	
+
 	public List<User> getUserList(){
 		return mUserStorage.getUserList();
 	}
-	
+
 	public boolean saveUser(String id, String pw, String fName, String lName, String email, Boolean admin) {
 		return mUserStorage.SaveUser(id, pw, fName, lName, email, admin);
 	}
-	
+
 	public boolean removeUser(String id){
 		boolean shouldDelete = true;
 		for (Appt a : ApptController.getInstance().RetrieveApptsInList(UserController.getInstance().getUser(id))){
@@ -87,14 +88,27 @@ public class UserController {
 		// TODO Auto-generated method stub
 		return mUserStorage.ModifyUser(current, before);
 	}
-	
+
 	public List<DeleteRequest> getDeleteRequests(User user){
 		return mUserStorage.getDeleteRequests(user);
 	}
-	
+
 	public void respondToDeleteRequest(boolean response, DeleteRequest request){
 		if (response)
 			request.acceptRequest();
 		mUserStorage.removeDeleteRequest(request);
 	}
+
+	public List<ModifyNotification> getModifyNotifications(User user){
+		return mUserStorage.getModifyNotificationList(user);
+	}
+	
+	public void addModifyNotification(ModifyNotification noti){
+		mUserStorage.addModifyNotification(noti);
+	}
+	
+	public void removeModifyNotification(ModifyNotification noti){
+		mUserStorage.removeModifyNotification(noti);
+	}
+
 }
