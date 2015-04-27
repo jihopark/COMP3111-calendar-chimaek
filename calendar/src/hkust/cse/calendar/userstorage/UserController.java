@@ -76,18 +76,25 @@ public class UserController {
 			if (a instanceof GroupAppt){
 				mUserStorage.addDeleteRequest(new DeleteRequest(id, ((GroupAppt) a).getOwner()));
 				shouldDelete = false;
-				System.out.println("UserController/removeUser Added DeleteRequest to delete " + id + " for " + ((GroupAppt) a).getOwner());
 			}
 		}
 		if (shouldDelete)
 			mUserStorage.RemoveUser(id);
-		return true;
-		//return mUserStorage.RemoveUser(id);
+		return shouldDelete;
 	}
 
 	public boolean modifyUser(User current, User before) {
 		// TODO Auto-generated method stub
 		return mUserStorage.ModifyUser(current, before);
 	}
-
+	
+	public List<DeleteRequest> getDeleteRequests(User user){
+		return mUserStorage.getDeleteRequests(user);
+	}
+	
+	public void respondToDeleteRequest(boolean response, DeleteRequest request){
+		if (response)
+			request.acceptRequest();
+		mUserStorage.removeDeleteRequest(request);
+	}
 }

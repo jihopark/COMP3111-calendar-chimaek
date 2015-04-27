@@ -3,6 +3,7 @@ package hkust.cse.calendar.userstorage;
 import hkust.cse.calendar.diskstorage.FileManager;
 import hkust.cse.calendar.diskstorage.JsonStorable;
 import hkust.cse.calendar.unit.DeleteRequest;
+import hkust.cse.calendar.unit.GroupAppt;
 import hkust.cse.calendar.unit.User;
 
 import java.util.ArrayList;
@@ -14,15 +15,15 @@ import com.google.gson.Gson;
 
 public class UserStorageMemory extends UserStorage implements JsonStorable{
 
-	
+
 	private LinkedList<User> list;
- 	private int userNumber = 1;
- 	private LinkedList<DeleteRequest> deleteRequestList;
-	
+	private int userNumber = 1;
+	private LinkedList<DeleteRequest> deleteRequestList;
+
 	public UserStorageMemory() {
 		list = new LinkedList<User>();
 	}
-	
+
 	public User getUserFromCredential(String id, String pw) {
 		for(User u : list) {
 			if( (u.getID().equals(id)) && (u.getPW().equals(pw)) )
@@ -30,7 +31,7 @@ public class UserStorageMemory extends UserStorage implements JsonStorable{
 		}
 		return null;
 	}
-	
+
 	@Override
 	public User getUser(String id) {
 		for(User u : list) {
@@ -40,7 +41,7 @@ public class UserStorageMemory extends UserStorage implements JsonStorable{
 		return null;
 	}
 
-	
+
 	public boolean SaveUser(String id, String pw, String fName, String lName, String email, Boolean admin){
 		if(!isDuplicate(id)){
 			User user = new User(id, pw, fName, lName, email, admin);
@@ -51,7 +52,7 @@ public class UserStorageMemory extends UserStorage implements JsonStorable{
 		}
 		return false;	
 	}	
-	
+
 	@Override
 	public boolean ModifyUser(User current, User before) {
 		// TODO Auto-generated method stub
@@ -67,8 +68,8 @@ public class UserStorageMemory extends UserStorage implements JsonStorable{
 		}
 		return false;
 	}
-	
-	
+
+
 	private boolean isDuplicate(String id) {
 		for(User u : list){
 			if(u.getID().equals(id))
@@ -76,12 +77,12 @@ public class UserStorageMemory extends UserStorage implements JsonStorable{
 		}
 		return false;
 	}
-	
+
 	@Override
 	public List<User> getUserList() {
 		return list;
 	}
-	
+
 	public boolean RemoveUser(String ID){	
 		if(ID!=null){
 			System.out.println("UserStorageMemory/RemoveUser Removed " + ID);
@@ -97,71 +98,87 @@ public class UserStorageMemory extends UserStorage implements JsonStorable{
 		System.out.println("RemoveUser: user is null");
 		return false;
 	}
-	
+
 	public List<DeleteRequest> getDeleteRequests(User user){
 		ArrayList<DeleteRequest> list = new ArrayList<DeleteRequest>();
 		if (deleteRequestList!=null){
 			for (DeleteRequest r : deleteRequestList){
 				if (r.getRequestUser().equals(user.ID()))
-						list.add(r);
+					list.add(r);
 			}
 		}
 		return list;
 	}
-	
+
 	public boolean addDeleteRequest(DeleteRequest request){
 		if (deleteRequestList==null) deleteRequestList = new LinkedList<DeleteRequest>();
-		
-		return deleteRequestList.add(request);
+
+		//Check for same request
+		for (DeleteRequest r : deleteRequestList){
+			if (r.equals(request))
+				return false;
+		}
+		System.out.println("UserStorageMemory/addDeleteRequest Added DeleteRequest to delete " + 
+				request.getDeleteUser() + " for " + request.getRequestUser());
+
+		deleteRequestList.add(request);
+		saveToJson();
+		return true;
 	}
-	
+
 	public boolean removeDeleteRequest(DeleteRequest request){
-		boolean deleteUser;
-		
+		boolean deleteUser = false;
+
 		if (deleteRequestList==null) return false;
 		if (request.getResponse()){
 			//If it is the last true Response
 			deleteUser = true;
 			for (DeleteRequest r : deleteRequestList){
-				if (r.getDeleteUser().equals(request.getDeleteUser())){
+				if (r.getDeleteUser().equals(request.getDeleteUser()) && !r.getRequestUser().equals(request.getRequestUser())){
 					deleteUser = false;
+					System.out.println("UserStorageMemory/removeDeleteRequest Another User's response needed");
 					break;
 				}
 			}
 		}
-		else{
-			deleteUser = false;
-			Iterator<DeleteRequest> itr = deleteRequestList.iterator();
-			while (true){
-				DeleteRequest r = itr.next();
-				if (r.getDeleteUser().equals(request.getDeleteUser()))
-					itr.remove();
-				
-				if (!itr.hasNext())
-					break;
+		Iterator<DeleteRequest> itr = deleteRequestList.iterator();
+		while (true){
+			DeleteRequest r = itr.next();
+			if (r.equals(request)){
+				itr.remove();
+				System.out.println("UserStorageMemory/removeDeleteRequest Removed DeleteRequest");
 			}
+			else if (request.getResponse()==false && r.getDeleteUser().equals(request.getDeleteUser())){
+				itr.remove();
+				System.out.println("UserStorageMemory/removeDeleteRequest Removed DeleteRequest with Same DeleteUser");
+			}
+
+			if (!itr.hasNext())
+				break;
 		}
+		System.out.println("UserStorageMemory/removeDeleteRequest " + deleteRequestList);
 		if (deleteUser)
 			RemoveUser(request.getDeleteUser());
+		saveToJson();
 		return true;
 	}
-	
-	
+
+
 	/*
 	 * For Disk Storage
 	 * */
-	
+
 	public String getFileName(){
 		return "DISK_USER.txt";
 	}
-	
+
 	public Object loadFromJson(){
 		Gson gson = new Gson();
 		String json = FileManager.getInstance().loadFromFile(getFileName());
 		if (json.equals("")) return null;
 		return gson.fromJson(json, UserStorageMemory.class);
 	}
-	
+
 	public void saveToJson(){
 		Gson gson = new Gson();
 		FileManager.getInstance().writeToFile(gson.toJson(this), getFileName());

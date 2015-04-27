@@ -28,4 +28,12 @@ public class DeleteRequest {
 		return response;
 	}
 	
+	public boolean equals(DeleteRequest r){
+		return r.getDeleteUser().equals(deleteUserID) && r.getRequestUser().equals(requestUserID);
+	}
+	
+	public String toString(){
+		return deleteUserID+"/"+requestUserID;
+	}
+	
 }

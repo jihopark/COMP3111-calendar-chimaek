@@ -6,6 +6,7 @@ import hkust.cse.calendar.invite.InviteController;
 import hkust.cse.calendar.notification.NotificationCheckThread;
 import hkust.cse.calendar.time.TimeController;
 import hkust.cse.calendar.unit.Appt;
+import hkust.cse.calendar.unit.DeleteRequest;
 import hkust.cse.calendar.unit.GroupAppt;
 import hkust.cse.calendar.unit.TimeSpan;
 import hkust.cse.calendar.unit.User;
@@ -519,6 +520,7 @@ public class CalGrid extends JFrame implements ActionListener {
 		mCurrUser = UserController.getInstance().getCurrentUser();	//get User from ApptController.getInstance().
 		notificationCheckThread.start();
 		checkAndShowAnyInvitation();
+		checkAndShowAnyDeleteRequest();
 	}
 
 	public void actionPerformed(ActionEvent e) {
@@ -818,6 +820,16 @@ public class CalGrid extends JFrame implements ActionListener {
 			System.out.println("There is no invitation!");
 			//testInvitePopUp();
 		}
+	}
+	
+	private void checkAndShowAnyDeleteRequest(){
+		List<DeleteRequest> deleteRequests = UserController.getInstance().getDeleteRequests(mCurrUser);
+		System.out.println("CalGrid/checkAndShowAnyDeleteRequest " + deleteRequests);
+		/*delete Request 있는거 다 받음다음에 pop 창 띄우기 invite user처럼 (삭제하려는 유저 = request.getDeleteUser())
+		 * accept라면 UserController.getInstance().respondToDeleteRequest(true, request)
+		 * decline 이면 UserController.getInstance().respondToDeleteRequest(false, request)
+		 * 하면 알아서 컨트롤러가 다 처리해줌
+		 * */
 	}
 	
 	public void testInvitePopUp(){
