@@ -114,7 +114,7 @@ public class ApptController {
 			int notificationHoursBefore, int notificationMinutesBefore){
 		appt.setID(mApptStorage.getIDCount());
 		if(notificationEnabled)
-			setNotificationForAppt(appt,notificationHoursBefore,notificationMinutesBefore);
+			setNotificationForAppt(appt, user, notificationHoursBefore,notificationMinutesBefore);
 		boolean tmp = mApptStorage.SaveAppt(user, appt);
 		
 		if(tmp) updateDiskStorage();
@@ -161,7 +161,7 @@ public class ApptController {
 			if (!saveNewAppt(user, a))
 				return false;
 			if(notificationEnabled)
-				setNotificationForAppt(a,notificationHoursBefore,notificationMinutesBefore);
+				setNotificationForAppt(a, user, notificationHoursBefore,notificationMinutesBefore);
 		}
 		linkRepeatedAppt(tmpList);
 		updateDiskStorage();
@@ -452,16 +452,26 @@ public class ApptController {
 		return tmp;
 	}*/
 	
-	public boolean setNotificationForAppt(Appt appt, int notificationHoursBefore, int notificationMinutesBefore)
+	public boolean setNotificationForAppt(Appt appt, User user, int notificationHoursBefore, int notificationMinutesBefore)
 	{
-		Notification notification = new Notification(appt, appt.getTitle(),appt.getTimeSpan().StartTime(),
-				notificationHoursBefore, notificationMinutesBefore);
-		boolean tmp = NotificationController.getInstance().saveNewNotification(UserController.getInstance().getCurrentUser(), notification);
+		Notification notification = new Notification(appt,notificationHoursBefore, notificationMinutesBefore);
+		boolean tmp = NotificationController.getInstance().saveNewNotification(user, notification);
 		if(tmp)
 			appt.setNotification(notification);
 		return tmp;
 	}
 
+	public boolean setNotificationForAppt(Appt appt, User user, int notificationHoursBefore, int notificationMinutesBefore, boolean pending)
+	{
+		Notification notification = new Notification(appt,notificationHoursBefore, notificationMinutesBefore);
+		notification.setPending(pending);
+		boolean tmp = NotificationController.getInstance().saveNewNotification(user, notification);
+		if(tmp)
+			appt.setNotification(notification);
+		return tmp;
+	}
+
+	
 	/* Get the defaultUser of mApptStorage */
 	public User getDefaultUser() {
 		return UserController.getInstance().getCurrentUser();

@@ -9,8 +9,10 @@ import hkust.cse.calendar.diskstorage.JsonStorable;
 import hkust.cse.calendar.locationstorage.LocationController;
 import hkust.cse.calendar.locationstorage.LocationStorage;
 import hkust.cse.calendar.locationstorage.LocationStorageMemory;
+import hkust.cse.calendar.notification.NotificationController;
 import hkust.cse.calendar.unit.Appt;
 import hkust.cse.calendar.unit.GroupAppt;
+import hkust.cse.calendar.unit.Notification;
 import hkust.cse.calendar.unit.User;
 import hkust.cse.calendar.userstorage.UserController;
 
@@ -52,8 +54,23 @@ public class InviteController {
 		if(tempAppt == null){
 			return false;
 		}
-		else{
+		else{//save to the invite storage
 			mInviteStorage.addGroupAppt(tempAppt);
+			updateDiskStorage();
+			return true;
+		}
+	}
+
+	public boolean saveNewGroupAppt(Appt appt, LinkedList<String> attendList, String ownerID, int hoursBefore, int minutesBefore){
+		GroupAppt tempAppt= mInviteStorage.createGroupApptInvite(appt, attendList, ownerID);
+		if(tempAppt == null){
+			return false;
+		}
+		else{//save to the invite storage
+			mInviteStorage.addGroupAppt(tempAppt);
+			//the initiator will have the pending group appt notification temporarily.
+			ApptController.getInstance().setNotificationForAppt(tempAppt, 
+					UserController.getInstance().getCurrentUser(), hoursBefore, minutesBefore, true);
 			updateDiskStorage();
 			return true;
 		}
@@ -79,12 +96,23 @@ public class InviteController {
 	
 	private void setConfirmedGroupAppt(GroupAppt gAppt){
 		mInviteStorage.removeGroupAppt(gAppt);
-		System.out.println(gAppt.getAttendList().size());
+		Notification notification = gAppt.getNotification();
 		for(String attendee : gAppt.getAttendList()){
-			System.out.println("Moving to ApptStorage!!");
+			System.out.println("Attendee" + attendee);
 			User attendingUser = UserController.getInstance().getUser(attendee);
-			ApptController.getInstance().saveNewAppt(attendingUser, gAppt);
+			GroupAppt tempGroupAppt = new GroupAppt(gAppt);
+			if(notification != null){
+				ApptController.getInstance().saveNewAppt(attendingUser, tempGroupAppt, true,
+						notification.getHoursBefore(), notification.getMinutesBefore());
+			}
+			else{
+				ApptController.getInstance().saveNewAppt(attendingUser, tempGroupAppt);
+			}
 		}
+		//erase notification for pending groupAppt
+		if(notification != null)
+			NotificationController.getInstance().removeNotification(UserController.getInstance().getUser(gAppt.getOwner()), notification);
+		updateDiskStorage();
 	}
 	
 	

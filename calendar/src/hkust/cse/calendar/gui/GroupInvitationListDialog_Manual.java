@@ -3,6 +3,7 @@ package hkust.cse.calendar.gui;
 import hkust.cse.calendar.invite.InviteController;
 import hkust.cse.calendar.unit.Appt;
 import hkust.cse.calendar.unit.Location;
+import hkust.cse.calendar.unit.Notification;
 import hkust.cse.calendar.unit.User;
 import hkust.cse.calendar.userstorage.UserController;
 
@@ -44,11 +45,13 @@ public class GroupInvitationListDialog_Manual extends JFrame implements ActionLi
 	private List<User> userList;
 	private JList displayList;
 	private Appt currentAppt;
+	private Notification notification;
 	
-	public GroupInvitationListDialog_Manual(Appt curAppt,AppScheduler parent){
+	public GroupInvitationListDialog_Manual(Appt curAppt,AppScheduler parent, Notification noti){
 		
 		currentAppt = curAppt;
 		parentApptScheduler = parent;
+		notification = noti;
 		setTitle("Group Event Invitation Dialog");
 		this.setAlwaysOnTop(true);
 		
@@ -142,29 +145,9 @@ public class GroupInvitationListDialog_Manual extends JFrame implements ActionLi
 		}else if(e.getSource() == cancelButton){
 			setVisible(false);
 			dispose();
+			
 		}else if(e.getSource() == okButton){
-			//get data from rightUserBox and add it to userController
-			if(rightListModel.getSize() <= 0){
-				JOptionPane.showMessageDialog(this, "Please choose at least one user before sending the invitation",
-						"Input Error", JOptionPane.ERROR_MESSAGE);
-				return;
-			}
-			//create invite list and send invitation.
-			LinkedList<String> inviteList = new LinkedList<String>();
-			for(int i = 0; i<rightListModel.getSize();i++){
-				inviteList.add(rightListModel.get(i).toString());
-			}
-			inviteList.add(UserController.getInstance().getCurrentUser().getID());
-			if(InviteController.getInstance().saveNewGroupAppt(currentAppt,inviteList,
-					UserController.getInstance().getCurrentUser().getID())){
-				JOptionPane.showMessageDialog(this, "Saved group appointment!");
-				setVisible(false);
-				dispose();
-				parentApptScheduler.dispose();
-			}
-			else{
-				JOptionPane.showMessageDialog(this, "Failed to save group appointment!");
-			}
+			okButtonResponse();
 			
 		}else if(e.getSource() == cancelButton){
 			setVisible(false);
@@ -173,14 +156,46 @@ public class GroupInvitationListDialog_Manual extends JFrame implements ActionLi
 		
 	}
 
-	
-	//can be replaced by InviteController.saveNewGroupAppt.
-	private void sendGroupInvitation(LinkedList<String> userList) {
-		// TODO Auto-generated method stub
-		for(String user : userList){
-			System.out.println("GroupInvitationDialog/sendGroupInvitation: Invitation sent to " + user);
+	private void okButtonResponse(){
+		
+		if(rightListModel.getSize() <= 0){
+			JOptionPane.showMessageDialog(this, "Please choose at least one user before sending the invitation",
+					"Input Error", JOptionPane.ERROR_MESSAGE);
+			return;
 		}
-		//need to connect to groupInvitation send logic
+		
+		//CREATE INVITE LIST.
+		LinkedList<String> inviteList = new LinkedList<String>();
+		for(int i = 0; i<rightListModel.getSize();i++){
+			inviteList.add(rightListModel.get(i).toString());
+		}
+		inviteList.add(UserController.getInstance().getCurrentUser().getID());
+		
+		//SAVING GROUP APPT.
+		if(notification != null){		//when there is notification.
+			if(InviteController.getInstance().saveNewGroupAppt(currentAppt,inviteList,
+					UserController.getInstance().getCurrentUser().getID(),notification.getHoursBefore(),notification.getMinutesBefore())){
+				JOptionPane.showMessageDialog(this, "Saved group appointment with notification!");
+				setVisible(false);
+				dispose();
+				parentApptScheduler.dispose();
+			}
+			else{
+				JOptionPane.showMessageDialog(this, "Failed to save group appointment!");
+			}
+		}
+		else{		//when there is no notification
+			if(InviteController.getInstance().saveNewGroupAppt(currentAppt,inviteList,
+					UserController.getInstance().getCurrentUser().getID())){
+				JOptionPane.showMessageDialog(this, "Saved group appointment withOUT notification!");
+				setVisible(false);
+				dispose();
+				parentApptScheduler.dispose();
+			}
+			else{
+				JOptionPane.showMessageDialog(this, "Failed to save group appointment!");
+			}
+		}
 	}
 
 	private void checkButtonActivity() {

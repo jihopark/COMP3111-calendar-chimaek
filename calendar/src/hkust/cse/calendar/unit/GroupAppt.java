@@ -56,6 +56,18 @@ public class GroupAppt extends Appt {
 		this.owner_id = ownerID;
 	}
 
+	public GroupAppt(GroupAppt gAppt){
+		mApptID=gAppt.getID();
+		mTimeSpan=gAppt.getTimeSpan();
+		mTitle = gAppt.getTitle();
+		mInfo= gAppt.getInfo();
+		location_id = gAppt.getLocationID();
+		notification_id = gAppt.getNotificationID();
+		attend = new LinkedList<String>(gAppt.getAttendList());
+		waiting = new LinkedList<String>(gAppt.getAttendList());
+		waiting.remove(gAppt.getOwner());
+		owner_id=gAppt.getOwner();
+	}
 	
 	public String getOwner(){
 		return owner_id;

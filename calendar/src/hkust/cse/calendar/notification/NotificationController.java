@@ -64,23 +64,42 @@ public class NotificationController {
 		
 		//Update
 		public boolean updateNotification(User user, Notification notification){
-			return mNotificationStorage.UpdateNotification(user, notification);
+			boolean temp = mNotificationStorage.UpdateNotification(user, notification);
+			if(temp)
+				updateDiskStorage();
+			return temp;
 		}
 		
 		//Save New
 		public boolean saveNewNotification(User user, Notification notification){
 			notification.setID(mNotificationStorage.getIDCount());
 			System.out.println("NotificationController/saveNewNotification Saved. ID is " + notification.getID());
-			return mNotificationStorage.SaveNotification(user, notification);
+			boolean temp = mNotificationStorage.SaveNotification(user, notification);
+			if(temp)
+				updateDiskStorage();
+			return temp;
 		}
 		
 		//remove
 		public boolean removeNotification(User user, Notification notification){
 			System.out.println("NotificationController/removeNewNotification Removed");
-			return mNotificationStorage.RemoveNotification(user, notification);
+			boolean temp = mNotificationStorage.RemoveNotification(user, notification);
+			if(temp)
+				updateDiskStorage();
+			return temp;
 		}
 		
 		public Notification getNotificationByID(int id){
 			return mNotificationStorage.RetrieveNotification(id);
+		}
+		
+		public void setDelivered(Notification noti){
+			noti.hasDelivered();
+			updateDiskStorage();
+		}
+		
+		private void updateDiskStorage(){
+			if (mNotificationStorage instanceof JsonStorable)
+				((JsonStorable) mNotificationStorage).saveToJson();
 		}
 }

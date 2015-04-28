@@ -6,6 +6,7 @@ import hkust.cse.calendar.locationstorage.LocationStorageMemory;
 import hkust.cse.calendar.time.TimeController;
 import hkust.cse.calendar.unit.Appt;
 import hkust.cse.calendar.unit.Location;
+import hkust.cse.calendar.unit.Notification;
 import hkust.cse.calendar.unit.TimeSpan;
 import hkust.cse.calendar.userstorage.UserController;
 
@@ -568,16 +569,24 @@ ComponentListener {
 	
 	private void groupEventButtonResponse() {
 		
-		if(saveInfoToAppt() == false){//when the input for the appt is invalid.
+		if(saveInfoToAppt() == false){			//when the input for the appt is invalid.
 			return;
 		}
 		if(checkGroupEventConditions()){
-			GroupInvitationListDialog_Manual groupInvitationDialog = new GroupInvitationListDialog_Manual(currentAppt,this);
+			if(checkForNotification()){
+				int hoursBefore = Utility.getNumber(notificationHourField.getText());
+				int minutesBefore = Utility.getNumber(notificationMinuteField.getText());
+				Notification tempGroupNotification = new Notification(currentAppt, hoursBefore, minutesBefore);
+				GroupInvitationListDialog_Manual groupInvitationDialog = new GroupInvitationListDialog_Manual(currentAppt,this,tempGroupNotification);
+			}
+			else{
+				GroupInvitationListDialog_Manual groupInvitationDialog = new GroupInvitationListDialog_Manual(currentAppt,this,null);
+			}
 		}
 	}
 	
 	private boolean checkGroupEventConditions(){
-		if(!oneTimeButton.isSelected()){//check if event is repeated.
+		if(!oneTimeButton.isSelected()){		//check if event is repeated.
 			JOptionPane.showMessageDialog(this, "Group Event can only be ONE-TIME!",
 					"Input Error", JOptionPane.ERROR_MESSAGE);
 			return false;

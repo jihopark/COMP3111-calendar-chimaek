@@ -26,7 +26,7 @@ public class Notification {
 	private int minutesBefore;
 	private int _notificationID; 
 	private boolean delivered = false;
-	private boolean isPending = true;
+	private boolean isPending = false;
 	
 	// A default constructor
 	public Notification() {
@@ -50,10 +50,10 @@ public class Notification {
 	}
 	*/
 	
-	public Notification(Appt appt, String name, Date time, int notificationHoursBefore, int notificationMinutesBefore){
+	public Notification(Appt appt,int notificationHoursBefore, int notificationMinutesBefore){
 		appt_id = appt.getID();
-		_name = name;
-		_appointmentTime = time;
+		_name = appt.getTitle();
+		_appointmentTime = appt.getTimeSpan().StartTime();
 		hoursBefore = notificationHoursBefore;
 		minutesBefore = notificationMinutesBefore;
 		

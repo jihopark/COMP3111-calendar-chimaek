@@ -792,17 +792,27 @@ public class CalGrid extends JFrame implements ActionListener {
 	public void updateCalGridTitleClock(Date currentTime)
 	{
 		mCurrTitle = "Desktop Calendar - " + mCurrUser.ID() + " - ";
-		if(TimeController.getInstance().getHourFrom(currentTime) == 0)
-		{
-			this.setTitle(mCurrTitle + (TimeController.getInstance().getHourFrom(currentTime)+12) + ":" + TimeController.getInstance().getMinuteFrom(currentTime) + "AM");
+		int originalHour = TimeController.getInstance().getHourFrom(currentTime);
+		int originalMinute = TimeController.getInstance().getMinuteFrom(currentTime);
+		String changedMinute;
+		if(originalMinute/10 < 1){
+			changedMinute = "0"+originalMinute;
 		}
-		else if(TimeController.getInstance().getHourFrom(currentTime) < 12)
-		{
-			this.setTitle(mCurrTitle + TimeController.getInstance().getHourFrom(currentTime) + ":" + TimeController.getInstance().getMinuteFrom(currentTime) + "AM");
+		else{
+			changedMinute = ""+ originalMinute;
 		}
-		else if(TimeController.getInstance().getHourFrom(currentTime) == 12)
+		
+		if(originalHour == 0)
 		{
-			this.setTitle(mCurrTitle + TimeController.getInstance().getHourFrom(currentTime) + ":" + TimeController.getInstance().getMinuteFrom(currentTime) + "PM");
+			this.setTitle(mCurrTitle + (originalHour+12) + ":" + changedMinute + "AM");
+		}
+		else if(originalHour < 12)
+		{
+			this.setTitle(mCurrTitle + originalHour + ":" + changedMinute + "AM");
+		}
+		else if(originalHour == 12)
+		{
+			this.setTitle(originalHour + ":" + changedMinute + "PM");
 		}
 		else
 		{
@@ -843,6 +853,7 @@ public class CalGrid extends JFrame implements ActionListener {
 		 * */
 	}
 	
+	//For testing purpose only!
 	public void testInvitePopUp(){
 		Timestamp startTime = TimeController.getInstance().dateInputToTimestamp(2015, 6, 12, 12, 0, 0);
 		Timestamp endTime = TimeController.getInstance().dateInputToTimestamp(2015, 6, 12, 12, 30, 0);
@@ -850,6 +861,6 @@ public class CalGrid extends JFrame implements ActionListener {
 		LinkedList<String> list = new LinkedList<String>();
 		list.add("bk");
 		GroupAppt tempGroupAppt = new GroupAppt(0,timespan,"Untitled"," ",10,-1,-1,0,-1,list,"bk");
-		InvitationPopUpDialog newDia = new InvitationPopUpDialog(tempGroupAppt,this);
+		InvitationPopUpDialog newDialog = new InvitationPopUpDialog(tempGroupAppt,this);
 	}
 }

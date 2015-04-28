@@ -6,6 +6,7 @@ import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.sql.Timestamp;
+import java.util.Date;
 
 import hkust.cse.calendar.invite.InviteController;
 import hkust.cse.calendar.time.TimeController;
@@ -30,6 +31,7 @@ public class InvitationPopUpDialog extends JFrame implements ActionListener{
 	private JPanel topPanel;
 	private JPanel bottomPanel;
 	private JLabel apptTimeLabel;
+	private JLabel notificationTimeLabel;
 	private JLabel organizerLabel;
 	private JLabel locationLabel;
 	private JButton acceptButton;
@@ -45,6 +47,7 @@ public class InvitationPopUpDialog extends JFrame implements ActionListener{
 		topPanel = initializeTopPanel();
 		bottomPanel = initializeBottomPanel();
 		apptTimeLabel = initializeApptTimeLabel();
+		notificationTimeLabel = initializeNotificationLabel();
 		organizerLabel = initializeOrganizerLabel();
 		locationLabel = initializeLocationLabel();
 		acceptButton = initializeAcceptButton();
@@ -53,6 +56,7 @@ public class InvitationPopUpDialog extends JFrame implements ActionListener{
 	
 		//add components to corresponding panels
 		topPanel.add(apptTimeLabel);
+		topPanel.add(notificationTimeLabel);
 		topPanel.add(organizerLabel);
 		topPanel.add(locationLabel);
 		bottomPanel.add(acceptButton);
@@ -71,7 +75,7 @@ public class InvitationPopUpDialog extends JFrame implements ActionListener{
 
 	private JPanel initializeTopPanel()
 	{
-		final int ROW = 3;
+		final int ROW = 4;
 		final int COL = 1;
 		JPanel tempTopPanel = new JPanel();
 		tempTopPanel.setLayout(new GridLayout(ROW,COL));
@@ -99,8 +103,24 @@ public class InvitationPopUpDialog extends JFrame implements ActionListener{
 		int endHour = TimeController.getInstance().getHourFrom(endTimestamp);
 		int endMinute = TimeController.getInstance().getMinuteFrom(endTimestamp);
 		
+		String changedStartMinute;
+		if(startMinute/10 < 1){
+			changedStartMinute = "0"+startMinute;
+		}
+		else{
+			changedStartMinute = ""+startMinute;
+		}		
+		
+		String changedEndMinute;
+		if(endMinute/10 < 1){
+			changedEndMinute = "0"+endMinute;
+		}
+		else{
+			changedEndMinute = ""+endMinute;
+		}
+		
 		tempTimeLabel.setText("Appointment Time: " + startYear + "-" + startMonth + "-" + startDate + " "
-				+ startHour + ":" + startMinute + "-" + endHour + ":" + endMinute);
+				+ startHour + ":" + changedStartMinute + "-" + endHour + ":" + changedEndMinute);
 		
 		return tempTimeLabel;
 	}
@@ -113,8 +133,28 @@ public class InvitationPopUpDialog extends JFrame implements ActionListener{
 	
 	private JLabel initializeLocationLabel(){	
 		JLabel tempLocationLabel = new JLabel();
-		tempLocationLabel.setText("Location: " ); //+ _groupAppt.getLocation().getName());
+		tempLocationLabel.setText("Location: " + _groupAppt.getLocation().getName());
 		return tempLocationLabel;
+	}
+	
+	private JLabel initializeNotificationLabel(){
+		JLabel tempNotificationLabel = new JLabel();
+		Date notificationTime = _groupAppt.getNotification().getNotificationTimeObj().getNotificationTime();
+		int notiYear = TimeController.getInstance().getYearFrom(notificationTime);
+		int notiMonth = TimeController.getInstance().getMonthFrom(notificationTime);
+		int notiDate = TimeController.getInstance().getDateFrom(notificationTime);
+		int notiHour = TimeController.getInstance().getHourFrom(notificationTime);
+		int notiMinute = TimeController.getInstance().getMinuteFrom(notificationTime);
+		String minute;
+		if(notiMinute/10 < 1){
+			minute = "0"+notiMinute;
+		}
+		else{
+			minute = ""+notiMinute;
+		}
+		tempNotificationLabel.setText("Notification At: " + + notiYear + "-" + notiMonth + "-" + notiDate 
+					+ " "+ notiHour + ":" + minute);
+		return tempNotificationLabel;
 	}
 	
 	private JButton initializeAcceptButton(){

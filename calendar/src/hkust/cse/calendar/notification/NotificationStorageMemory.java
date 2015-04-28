@@ -36,7 +36,6 @@ public class NotificationStorageMemory extends NotificationStorage implements Js
 			System.out.println("NotificationStorageNullImpl/SaveNotification Notification added.");
 			notificationNumber++;
 			notification.resetNotificationID();
-			saveToJson();
 			return true;
 		}
 		else {
@@ -50,7 +49,6 @@ public class NotificationStorageMemory extends NotificationStorage implements Js
 			if (a.equals(notification) && notificationIsValid(notification)) {
 				notifications.get(user.toString()).remove(a);
 				notificationNumber--;
-				saveToJson();
 				return true;
 			}
 		}
@@ -107,7 +105,6 @@ public class NotificationStorageMemory extends NotificationStorage implements Js
 			if (a.equals(notification)){
 				notifications.get(user.toString()).remove(a);
 				notifications.get(user.toString()).add(notification);
-				saveToJson();
 				return true;
 			}
 		}

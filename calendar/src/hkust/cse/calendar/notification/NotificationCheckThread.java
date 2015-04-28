@@ -14,7 +14,6 @@ public class NotificationCheckThread extends Thread {
 
 	public static Date currentTime = new Date();
 	public CalGrid calGrid;
-	private List<NotificationTime> deliveredNotification = new ArrayList<NotificationTime>();
 	
 	public NotificationCheckThread(CalGrid cal)
 	{
@@ -30,20 +29,12 @@ public class NotificationCheckThread extends Thread {
 				calGrid.updateCalGridTitleClock(currentTime);
 				//System.out.println("Current Time is: " + currentTime);
 
-				List<NotificationTime> notifications = NotificationController.getInstance().retrieveNotification(UserController.getInstance().getAdmin(), currentTime);
-				if(notifications.size() == 0)
-				{
-					//System.out.println("There is no notification!");
-				}
+				List<NotificationTime> notifications = NotificationController.getInstance().retrieveNotification(UserController.getInstance().getCurrentUser(), currentTime);
 				if (notifications.size()!=0){
 					for (NotificationTime time : notifications){
-						if (!deliveredNotification.contains(time) && time.getParent().isPending() != true){
-							System.out.println((time == null)+"");
-							System.out.println((time.getParent()==null)+"");
-							System.out.println((time.getParent().getAppt()==null)+"");				
-							
+						if ((!time.getParent().isDelivered()) && (!time.getParent().isPending())){
+							NotificationController.getInstance().setDelivered(time.getParent());
 							JOptionPane.showMessageDialog(null, "You have an appointment!\n" + time.getParent().getName() + "at " + time.getParent().getAppt().TimeSpan());
-							deliveredNotification.add(time);
 						}
 					}
 				}
