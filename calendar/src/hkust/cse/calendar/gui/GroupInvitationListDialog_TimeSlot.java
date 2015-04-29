@@ -34,7 +34,7 @@ public class GroupInvitationListDialog_TimeSlot extends JFrame implements Action
 	private JList leftUserBox;
 	private JList rightUserBox;
 	private JButton cancelButton;
-	private JButton okButton; 
+	private JButton viewTimeSlotButton; 
 	private JButton leftButton;
 	private JButton rightButton;
 	private DefaultListModel leftListModel;
@@ -123,9 +123,9 @@ public class GroupInvitationListDialog_TimeSlot extends JFrame implements Action
 		cancelButton.addActionListener(this);
 		bottom.add(cancelButton);
 		
-		okButton = new JButton("Ok");
-		okButton.addActionListener(this);
-		bottom.add(okButton);
+		viewTimeSlotButton = new JButton("View Timeslot");
+		viewTimeSlotButton.addActionListener(this);
+		bottom.add(viewTimeSlotButton);
 		
 		contentPane.add("South", bottom);
 		
@@ -165,7 +165,7 @@ public class GroupInvitationListDialog_TimeSlot extends JFrame implements Action
 		}else if(e.getSource() == cancelButton){
 			setVisible(false);
 			dispose();
-		}else if(e.getSource() == okButton){
+		}else if(e.getSource() == viewTimeSlotButton){
 			//get data from rightUserBox and add it to userController
 			if(rightListModel.getSize() <= 0){
 				JOptionPane.showMessageDialog(this, "Please choose at least one user before sending the invitation",
