@@ -139,21 +139,26 @@ public class InvitationPopUpDialog extends JFrame implements ActionListener{
 	
 	private JLabel initializeNotificationLabel(){
 		JLabel tempNotificationLabel = new JLabel();
-		Date notificationTime = _groupAppt.getNotification().getNotificationTimeObj().getNotificationTime();
-		int notiYear = TimeController.getInstance().getYearFrom(notificationTime);
-		int notiMonth = TimeController.getInstance().getMonthFrom(notificationTime);
-		int notiDate = TimeController.getInstance().getDateFrom(notificationTime);
-		int notiHour = TimeController.getInstance().getHourFrom(notificationTime);
-		int notiMinute = TimeController.getInstance().getMinuteFrom(notificationTime);
-		String minute;
-		if(notiMinute/10 < 1){
-			minute = "0"+notiMinute;
+		if(_groupAppt.getNotification() != null){
+			Date notificationTime = _groupAppt.getNotification().getNotificationTimeObj().getNotificationTime();
+			int notiYear = TimeController.getInstance().getYearFrom(notificationTime);
+			int notiMonth = TimeController.getInstance().getMonthFrom(notificationTime);
+			int notiDate = TimeController.getInstance().getDateFrom(notificationTime);
+			int notiHour = TimeController.getInstance().getHourFrom(notificationTime);
+			int notiMinute = TimeController.getInstance().getMinuteFrom(notificationTime);
+			String minute;
+			if(notiMinute/10 < 1){
+				minute = "0"+notiMinute;
+			}
+			else{
+				minute = ""+notiMinute;
+			}
+			tempNotificationLabel.setText("Notification At: " + notiYear + "-" + notiMonth + "-" + notiDate 
+						+ " "+ notiHour + ":" + minute);
 		}
 		else{
-			minute = ""+notiMinute;
+			tempNotificationLabel.setText("Notification At: -");
 		}
-		tempNotificationLabel.setText("Notification At: " + + notiYear + "-" + notiMonth + "-" + notiDate 
-					+ " "+ notiHour + ":" + minute);
 		return tempNotificationLabel;
 	}
 	
