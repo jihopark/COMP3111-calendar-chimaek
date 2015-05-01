@@ -1,5 +1,6 @@
 package hkust.cse.calendar.gui;
 
+import hkust.cse.calendar.unit.DeleteRequest;
 import hkust.cse.calendar.unit.ModifyNotification;
 import hkust.cse.calendar.unit.User;
 import hkust.cse.calendar.userstorage.UserController;
@@ -202,6 +203,19 @@ public class ManageAdminDataDialog extends JFrame implements ActionListener {
 						"Remove UnSuccessful", JOptionPane.OK_CANCEL_OPTION);
 				return;
 			}
+			UserController.getInstance().removeUser(user.toString());
+			//DeleteRequest newDeleteRequest = new DeleteRequest(user.toString(), UserController.getInstance().getCurrentUser().toString());
+			JOptionPane.showMessageDialog(this, "You have Requested to Delete User: " + newDataUser.getID() + "!",
+					"Remove Requsted Successful", JOptionPane.OK_CANCEL_OPTION);
+			userListModel.clear();
+			userList = UserController.getInstance().getUserList();
+			for(User a : userList) {
+				userListModel.addElement(a.getID());
+			}
+			
+
+			
+			/** old code: delete on user on request
 			if(UserController.getInstance().removeUser(newDataUser.getID())){
 				JOptionPane.showMessageDialog(this, "You have Deleted User: " + newDataUser.getID() + "!",
 						"Remove Successful", JOptionPane.OK_CANCEL_OPTION);
@@ -214,7 +228,7 @@ public class ManageAdminDataDialog extends JFrame implements ActionListener {
 				JOptionPane.showMessageDialog(this, "Could Not Delete the Specific User.",
 						"Remove UnSuccessful", JOptionPane.OK_CANCEL_OPTION);
 			}
-			
+			**/
 			
 		} else if(e.getSource() == cancelButton){
 			setVisible(false);

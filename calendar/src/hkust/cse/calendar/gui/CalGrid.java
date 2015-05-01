@@ -842,6 +842,10 @@ public class CalGrid extends JFrame implements ActionListener {
 		 * decline 이면 UserController.getInstance().respondToDeleteRequest(false, request)
 		 * 하면 알아서 컨트롤러가 다 처리해줌
 		 * */
+		for(DeleteRequest a: deleteRequests){
+			DeleteUserPopUpDialog dialog = new DeleteUserPopUpDialog(a,this);
+		}
+		
 	}
 	
 	private void checkAndShowAnyModifyNotification(){
@@ -851,6 +855,7 @@ public class CalGrid extends JFrame implements ActionListener {
 		 * Modify Notification 있으면 alert 창 띄우기. getAdminUser해서 어떤 admin user가 수정했는지 보여주기
 		 * 창 띄우고 나서 remove할 것.
 		 * */
+		
 	}
 	
 	//For testing purpose only!
