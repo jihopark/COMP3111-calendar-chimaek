@@ -855,6 +855,10 @@ public class CalGrid extends JFrame implements ActionListener {
 		 * Modify Notification 있으면 alert 창 띄우기. getAdminUser해서 어떤 admin user가 수정했는지 보여주기
 		 * 창 띄우고 나서 remove할 것.
 		 * */
+		for(ModifyNotification n: modifyNotis){
+			ModifyUserPopUpDialog dialog = new ModifyUserPopUpDialog(n,this);
+			UserController.getInstance().removeModifyNotification(n);
+		}
 		
 	}
 	
