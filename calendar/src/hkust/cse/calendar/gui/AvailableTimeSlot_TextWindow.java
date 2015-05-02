@@ -22,15 +22,9 @@ import javax.swing.table.TableModel;
 public class AvailableTimeSlot_TextWindow extends JFrame{
 	private static final long serialVersionUID = 1L;
     private CalGrid parent;
-    public AvailableTimeSlot_TextWindow(ArrayList<User> userList, ArrayList<Date> dateList, CalGrid cal) {
-
-    	parent = cal;
-    	AppScheduler groupApptScheduler = new AppScheduler("TimeSlot GroupAppt", parent, userList);
-		groupApptScheduler.setLocationRelativeTo(null);
-		groupApptScheduler.show();
-		
+    public AvailableTimeSlot_TextWindow(ArrayList<User> userList, ArrayList<Date> dateList) {
     	setTitle("View Available TimeSlot");
-    	this.getContentPane().setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
+    	this.getContentPane().setLayout(new BoxLayout(getContentPane(), BoxLayout.Y_AXIS));
     	setSize(500, 300);
         // create JTextField
     	JLabel dateLabel= new JLabel("");

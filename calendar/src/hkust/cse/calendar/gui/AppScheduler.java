@@ -209,7 +209,7 @@ ComponentListener {
 
 	}
 
-	private void commonConstructor(String title, CalGrid cal, ArrayList<User> inviteeList) {
+	private void commonConstructor(String title, CalGrid cal, ArrayList<User> inviteeList, ArrayList<Date> dateList) {
 
 		parent = cal;
 		this.setAlwaysOnTop(true);
@@ -246,13 +246,13 @@ ComponentListener {
 		panelEndAtFreqAndNotification.add("North",panelFreqAndNotification);
 		panelEndAtFreqAndNotification.add("South",panelFreqEndAt);
 		panelTop.add(panelEndAtFreqAndNotification, BorderLayout.CENTER);
-		JPanel panelTitleAndText = initializeTitleAndTextPanel();
+		JPanel panelTitleNLocationNPublic = initializeTitleNLocationNPublicPanel();
 		panelDetail = initializeDetailPanel();
-		panelApptDescription = initializeApptDescriptionPanel(panelTitleAndText, panelDetail);
+		panelApptDescription = initializeApptDescriptionPanel(panelTitleNLocationNPublic, panelDetail);
 		panelTop.add(panelApptDescription, BorderLayout.SOUTH);
 		contentPane.add("North", panelTop);
 
-		currentAppt = new Appt();
+		//currentAppt = new Appt();
 
 		JPanel panelBottom = new JPanel();
 		panelBottom.setLayout(new FlowLayout(FlowLayout.RIGHT));
@@ -289,7 +289,6 @@ ComponentListener {
 		pack();
 
 	}
-	
 
 	public JPanel initializeDatePanel()
 	{
@@ -622,8 +621,8 @@ ComponentListener {
 		commonConstructor(title, groupOrSingle, cal);
 	}
 	
-	AppScheduler(String title, CalGrid cal, ArrayList<User> inviteeList){
-		commonConstructor(title, cal, inviteeList);
+	AppScheduler(String title, CalGrid cal, ArrayList<User> inviteeList, ArrayList<Date> dateList){
+		commonConstructor(title, cal, inviteeList, dateList);
 	}
 
 

@@ -234,14 +234,17 @@ public class GroupInvitationListDialog_TimeSlot extends JFrame implements Action
 			dateList.add(d2);
 			
 			  //Display the window.
-			JFrame frame = new AvailableTimeSlot_TextWindow(inviteeList, dateList, parent);
+	    	AppScheduler groupApptScheduler = new AppScheduler("TimeSlot GroupAppt", parent, inviteeList, dateList);
+			groupApptScheduler.setLocationRelativeTo(null);
+			groupApptScheduler.show();
+			
+			JFrame frame = new AvailableTimeSlot_TextWindow(inviteeList, dateList);
 			//frame.pack();
 			frame.setSize(300, 500);
 			frame.setVisible(true);
-
-			//frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-			//setVisible(false);
-			//dispose();
+			frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+			setVisible(false);
+			dispose();
 		}
 		
 	}
@@ -375,15 +378,15 @@ public class GroupInvitationListDialog_TimeSlot extends JFrame implements Action
 		endyearField = new JTextField(6);
 		panelDate.add(endyearField);
 
-		startmonthLabel = new JLabel("MONTH: ");
-		panelDate.add(startmonthLabel);
-		startmonthField = new JTextField(4);
-		panelDate.add(startmonthField);
+		endmonthLabel = new JLabel("MONTH: ");
+		panelDate.add(endmonthLabel);
+		endmonthField = new JTextField(4);
+		panelDate.add(endmonthField);
 
-		startdayLabel = new JLabel("DAY: ");
-		panelDate.add(startdayLabel);
-		startdayField = new JTextField(4);
-		panelDate.add(startdayField);
+		enddayLabel = new JLabel("DAY: ");
+		panelDate.add(enddayLabel);
+		enddayField = new JTextField(4);
+		panelDate.add(enddayField);
 		
 		return panelDate;
 	}
