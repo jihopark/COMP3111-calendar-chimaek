@@ -170,7 +170,7 @@ public class AppList extends JPanel implements ActionListener
 
 
 		setVisible(true);
-		setSize(600, 300);
+		setSize(600, 300);	
 		//this.
 	}
 

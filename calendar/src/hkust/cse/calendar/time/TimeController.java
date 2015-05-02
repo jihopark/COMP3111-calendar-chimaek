@@ -143,7 +143,7 @@ public class TimeController {
 		return tempTimestamp;
 	}
 	
-	public Date dateInputToDate(int year, int month, int date, int hour, int min, int sec)
+	public static Date dateInputToDate(int year, int month, int date, int hour, int min, int sec)
 	{
 		Date tempDate = new Date(0);
 		long dateInputInMillisFromEpoch = dateInputToMillisFromEpoch(year,month,date,hour,min,sec);
@@ -151,7 +151,7 @@ public class TimeController {
 		return tempDate;
 	}
 	
-	public long dateInputToMillisFromEpoch(int year, int month, int date, int hour, int min, int sec)
+	public static long dateInputToMillisFromEpoch(int year, int month, int date, int hour, int min, int sec)
 	{
 		Calendar tempCalendar = Calendar.getInstance();
 		tempCalendar.set(year, month-1, date, hour, min, sec);

@@ -410,7 +410,7 @@ public class CalGrid extends JFrame implements ActionListener {
 		
 		viewTimeSlotMenuItem.addActionListener(new ActionListener() {	
 			public void actionPerformed(ActionEvent arg0) {
-				GroupInvitationListDialog_TimeSlot dlg = new GroupInvitationListDialog_TimeSlot();
+				GroupInvitationListDialog_TimeSlot dlg = new GroupInvitationListDialog_TimeSlot(CalGrid.this);
 			}	
 		});			
 		voteTimeSlotMenuItem.addActionListener(new ActionListener() {	

@@ -493,7 +493,7 @@ public class ApptController {
 	}
 	
 	//Return non-overlapping timeslot in one day
-	public List<TimeSpan> getSchedulableTimeSpan(List<User> users, Date scheduleDay){
+	public ArrayList<TimeSpan> getSchedulableTimeSpan(List<User> users, Date scheduleDay){
 		ArrayList<TimeSpan> timeSlots = new ArrayList<TimeSpan>();
 		
 		//create timeslots in 15min interval of the whole day
@@ -523,19 +523,19 @@ public class ApptController {
 		TimeSpan oneDay = new TimeSpan(startTime.getTime(), endTime.getTime());
 		
 		for (User user : users){
-			System.out.println("ApptController/getSchedualableTimeSpan Iterating user " + user.toString());
+			//System.out.println("ApptController/getSchedualableTimeSpan Iterating user " + user.toString());
 			for (Appt appt : mApptStorage.RetrieveApptsInList(user, oneDay)){
 				TimeSpan slot = timeSlots.get(0);
 				for (Iterator<TimeSpan> it = timeSlots.iterator(); it.hasNext() ; 
 						slot = it.next()){
 					if (appt.getTimeSpan().Overlap(slot)){
-						System.out.println("ApptController/getSchedualableTimeSpan Removed " + slot);
+						//System.out.println("ApptController/getSchedualableTimeSpan Removed " + slot);
 						it.remove();						
 					}
 				}
 			}
 		}
-		System.out.println("ApptController/getSchedualableTimeSpan Removed " + timeSlots);
+		//System.out.println("ApptController/getSchedualableTimeSpan Removed " + timeSlots);
 		return timeSlots;
 	}
 	

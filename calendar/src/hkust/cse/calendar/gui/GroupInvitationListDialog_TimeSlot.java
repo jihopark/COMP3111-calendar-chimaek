@@ -1,6 +1,8 @@
 package hkust.cse.calendar.gui;
 
+import hkust.cse.calendar.time.TimeController;
 import hkust.cse.calendar.unit.Location;
+import hkust.cse.calendar.unit.TimeSpan;
 import hkust.cse.calendar.unit.User;
 import hkust.cse.calendar.userstorage.UserController;
 
@@ -14,7 +16,11 @@ import java.awt.event.ActionListener;
 import java.awt.event.MouseListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.sql.Timestamp;
+import java.util.ArrayList;
+import java.util.GregorianCalendar;
 import java.util.List;
+import java.util.Date;
 
 import javax.swing.BoxLayout;
 import javax.swing.DefaultListModel;
@@ -28,6 +34,7 @@ import javax.swing.JScrollPane;
 import javax.swing.JTextField;
 import javax.swing.border.Border;
 import javax.swing.border.TitledBorder;
+
 
 public class GroupInvitationListDialog_TimeSlot extends JFrame implements ActionListener {
 
@@ -56,9 +63,11 @@ public class GroupInvitationListDialog_TimeSlot extends JFrame implements Action
 	private JLabel enddayLabel;
 	private JTextField enddayField;
 	
+	private CalGrid parent;
 	
-	public GroupInvitationListDialog_TimeSlot(){
+	public GroupInvitationListDialog_TimeSlot(CalGrid cal){
 		
+		parent = cal;
 		setTitle("Group Event Invitation Dialog");
 		this.setAlwaysOnTop(true);
 		
@@ -172,22 +181,151 @@ public class GroupInvitationListDialog_TimeSlot extends JFrame implements Action
 						"Input Error", JOptionPane.ERROR_MESSAGE);
 				return;
 			}
+			
 			////need to implement view available timeslot.
+	
+			/*
+
+
+			
+			Timestamp timestampForStartTime = CreateTimeStamp(validDate1, validTimeInterval[0]);
+			Timestamp timestampForEndTime = CreateTimeStamp(validDate2, validTimeInterval[1]);
+			
+			TimeSpan timeSpanForSlot = new TimeSpan(timestampForStartTime,timestampForEndTime);
+			*/
 			
 			
+			ArrayList<User> inviteeList = new ArrayList<User>();
 			
-			setVisible(false);
-			dispose();
+
+			for(int i = 0; i<rightListModel.getSize();i++){
+				inviteeList.add(UserController.getInstance().getUser(rightListModel.get(i).toString()));
+			}
+			
+			ArrayList<Date> dateList = new ArrayList<Date>();
+			
+			Date d2 = new Date();
+			Date d1 = new Date();
+			
+			int[] validDate1 = getValidDate(startyearField,startmonthField,startdayField);
+			int[] validDate2 = getValidDate(endyearField,endmonthField,enddayField);
+			int[] validTimeInterval = setTimeInterval();
+			
+			if(validDate1 == null || validDate2 == null || validTimeInterval == null)
+			{
+				System.out.println("not Valid date || TimeInterval");
+				return;
+			}
+			
+			//System.out.println("d2: "+ Utility.getNumber(endyearField.getText()) +" - "+ Utility.getNumber(endmonthField.getText())+" - "+Utility.getNumber(enddayField.getText()));
+			d1 = TimeController.dateInputToDate(validDate1[0],validDate1[1], validDate1[2], 0,0,0);
+			d2 = TimeController.dateInputToDate(validDate2[0],validDate2[1], validDate2[2], 0,0,0);
+			if(d2.getTime()<=d1.getTime()){
+				System.out.println("end date should be later than the start date");
+				return;
+			}
+			dateList.add(d1);
+			Date tempdate = new Date();
+			for(int dayCount=1; dayCount<(d2.getTime()-d1.getTime())/(1000*60*60*24); dayCount++){
+				tempdate = d1;
+				tempdate.setDate(tempdate.getDate()+dayCount);
+				dateList.add(tempdate);
+			}
+			dateList.add(d2);
+			
+			  //Display the window.
+			JFrame frame = new AvailableTimeSlot_TextWindow(inviteeList, dateList, parent);
+			//frame.pack();
+			frame.setSize(300, 500);
+			frame.setVisible(true);
+
+			//frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+			//setVisible(false);
+			//dispose();
 		}
 		
 	}
+	
+	private int getTimeInput(int hour, int min) 
+	{
 
-	private void sendGroupInvitation(String user) {
-		// TODO Auto-generated method stub
-		System.out.println("GroupInvitationDialog/sendGroupInvitation: Invitation sent to " + user);
-		//need to connect to groupInvitation send logic
+		if (hour == -1)
+			return -1;
+		if (min == -1)
+			return -1;
+
+		return (hour * 60 + min);
+
 	}
+	private int[] setTimeInterval() {
 
+		int[] result = new int[2];
+		result[0] = getTimeInput(0, 0);
+		result[1] = getTimeInput(24, 0);
+
+		return result;
+	}
+	
+	private int[] getValidDate(JTextField year, JTextField month, JTextField day) {
+
+		int[] date = new int[3];
+		date[0] = Utility.getNumber(year.getText());
+		date[1] = Utility.getNumber(month.getText());
+
+		if (date[0] < 1980 || date[0] > 2100) 
+		{
+			JOptionPane.showMessageDialog(this, "Please input proper year",
+					"Input Error", JOptionPane.ERROR_MESSAGE);
+			return null;
+		}
+
+		if (date[1] <= 0 || date[1] > 12) 
+		{
+			JOptionPane.showMessageDialog(this, "Please input proper month",
+					"Input Error", JOptionPane.ERROR_MESSAGE);
+			return null;
+		}
+
+		date[2] = Utility.getNumber(day.getText());
+		int monthDay = CalGrid.monthDays[date[1] - 1];
+
+		if (date[1] == 2) 
+		{
+			GregorianCalendar c = new GregorianCalendar();
+			if (c.isLeapYear(date[0]))
+				monthDay = 29;
+		}
+
+		if (date[2] <= 0 || date[2] > monthDay) 
+		{
+			JOptionPane.showMessageDialog(this,
+					"Please input proper month day", "Input Error",
+					JOptionPane.ERROR_MESSAGE);
+			return null;
+		}
+		return date;
+	}
+	
+	
+	private Timestamp CreateTimeStamp(int[] date, int time) {
+		Timestamp stamp = new Timestamp(0);
+		TimeController.getInstance().setYear(stamp, date[0]);
+		TimeController.getInstance().setMonth(stamp, date[1]);
+		if(time/60 == 24)
+		{
+			TimeController.getInstance().setDate(stamp, date[2]+1);
+			TimeController.getInstance().setHour(stamp, 0);
+			TimeController.getInstance().setMinute(stamp, time % 60);
+		}
+		else
+		{
+			TimeController.getInstance().setDate(stamp,date[2]);
+			TimeController.getInstance().setHour(stamp, time/60);
+			TimeController.getInstance().setMinute(stamp, time % 60);
+		}
+		return stamp;
+	}
+	
 	private void checkButtonActivity() {
 		// TODO Auto-generated method stub
 		if(rightListModel.isEmpty()){
@@ -202,7 +340,6 @@ public class GroupInvitationListDialog_TimeSlot extends JFrame implements Action
 		}
 	}
 	
-	/// for type 1 (view available timeslot)
 	private JPanel initializeStartDatePanel()
 	{
 		JPanel panelDate = new JPanel();

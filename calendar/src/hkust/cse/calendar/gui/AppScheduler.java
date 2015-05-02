@@ -209,6 +209,87 @@ ComponentListener {
 
 	}
 
+	private void commonConstructor(String title, CalGrid cal, ArrayList<User> inviteeList) {
+
+		parent = cal;
+		this.setAlwaysOnTop(true);
+		setTitle(title);
+		setModal(false);
+
+		if (title.equals(MODIFY)) 
+			isModifying = true;
+
+		Container contentPane;
+		contentPane = getContentPane();
+
+		//Initializing individual panels.
+		JPanel panelTop = initializeTopPanel();
+		JPanel panelDate = initializeDatePanel();
+		JPanel panelStartTime = initializeStartTimePanel();
+		JPanel panelEndTime = initializeEndTimePanel();
+		JPanel panelBothTime = initializeBothTimePanel();
+		JPanel panelDateAndTime = initializeDateAndTimePanel();
+		JPanel panelFreq = initializeFreqPanel();
+		JPanel panelNotification = initializeNotificationPanel();
+		JPanel panelFreqAndNotification = initiatializeFreqAndNotificationPanel();
+		JPanel panelFreqEndAt = initializeFreqEndAtPanel();
+		JPanel panelEndAtFreqAndNotification = initializeEndAtFreqAndNotificationPanel();
+
+		//Adding the panels to respective root panels.
+		panelBothTime.add(panelStartTime);
+		panelBothTime.add(panelEndTime);
+		panelDateAndTime.add("North", panelDate);
+		panelDateAndTime.add("South", panelBothTime);
+		panelTop.add(panelDateAndTime, BorderLayout.NORTH);
+		panelFreqAndNotification.add(panelFreq);
+		panelFreqAndNotification.add(panelNotification);
+		panelEndAtFreqAndNotification.add("North",panelFreqAndNotification);
+		panelEndAtFreqAndNotification.add("South",panelFreqEndAt);
+		panelTop.add(panelEndAtFreqAndNotification, BorderLayout.CENTER);
+		JPanel panelTitleAndText = initializeTitleAndTextPanel();
+		panelDetail = initializeDetailPanel();
+		panelApptDescription = initializeApptDescriptionPanel(panelTitleAndText, panelDetail);
+		panelTop.add(panelApptDescription, BorderLayout.SOUTH);
+		contentPane.add("North", panelTop);
+
+		currentAppt = new Appt();
+
+		JPanel panelBottom = new JPanel();
+		panelBottom.setLayout(new FlowLayout(FlowLayout.RIGHT));
+
+		//initiate buttons.
+		initiateSaveButton();
+		initiateRejectButton();
+		initiateCancelButton();
+		initiateGroupEventButton();
+		
+		//add them to the panel
+		panelBottom.add(groupEventButton);
+		panelBottom.add(saveBut);
+		panelBottom.add(rejectBut);
+		rejectBut.show(false);
+		panelBottom.add(CancelBut);
+		contentPane.add("South", panelBottom);
+
+		if (this.getTitle().equals("Join Appointment Content Change") || this.getTitle().equals("Join Appointment Invitation")){
+			inviteBut.show(false);
+			rejectBut.show(true);
+			CancelBut.setText("Consider Later");
+			saveBut.setText("Accept");
+		}
+		if (this.getTitle().equals("Someone has responded to your Joint Appointment invitation") ){
+			inviteBut.show(false);
+			rejectBut.show(false);
+			CancelBut.show(false);
+			saveBut.setText("confirmed");
+		}
+		if (this.getTitle().equals("Join Appointment Invitation") || this.getTitle().equals("Someone has responded to your Joint Appointment invitation") || this.getTitle().equals("Join Appointment Content Change")){
+			allDisableEdit();
+		}
+		pack();
+
+	}
+	
 
 	public JPanel initializeDatePanel()
 	{
@@ -539,6 +620,10 @@ ComponentListener {
 	//Constructor
 	AppScheduler(String title, String groupOrSingle, CalGrid cal) {
 		commonConstructor(title, groupOrSingle, cal);
+	}
+	
+	AppScheduler(String title, CalGrid cal, ArrayList<User> inviteeList){
+		commonConstructor(title, cal, inviteeList);
 	}
 
 

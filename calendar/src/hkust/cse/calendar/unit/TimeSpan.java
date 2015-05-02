@@ -11,6 +11,7 @@ import java.util.Date;
 public class TimeSpan implements Serializable {
 	
 	public static SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm");
+	public static SimpleDateFormat onlyTimeFormat = new SimpleDateFormat("HH:mm");
 	/* The starting time of the time span */
 	private Timestamp mStartTime;
 	/* The ending time of the time span */
@@ -70,6 +71,10 @@ public class TimeSpan implements Serializable {
 	
 	public String toString(){
 		return "TimeSpan From " + dateFormat.format(new Date(mStartTime.getTime())) + " to " + dateFormat.format(new Date(mEndTime.getTime()));
+	}
+	
+	public String OnlyTimetoString(){
+		return onlyTimeFormat.format(new Date(mStartTime.getTime())) +" ~ "+ onlyTimeFormat.format(new Date(mEndTime.getTime()));
 	}
 	
 	public void setTimeWithoutChangingDay(TimeSpan timespan){
