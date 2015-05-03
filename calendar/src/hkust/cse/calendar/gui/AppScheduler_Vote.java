@@ -81,7 +81,7 @@ ComponentListener {
 	private JLabel startdayLabel;
 	private JTextField startdayField;
 	
-	
+	private Appt tempAppt;
 	
 	public AppScheduler_Vote(CalGrid cal){
 		
@@ -281,6 +281,9 @@ ComponentListener {
 			}
 
 			date = TimeController.dateInputToDate(validDate[0],validDate[1], validDate[2], 0,0,0);
+			
+			//set Appt info
+			tempAppt
 			
 			if(sendVote(inviteeList, tempAppt, date))
 				JOptionPane.showMessageDialog(this,  "Sent vote invitation successfully");
