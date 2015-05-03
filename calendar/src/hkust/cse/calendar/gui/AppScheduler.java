@@ -15,6 +15,7 @@ import hkust.cse.calendar.userstorage.UserController;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Component;
 import java.awt.Container;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
@@ -101,6 +102,7 @@ ComponentListener {
 	private JButton inviteBut;
 	private JButton rejectBut;
 	private JButton groupEventButton;
+	private JButton GroupEventTimeSlotButton;
 
 	private Appt currentAppt;
 	private CalGrid parent;
@@ -123,6 +125,15 @@ ComponentListener {
 	private final String MODIFY = "Modify";
 	private boolean isGroupEvent = false;
 	private final String GROUP = "Group";
+	
+
+	//////////////Group Event Time Slot/////////////
+	private TimeSpan d1;
+	private ArrayList<User> inviteeList1;
+	private ArrayList<Date> dateList1;
+	////////////////////////////////////////////////
+	
+	
 	
 	private void commonConstructor(String title, String groupOrSingle, CalGrid cal) {
 
@@ -215,10 +226,14 @@ ComponentListener {
 		this.setAlwaysOnTop(true);
 		setTitle(title);
 		setModal(false);
-
-		if (title.equals(MODIFY)) 
-			isModifying = true;
-
+		
+		inviteeList1 = new ArrayList<User>();
+		dateList1 = new ArrayList<Date> ();
+		inviteeList1 = inviteeList;
+		dateList1 = dateList;
+		
+		currentAppt = new Appt();
+		
 		Container contentPane;
 		contentPane = getContentPane();
 
@@ -258,34 +273,19 @@ ComponentListener {
 		panelBottom.setLayout(new FlowLayout(FlowLayout.RIGHT));
 
 		//initiate buttons.
-		initiateSaveButton();
-		initiateRejectButton();
+		//initiateSaveButton();
+		//initiateRejectButton();
 		initiateCancelButton();
-		initiateGroupEventButton();
+		//initiateGroupEventButton();
+		initiateGroupEventTimeSlotButton();
 		
 		//add them to the panel
-		panelBottom.add(groupEventButton);
-		panelBottom.add(saveBut);
-		panelBottom.add(rejectBut);
-		rejectBut.show(false);
+		panelBottom.add(GroupEventTimeSlotButton);
+		//panelBottom.add(saveBut);
+		//panelBottom.add(rejectBut);
+		//rejectBut.show(false);
 		panelBottom.add(CancelBut);
 		contentPane.add("South", panelBottom);
-
-		if (this.getTitle().equals("Join Appointment Content Change") || this.getTitle().equals("Join Appointment Invitation")){
-			inviteBut.show(false);
-			rejectBut.show(true);
-			CancelBut.setText("Consider Later");
-			saveBut.setText("Accept");
-		}
-		if (this.getTitle().equals("Someone has responded to your Joint Appointment invitation") ){
-			inviteBut.show(false);
-			rejectBut.show(false);
-			CancelBut.show(false);
-			saveBut.setText("confirmed");
-		}
-		if (this.getTitle().equals("Join Appointment Invitation") || this.getTitle().equals("Someone has responded to your Joint Appointment invitation") || this.getTitle().equals("Join Appointment Content Change")){
-			allDisableEdit();
-		}
 		pack();
 
 	}
@@ -314,18 +314,7 @@ ComponentListener {
 		return panelDate;
 	}
 
-	/*public void initializeDefaultDateSetting()
-	{
-		String defaultYearString = Integer.toString(TimeController.getInstance().getCurrentTimeInDate().getYear()+1900);
-		yearField.setText(defaultYearString);
 
-		String defaultMonthString = Integer.toString(TimeController.getInstance().getCurrentTimeInDate().getMonth()+1);
-		monthField.setText(defaultMonthString);
-
-		String defaultDayString = Integer.toString(TimeController.getInstance().getCurrentTimeInDate().getDate());
-		dayField.setText(defaultDayString);
-
-	}*/
 
 	public JPanel initializeStartTimePanel()
 	{
@@ -591,6 +580,12 @@ ComponentListener {
 		}
 
 	}
+	
+	public void initiateGroupEventTimeSlotButton()
+	{
+		GroupEventTimeSlotButton = new JButton("Save Group Event(TimeSlot)");
+		GroupEventTimeSlotButton.addActionListener(this);
+	}
 
 	public void initiateRejectButton()
 	{
@@ -621,6 +616,7 @@ ComponentListener {
 		commonConstructor(title, groupOrSingle, cal);
 	}
 	
+	//Constructor - Group Event with Timeslot
 	AppScheduler(String title, CalGrid cal, ArrayList<User> inviteeList, ArrayList<Date> dateList){
 		commonConstructor(title, cal, inviteeList, dateList);
 	}
@@ -643,6 +639,10 @@ ComponentListener {
 		{
 			groupEventButtonResponse();
 
+		}
+		else if (e.getSource() == GroupEventTimeSlotButton)
+		{
+			GroupEventTimeSlotButtonResponse();
 		}
 		else if(e.getSource() == oneTimeButton)
 		{
@@ -733,6 +733,87 @@ ComponentListener {
 				}
 			}
 		}
+	}
+	
+	private void GroupEventTimeSlotButtonResponse(){		
+		if(saveInfoToAppt() == false){ //when the input for the appt is invalid.
+			return;
+		}
+		else if(!checkValidTimeSlot(d1, inviteeList1, dateList1)){
+			System.out.println("Not a valid timeslot");
+			return;
+		}
+		else if(checkGroupEventConditions()){
+			if(checkForNotification()){
+				int hoursBefore = Utility.getNumber(notificationHourField.getText());
+				int minutesBefore = Utility.getNumber(notificationMinuteField.getText());
+				Notification tempGroupNotification = new Notification(currentAppt, hoursBefore, minutesBefore);
+				
+				
+				sendGroupEventInvitation_TimeSlot(currentAppt,this,tempGroupNotification);
+				setVisible(false);
+				dispose();
+			}
+			else{
+				sendGroupEventInvitation_TimeSlot(currentAppt,this,null);
+				setVisible(false);
+				dispose();
+			}
+		}
+	}
+	
+	private boolean sendGroupEventInvitation_TimeSlot( Appt currentAppt, AppScheduler parent, Notification noti){
+		
+		//conversion from arraylist<user> to linkedlist<String>
+		LinkedList<String> userList = new LinkedList<String>();
+		for(User a : inviteeList1){
+			userList.add(a.getID());
+		}
+		
+		
+		if(noti != null){		//when there is notification.
+			if(InviteController.getInstance().saveNewGroupAppt(currentAppt,userList,
+					UserController.getInstance().getCurrentUser().getID(),noti.getHoursBefore(),noti.getMinutesBefore())){
+				JOptionPane.showMessageDialog(parent, "Saved group appointment with notification!");
+				return true;
+			}
+			else{
+				JOptionPane.showMessageDialog(parent, "Failed to save group appointment!");
+				return false;
+			}
+		}
+		else{		//when there is no notification
+			if(InviteController.getInstance().saveNewGroupAppt(currentAppt,userList,
+					UserController.getInstance().getCurrentUser().getID())){
+				JOptionPane.showMessageDialog(parent, "Saved group appointment withOUT notification!");
+				return true;
+			}
+			else{
+				JOptionPane.showMessageDialog(parent, "Failed to save group appointment!");
+				return false;
+			}
+		}
+	}
+	
+	
+	private boolean checkValidTimeSlot(TimeSpan d, ArrayList<User> inviteeList, ArrayList<Date> dateList){
+    	
+		ArrayList<TimeSpan> slotList = new ArrayList<TimeSpan>();
+    	TimeSpan tempSpan = new TimeSpan(d.StartTime(), d.EndTime());
+    	for(int i =0; i<dateList.size(); i++) {
+			slotList = ApptController.getInstance().getSchedulableTimeSpan(inviteeList, dateList.get(i));
+
+			for(int j=0; j<slotList.size();j++){
+				if(slotList.get(j).Overlap(tempSpan)){
+					if(slotList.get(j).TimeLength()<tempSpan.TimeLength()){
+						tempSpan.StartTime(slotList.get(j).StartTime());
+					}
+					if(slotList.get(j).TimeLength()==tempSpan.TimeLength())
+						return true;
+				}
+			}
+    	}
+    	return false;
 	}
 	
 	private boolean checkGroupEventConditions(){
@@ -986,6 +1067,8 @@ ComponentListener {
 		Timestamp timestampForEndTime = CreateTimeStamp(validDate, validTimeInterval[1]);
 		
 		TimeSpan timeSpanForAppt = new TimeSpan(timestampForStartTime,timestampForEndTime);
+		d1 = new TimeSpan(timestampForStartTime,timestampForEndTime);
+
 		
 		if(!TimeController.getInstance().isNotPast(timeSpanForAppt)){
 			JOptionPane.showMessageDialog(this, "Input date is past date! ");

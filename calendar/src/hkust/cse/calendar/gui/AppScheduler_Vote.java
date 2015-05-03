@@ -1,6 +1,10 @@
 package hkust.cse.calendar.gui;
 
+import hkust.cse.calendar.apptstorage.ApptController;
+import hkust.cse.calendar.locationstorage.LocationController;
+import hkust.cse.calendar.locationstorage.LocationStorageMemory;
 import hkust.cse.calendar.time.TimeController;
+import hkust.cse.calendar.unit.Appt;
 import hkust.cse.calendar.unit.Location;
 import hkust.cse.calendar.unit.TimeSpan;
 import hkust.cse.calendar.unit.User;
@@ -9,46 +13,67 @@ import hkust.cse.calendar.userstorage.UserController;
 import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.Container;
-import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.MouseListener;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
+import java.awt.event.ComponentEvent;
+import java.awt.event.ComponentListener;
 import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
-import java.util.Date;
 
 import javax.swing.BoxLayout;
+import javax.swing.ButtonGroup;
 import javax.swing.DefaultListModel;
 import javax.swing.JButton;
+import javax.swing.JCheckBox;
+import javax.swing.JComboBox;
+import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JRadioButton;
 import javax.swing.JScrollPane;
+import javax.swing.JSplitPane;
+import javax.swing.JTextArea;
 import javax.swing.JTextField;
+import javax.swing.border.BevelBorder;
 import javax.swing.border.Border;
 import javax.swing.border.TitledBorder;
 
-
-public class GroupInvitationListDialog_TimeSlot extends JFrame implements ActionListener {
+public class AppScheduler_Vote extends JFrame implements ActionListener,
+ComponentListener {
 
 	private JList leftUserBox;
 	private JList rightUserBox;
 	private JButton cancelButton;
-	private JButton viewTimeSlotButton; 
+	
+	private JButton sendVoteButton; 
 	private JButton leftButton;
 	private JButton rightButton;
+	
 	private DefaultListModel leftListModel;
 	private DefaultListModel rightListModel;
+	
 	private List<User> userList;
 	private JList displayList;
 	
+	private JLabel titleLabel;
+	private JTextField titleField;
+	private JCheckBox setPublicCheckBox;
+
+	//private JLabel descriptionLabel;
+	//private JTextField descriptionField;
+	private JTextArea detailArea;
+
+	private JComboBox locationField;
+	private String[] locationStringArray;
+	
+	private CalGrid parent;
 	private JLabel startyearLabel;
 	private JTextField startyearField;
 	private JLabel startmonthLabel;
@@ -56,19 +81,12 @@ public class GroupInvitationListDialog_TimeSlot extends JFrame implements Action
 	private JLabel startdayLabel;
 	private JTextField startdayField;
 	
-	private JLabel endyearLabel;
-	private JTextField endyearField;
-	private JLabel endmonthLabel;
-	private JTextField endmonthField;
-	private JLabel enddayLabel;
-	private JTextField enddayField;
 	
-	private CalGrid parent;
 	
-	public GroupInvitationListDialog_TimeSlot(CalGrid cal){
+	public AppScheduler_Vote(CalGrid cal){
 		
 		parent = cal;
-		setTitle("Group Event Invitation Dialog");
+		setTitle("App Scheduler Vote Dialog");
 		this.setAlwaysOnTop(true);
 		
 		Container contentPane;
@@ -86,12 +104,18 @@ public class GroupInvitationListDialog_TimeSlot extends JFrame implements Action
 		JPanel top = new JPanel();
 		top.setLayout(new BorderLayout());
 		
-		JPanel panelStartDate = initializeStartDatePanel();
-		JPanel panelEndDate = initializeEndDatePanel();
-		top.add("North", panelStartDate);
-		top.add("South", panelEndDate);
+		JPanel panelTitle = initializeTitleNLocationNPublicPanel();
+		top.add("North", panelTitle);
 		
-		contentPane.add("North", top);
+		JPanel panelDate = initializeStartDatePanel();
+		top.add("Center", panelDate);
+		
+		JPanel panelDetail = initializeDetailPanel();
+		top.add("South",panelDetail);
+		
+		contentPane.add("North",top);
+		
+		
 		
 		JPanel center = new JPanel();
 		center.setLayout(new FlowLayout());
@@ -128,13 +152,15 @@ public class GroupInvitationListDialog_TimeSlot extends JFrame implements Action
 		//bottom part
 		JPanel bottom = new JPanel();
 		bottom.setLayout(new FlowLayout());
+		
+		sendVoteButton = new JButton("Send Vote");
+		sendVoteButton.addActionListener(this);
+		bottom.add(sendVoteButton);
 		cancelButton = new JButton("Cancel");
 		cancelButton.addActionListener(this);
 		bottom.add(cancelButton);
 		
-		viewTimeSlotButton = new JButton("View Timeslot");
-		viewTimeSlotButton.addActionListener(this);
-		bottom.add(viewTimeSlotButton);
+
 		
 		contentPane.add("South", bottom);
 		
@@ -144,7 +170,58 @@ public class GroupInvitationListDialog_TimeSlot extends JFrame implements Action
 		setVisible(true);	
 	}
 	
-	
+	public JPanel initializeTitleNLocationNPublicPanel()
+	{
+		JPanel panelTitleNLocationNPublic = new JPanel();
+		
+		//title label and field.
+		JLabel titleLabel = new JLabel("TITLE");
+		titleField = new JTextField(12);
+		panelTitleNLocationNPublic.add(titleLabel);
+		panelTitleNLocationNPublic.add(titleField);
+
+		//location list
+		LocationController.getInstance().initLocationStorage(new LocationStorageMemory(UserController.getInstance().getAdmin()));
+		ArrayList<Location> locationList = new ArrayList<Location>();
+		for(int i=0; i<LocationController.getInstance().getLocationList().getSize(); i++){
+			locationList.add(LocationController.getInstance().getLocationList().getElementAt(i));
+		}
+
+		locationStringArray = new String[locationList.size()];
+		int i = 0;
+		for(Location l: locationList)
+		{
+			locationStringArray[i] = l.getName();
+			i++;
+		}
+
+		JLabel locationLabel = new JLabel("LOCATION");
+		locationField = new JComboBox(locationStringArray);
+		panelTitleNLocationNPublic.add(locationLabel);
+		panelTitleNLocationNPublic.add(locationField);
+		
+		//set public checkbox
+		setPublicCheckBox = new JCheckBox("isPublic");
+		panelTitleNLocationNPublic.add(setPublicCheckBox);
+				
+		
+		return panelTitleNLocationNPublic;
+	}
+
+	public JPanel initializeDetailPanel()
+	{
+		JPanel tempPanelDetail = new JPanel();
+		tempPanelDetail.setLayout(new BorderLayout());
+		Border detailBorder = new TitledBorder(null, "Appointment Description");
+		tempPanelDetail.setBorder(detailBorder);
+		detailArea = new JTextArea(15, 30);
+
+		detailArea.setEditable(true);
+		JScrollPane detailScroll = new JScrollPane(detailArea);
+		tempPanelDetail.add(detailScroll);
+
+		return tempPanelDetail;
+	}
 	
 	
 	@Override
@@ -174,7 +251,7 @@ public class GroupInvitationListDialog_TimeSlot extends JFrame implements Action
 		}else if(e.getSource() == cancelButton){
 			setVisible(false);
 			dispose();
-		}else if(e.getSource() == viewTimeSlotButton){
+		}else if(e.getSource() == sendVoteButton){
 			//get data from rightUserBox and add it to userController
 			if(rightListModel.getSize() <= 0){
 				JOptionPane.showMessageDialog(this, "Please choose at least one user before sending the invitation",
@@ -182,19 +259,7 @@ public class GroupInvitationListDialog_TimeSlot extends JFrame implements Action
 				return;
 			}
 			
-			////need to implement view available timeslot.
-	
-			/*
-
-
-			
-			Timestamp timestampForStartTime = CreateTimeStamp(validDate1, validTimeInterval[0]);
-			Timestamp timestampForEndTime = CreateTimeStamp(validDate2, validTimeInterval[1]);
-			
-			TimeSpan timeSpanForSlot = new TimeSpan(timestampForStartTime,timestampForEndTime);
-			*/
-			
-			
+			///send vote (
 			ArrayList<User> inviteeList = new ArrayList<User>();
 			
 
@@ -203,58 +268,38 @@ public class GroupInvitationListDialog_TimeSlot extends JFrame implements Action
 			}
 			
 			ArrayList<Date> dateList = new ArrayList<Date>();
+		
+			Date date = new Date();
 			
-			Date d2 = new Date();
-			Date d1 = new Date();
-			
-			int[] validDate1 = getValidDate(startyearField,startmonthField,startdayField);
-			int[] validDate2 = getValidDate(endyearField,endmonthField,enddayField);
+			int[] validDate = getValidDate(startyearField,startmonthField,startdayField);
 			int[] validTimeInterval = setTimeInterval();
 			
-			if(validDate1 == null || validDate2 == null || validTimeInterval == null)
+			if(validDate == null || validTimeInterval == null)
 			{
 				System.out.println("not Valid date || TimeInterval");
 				return;
 			}
 
+			date = TimeController.dateInputToDate(validDate[0],validDate[1], validDate[2], 0,0,0);
 			
-			//System.out.println("d2: "+ Utility.getNumber(endyearField.getText()) +" - "+ Utility.getNumber(endmonthField.getText())+" - "+Utility.getNumber(enddayField.getText()));
-			d1 = TimeController.dateInputToDate(validDate1[0],validDate1[1], validDate1[2], 0,0,0);
-			d2 = TimeController.dateInputToDate(validDate2[0],validDate2[1], validDate2[2], 24,0,0);
+			if(sendVote(inviteeList, tempAppt, date))
+				JOptionPane.showMessageDialog(this,  "Sent vote invitation successfully");
 			
-			System.out.println("d2: "+d2.getTime());
-			System.out.println("d1: "+d1.getTime());
-			System.out.println("numDays = "+(d2.getTime()-d1.getTime())/(1000*60*60*24));
-			
-			if(d2.getTime()<=d1.getTime()){
-				System.out.println("end date should be later than the start date");
-				return;
+			else{
+				JOptionPane.showMessageDialog(this, "Failed to send invitation!");
 			}
-			dateList.add(d1);
-			for(int dayCount=1; dayCount<((d2.getTime()-d1.getTime())/(1000*60*60*24)); dayCount++){
-				Date tempdate = new Date();
-				tempdate.setDate(d1.getDate()+dayCount);
-				dateList.add(tempdate);
-			}
-			//dateList.add(d2);
-			
-			  //Display the window.
-	    	AppScheduler groupApptScheduler = new AppScheduler("TimeSlot GroupAppt", parent, inviteeList, dateList);
-			groupApptScheduler.setLocationRelativeTo(null);
-			groupApptScheduler.show();
-			
-			JFrame frame = new AvailableTimeSlot_TextWindow(inviteeList, dateList);
-			//frame.pack();
-			frame.setSize(300, 500);
-			frame.setVisible(true);
-			setVisible(false);
-			dispose();
 		}
-		
 	}
+	
+	private boolean sendVote(ArrayList<User> inviteeList, Appt curAppt, Date date){
+		
+		return false;
+	}
+	
 	
 	private int getTimeInput(int hour, int min) 
 	{
+
 		if (hour == -1)
 			return -1;
 		if (min == -1)
@@ -314,7 +359,24 @@ public class GroupInvitationListDialog_TimeSlot extends JFrame implements Action
 	}
 	
 	
-
+	private Timestamp CreateTimeStamp(int[] date, int time) {
+		Timestamp stamp = new Timestamp(0);
+		TimeController.getInstance().setYear(stamp, date[0]);
+		TimeController.getInstance().setMonth(stamp, date[1]);
+		if(time/60 == 24)
+		{
+			TimeController.getInstance().setDate(stamp, date[2]+1);
+			TimeController.getInstance().setHour(stamp, 0);
+			TimeController.getInstance().setMinute(stamp, time % 60);
+		}
+		else
+		{
+			TimeController.getInstance().setDate(stamp,date[2]);
+			TimeController.getInstance().setHour(stamp, time/60);
+			TimeController.getInstance().setMinute(stamp, time % 60);
+		}
+		return stamp;
+	}
 	
 	private void checkButtonActivity() {
 		// TODO Auto-generated method stub
@@ -354,27 +416,31 @@ public class GroupInvitationListDialog_TimeSlot extends JFrame implements Action
 		return panelDate;
 	}
 	
-	private JPanel initializeEndDatePanel()
-	{
-		JPanel panelDate = new JPanel();
-		Border dateBorder = new TitledBorder(null, "END DATE");
-		panelDate.setBorder(dateBorder);
-		
-		endyearLabel = new JLabel("YEAR: ");
-		panelDate.add(endyearLabel);
-		endyearField = new JTextField(6);
-		panelDate.add(endyearField);
+	
 
-		endmonthLabel = new JLabel("MONTH: ");
-		panelDate.add(endmonthLabel);
-		endmonthField = new JTextField(4);
-		panelDate.add(endmonthField);
-
-		enddayLabel = new JLabel("DAY: ");
-		panelDate.add(enddayLabel);
-		enddayField = new JTextField(4);
-		panelDate.add(enddayField);
+	@Override
+	public void componentHidden(ComponentEvent e) {
+		// TODO Auto-generated method stub
 		
-		return panelDate;
 	}
+
+	@Override
+	public void componentMoved(ComponentEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void componentResized(ComponentEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void componentShown(ComponentEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+	
+
 }

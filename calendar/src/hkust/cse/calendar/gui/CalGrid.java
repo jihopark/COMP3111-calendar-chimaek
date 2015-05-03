@@ -416,6 +416,7 @@ public class CalGrid extends JFrame implements ActionListener {
 		voteTimeSlotMenuItem.addActionListener(new ActionListener() {	
 			public void actionPerformed(ActionEvent arg0) {
 				//need to implement
+				AppScheduler_Vote dlg = new AppScheduler_Vote(CalGrid.this);
 			}	
 		});	
 		
