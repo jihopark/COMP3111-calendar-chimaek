@@ -143,7 +143,6 @@ public class CalGrid extends JFrame implements ActionListener {
 		applistPanel = new AppList(currentlySelectedYear,currentlySelectedMonth,currentlySelectedDay);
 		applistPanel.setParent(this);
 		
-		
 		getDateArray(data);
 
 		JPanel panelMonthYearAndImportantDays = new JPanel();
@@ -160,7 +159,7 @@ public class CalGrid extends JFrame implements ActionListener {
 		sabImportantDays = new SimpleAttributeSet();
 		StyleConstants.setBold(sabImportantDays, true);
 		StyleConstants.setFontSize(sabImportantDays, 20);
-
+		
 		JPanel panelImportantDays = new JPanel();
 		panelImportantDays.setLayout(new BorderLayout());
 		panelImportantDays.add(labelImportantDays, BorderLayout.NORTH);
@@ -174,14 +173,17 @@ public class CalGrid extends JFrame implements ActionListener {
 		yearLeftArrowButton = new BasicArrowButton(SwingConstants.WEST);
 		yearLeftArrowButton.setEnabled(true);
 		yearLeftArrowButton.addActionListener(this);
-
+		
 		yearLabel = new JLabel(new Integer(currentlySelectedYear).toString());
 		monthComboBox = new JComboBox();
 		monthComboBox.addActionListener(this);
 		monthComboBox.setPreferredSize(new Dimension(200, 30));
-		for (int cnt = 0; cnt < 12; cnt++)
+		for (int cnt = 0; cnt < 12; cnt++){
 			monthComboBox.addItem(months[cnt]);
-		monthComboBox.setSelectedIndex(currentlySelectedMonth+2);
+		}
+		getTodayDate_TimeController();	
+		System.out.println("Current month: " + currentlySelectedMonth);
+		monthComboBox.setSelectedIndex(currentlySelectedMonth-1);
 
 		JPanel yearGroup = new JPanel();
 		yearGroup.setLayout(new FlowLayout());
@@ -327,7 +329,7 @@ public class CalGrid extends JFrame implements ActionListener {
 			public void actionPerformed(ActionEvent e) {
 				if (e.getActionCommand().equals("Manual Scheduling")) {
 					Appt newAppt = Utility.createDefaultAppt(currentlySelectedYear, currentlySelectedMonth, currentlySelectedDay,mCurrUser);
-					AppScheduler defaultAppt = new AppScheduler("New", CalGrid.this,newAppt);
+					AppScheduler defaultAppt = new AppScheduler("New", "Single",CalGrid.this,newAppt);
 					defaultAppt.updateSettingAppt(newAppt);
 					defaultAppt.setLocationRelativeTo(null);
 					defaultAppt.show();
@@ -514,6 +516,7 @@ public class CalGrid extends JFrame implements ActionListener {
 		//int temp = todayDate.getMonth()+1;
 		//currentMonth = 12;
 		currentlySelectedMonth = TimeController.getInstance().getMonthFrom(todayDate);
+		System.out.println("Current month: " + currentlySelectedMonth);
 	}
 
 	private void initializeSystem() {
@@ -827,10 +830,6 @@ public class CalGrid extends JFrame implements ActionListener {
 			for(GroupAppt gAppt: invitedGroupAppt){
 				InvitationPopUpDialog newInvite = new InvitationPopUpDialog(gAppt,this);
 			}
-		}
-		else{
-			System.out.println("There is no invitation!");
-			//testInvitePopUp();
 		}
 	}
 	

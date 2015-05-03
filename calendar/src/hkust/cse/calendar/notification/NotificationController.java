@@ -82,7 +82,7 @@ public class NotificationController {
 		
 		//remove
 		public boolean removeNotification(User user, Notification notification){
-			System.out.println("NotificationController/removeNewNotification Removed");
+			System.out.println("NotificationController/removeNewNotification Removed: " + notification.getID());
 			boolean temp = mNotificationStorage.RemoveNotification(user, notification);
 			if(temp)
 				updateDiskStorage();

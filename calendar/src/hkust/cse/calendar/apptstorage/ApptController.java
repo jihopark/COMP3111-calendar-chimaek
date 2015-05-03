@@ -4,6 +4,7 @@ import hkust.cse.calendar.diskstorage.JsonStorable;
 import hkust.cse.calendar.notification.NotificationController;
 import hkust.cse.calendar.time.TimeController;
 import hkust.cse.calendar.unit.Appt;
+import hkust.cse.calendar.unit.GroupAppt;
 import hkust.cse.calendar.unit.Notification;
 import hkust.cse.calendar.unit.TimeSpan;
 import hkust.cse.calendar.unit.User;
@@ -13,6 +14,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 
 public class ApptController {
@@ -284,7 +286,111 @@ public class ApptController {
 		return false;
 	}
 	
+	public boolean modifyGroupApptWithNotification(GroupAppt gAppt, 
+			TimeSpan timeSpanBeforeModified, int hoursBefore, int minutesBefore){
+		
+		final boolean NOTIFICATION_ON = true;
+		
+		//FOR ALL ATTENDEE
+		for(String attendeeString: gAppt.getAttendList()){
+			System.out.println("Changing GroupAppt in: " + attendeeString);
+			
+			//Get the group appt to be modified from each user.
+			User attendee = UserController.getInstance().getUser(attendeeString);
+			List<Appt> listContainingGroupApptToBeModified = ApptController.getInstance().RetrieveApptsInList(attendee,
+					timeSpanBeforeModified);
+			GroupAppt eachUserGroupAppt;
+			if(listContainingGroupApptToBeModified.size() <= 1 && listContainingGroupApptToBeModified.size() != 0){
+				eachUserGroupAppt = (GroupAppt)listContainingGroupApptToBeModified.get(0);
+				//should change eachGroupAppt's attribute to same as gGroupAppt and then save the changes.
+				eachUserGroupAppt.copyChangedInfoFrom(gAppt);
+				System.out.println("AppScheduler/groupEventButtonResponse: "+ eachUserGroupAppt.getID());
+			}
+			else{
+				System.out.println("Something wrong in modifying group appt !");
+				return false;
+			}
+			
+			//modify the group appt.
+			if(eachUserGroupAppt != null){
+				boolean modifySuccess = ApptController.getInstance().modifyAppt(attendee, eachUserGroupAppt, 
+						NOTIFICATION_ON, hoursBefore, minutesBefore);
+				if(!modifySuccess){
+					return false;
+				}
+			}
+		}//end of for-loop.
+		
+		return true;
+	}
 	
+	
+	public boolean modifyGroupApptWithoutNotification(GroupAppt gAppt, TimeSpan timeSpanBeforeModified){
+		
+		boolean NOTIFICATION_OFF = false;
+		
+		for(String attendeeString: gAppt.getAttendList()){
+			System.out.println("Changing GroupAppt in: " + attendeeString);
+			
+			//Get the group appt to be modified from each user.
+			User attendee = UserController.getInstance().getUser(attendeeString);
+			List<Appt> listContainingGroupApptToBeModified = ApptController.getInstance().RetrieveApptsInList(attendee,
+					timeSpanBeforeModified);
+			GroupAppt eachUserGroupAppt;
+			if(listContainingGroupApptToBeModified.size() <= 1 && listContainingGroupApptToBeModified.size() != 0){
+				eachUserGroupAppt = (GroupAppt)listContainingGroupApptToBeModified.get(0);
+				//should change eachGroupAppt's attribute to same as currentGroupAppt and then save the changes.
+				eachUserGroupAppt.copyChangedInfoFrom(gAppt);
+				System.out.println("AppScheduler/groupEventButtonResponse: "+ eachUserGroupAppt.getID());
+			}
+			else{
+				System.out.println("Something wrong in modifying group appt !");
+				return false;
+			}
+			
+			//modify the group appt.
+			if(eachUserGroupAppt != null){
+				boolean modifySuccess = ApptController.getInstance().modifyAppt(attendee, eachUserGroupAppt, 
+						NOTIFICATION_OFF, 0, 0);
+				if(!modifySuccess){
+					return false;
+				}
+			}
+		}//end of for-loop.
+	
+		return true;
+	}
+	
+	public boolean checkOverlapsForGroupAppt(List<String> attendList, TimeSpan timeSpanBeforeModify,
+			TimeSpan timeSpanAfterModify){
+		
+		for(String userString: attendList){
+			System.out.println("CURRENT USER: " + userString);
+			TimeSpan tempTimeSpan;		//used to save original time span.
+			User attendee = UserController.getInstance().getUser(userString);
+			List<Appt> listContainingApptToBeModified = ApptController.getInstance().RetrieveApptsInList(attendee,
+					timeSpanBeforeModify);
+			GroupAppt eachUserGroupAppt;
+			if(!listContainingApptToBeModified.isEmpty()){
+				eachUserGroupAppt = (GroupAppt)listContainingApptToBeModified.get(0);
+				tempTimeSpan = eachUserGroupAppt.getTimeSpan();
+				System.out.println("CURRENT TIME SPAN: " + tempTimeSpan);
+				eachUserGroupAppt.setTimeSpan(timeSpanAfterModify);		//change time span just for checking purpose.
+				System.out.println("CHANGED TIME SPAN: " + eachUserGroupAppt.TimeSpan());
+				boolean temp = mApptStorage.checkOverlaps(attendee, eachUserGroupAppt);
+				System.out.println("TEMP: " + temp);
+				eachUserGroupAppt.setTimeSpan(tempTimeSpan);	//set the time span back to orignal.
+				System.out.println("RETURNED TIME SPAN: " + eachUserGroupAppt.TimeSpan());
+				if(temp){	//if overlaps.
+					return true;
+				}
+			}else{
+				return true;
+			}
+		}
+		//if no overlap
+		return false;
+	}
 	
 	/*public boolean modifyRepeatedNewAppt(User user, Appt appt, Date repeatEndDate,
 			boolean flagOne, boolean flagTwo, boolean flagThree, boolean flagFour){

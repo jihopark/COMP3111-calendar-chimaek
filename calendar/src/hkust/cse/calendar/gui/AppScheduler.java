@@ -1,13 +1,16 @@
 package hkust.cse.calendar.gui;
 
 import hkust.cse.calendar.apptstorage.ApptController;
+import hkust.cse.calendar.invite.InviteController;
 import hkust.cse.calendar.locationstorage.LocationController;
 import hkust.cse.calendar.locationstorage.LocationStorageMemory;
 import hkust.cse.calendar.time.TimeController;
 import hkust.cse.calendar.unit.Appt;
+import hkust.cse.calendar.unit.GroupAppt;
 import hkust.cse.calendar.unit.Location;
 import hkust.cse.calendar.unit.Notification;
 import hkust.cse.calendar.unit.TimeSpan;
+import hkust.cse.calendar.unit.User;
 import hkust.cse.calendar.userstorage.UserController;
 
 import java.awt.BorderLayout;
@@ -24,6 +27,7 @@ import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.GregorianCalendar;
+import java.util.LinkedList;
 import java.util.List;
 
 import javax.swing.BorderFactory;
@@ -117,17 +121,23 @@ ComponentListener {
 	//	private JTextField waitingField;
 	private boolean isModifying = false;
 	private final String MODIFY = "Modify";
+	private boolean isGroupEvent = false;
+	private final String GROUP = "Group";
 	
-	private void commonConstructor(String title, CalGrid cal) {
+	private void commonConstructor(String title, String groupOrSingle, CalGrid cal) {
 
 		parent = cal;
 		this.setAlwaysOnTop(true);
 		setTitle(title);
 		setModal(false);
 
-		if (title.equals(MODIFY)) 
+		if(title.equals(MODIFY)) 
 			isModifying = true;
 
+		if(groupOrSingle.equals(GROUP)){
+			isGroupEvent = true;
+		}
+		
 		Container contentPane;
 		contentPane = getContentPane();
 
@@ -496,6 +506,9 @@ ComponentListener {
 	{
 		saveBut = new JButton("Save");
 		saveBut.addActionListener(this);
+		if(isGroupEvent && isModifying){
+			saveBut.setEnabled(false);
+		}
 
 	}
 
@@ -517,15 +530,15 @@ ComponentListener {
 	}
 
 	//Constructor	
-	AppScheduler(String title, CalGrid cal, Appt appt) {
+	AppScheduler(String title, String groupOrSingle, CalGrid cal, Appt appt) {
 		this.currentAppt = appt;
-		commonConstructor(title, cal);
+		commonConstructor(title, groupOrSingle, cal);
 	}
 
 
 	//Constructor
-	AppScheduler(String title, CalGrid cal) {
-		commonConstructor(title, cal);
+	AppScheduler(String title, String groupOrSingle, CalGrid cal) {
+		commonConstructor(title, groupOrSingle, cal);
 	}
 
 
@@ -568,19 +581,72 @@ ComponentListener {
 	}
 	
 	private void groupEventButtonResponse() {
+		Appt tempAppt = new Appt(currentAppt);
+		TimeSpan timeSpanBeforeModify = tempAppt.getTimeSpan();
 		
+		//Save modified settings to currentAppt.
 		if(saveInfoToAppt() == false){			//when the input for the appt is invalid.
 			return;
 		}
+		
+		//Check for group event conditions.
 		if(checkGroupEventConditions()){
-			if(checkForNotification()){
+			if(checkForNotification()){		//NOTIFICATION
 				int hoursBefore = Utility.getNumber(notificationHourField.getText());
 				int minutesBefore = Utility.getNumber(notificationMinuteField.getText());
-				Notification tempGroupNotification = new Notification(currentAppt, hoursBefore, minutesBefore);
-				GroupInvitationListDialog_Manual groupInvitationDialog = new GroupInvitationListDialog_Manual(currentAppt,this,tempGroupNotification);
+				
+				//WHEN MODIFYING GROUPEVENT.
+				if(isModifying && isGroupEvent){
+					GroupAppt modifiedGroupAppt = (GroupAppt) currentAppt;
+		
+					//CHECK TIME CLASH WITH MODIFIED TIMESPAN.
+					boolean TIMECLASH = ApptController.getInstance().checkOverlapsForGroupAppt(
+							modifiedGroupAppt.getAttendList(),timeSpanBeforeModify,modifiedGroupAppt.TimeSpan());
+							
+					System.out.println("TIMECLASH: " + TIMECLASH);
+					//IF TIMECLASH
+					if(TIMECLASH){
+						JOptionPane.showMessageDialog(this, "Failed to change group event!");
+						currentAppt.copyInfoFrom(tempAppt);
+						return;
+					}
+					
+					//MODIFY GROUP APPT FOR ALL ATTENDEES
+					ApptController.getInstance().modifyGroupApptWithNotification(modifiedGroupAppt, timeSpanBeforeModify, hoursBefore, minutesBefore);
+					this.dispose();
+				}
+				//WHEN MAKING A NEW GROUP EVENT
+				else{
+					Notification tempGroupNotification = new Notification(currentAppt, hoursBefore, minutesBefore);
+					GroupInvitationListDialog_Manual groupInvitationDialog = new GroupInvitationListDialog_Manual(currentAppt,this,tempGroupNotification);
+				}
 			}
-			else{
-				GroupInvitationListDialog_Manual groupInvitationDialog = new GroupInvitationListDialog_Manual(currentAppt,this,null);
+			else{ 	//NO NOTIFICAION.
+				if(isModifying && isGroupEvent){
+					GroupAppt modifiedGroupAppt = (GroupAppt) currentAppt;
+					
+					//CHECK TIME CLASH WITH MODIFIED TIMESPAN.
+					boolean TIMECLASH = ApptController.getInstance().checkOverlapsForGroupAppt(
+							modifiedGroupAppt.getAttendList(), timeSpanBeforeModify, modifiedGroupAppt.TimeSpan());
+							
+					System.out.println("TIMECLASH: " + TIMECLASH);
+					
+					//IF TIMECLASH
+					if(TIMECLASH){
+						JOptionPane.showMessageDialog(this, "Failed to change group event!");
+						currentAppt.copyInfoFrom(tempAppt);
+						return;
+					}
+					
+					//MODIFY GROUP APPT IN ALL ATTENDEE
+					ApptController.getInstance().modifyGroupApptWithoutNotification(modifiedGroupAppt,
+							timeSpanBeforeModify);
+					this.dispose();
+				}
+				//WHEN MAKING NEW GROUP APPT
+				else{
+					GroupInvitationListDialog_Manual groupInvitationDialog = new GroupInvitationListDialog_Manual(currentAppt,this,null);
+				}
 			}
 		}
 	}

@@ -2,6 +2,7 @@ package hkust.cse.calendar.apptstorage;
 
 import hkust.cse.calendar.diskstorage.FileManager;
 import hkust.cse.calendar.diskstorage.JsonStorable;
+import hkust.cse.calendar.invite.InviteController;
 import hkust.cse.calendar.notification.NotificationController;
 import hkust.cse.calendar.time.TimeController;
 import hkust.cse.calendar.unit.Appt;
@@ -49,6 +50,7 @@ public class ApptStorageMemory extends ApptStorage implements JsonStorable {
 
 	@Override
 	public boolean checkOverlaps(User user, Appt appt){
+		//CHECK THE APPT STORAGE
 		if (hasNoAppts(user))
 			return false;
 		for (Appt a : getAllAppts(user)){
@@ -57,7 +59,12 @@ public class ApptStorageMemory extends ApptStorage implements JsonStorable {
 				return true;
 			}
 		}
-
+		
+		//CHECK THE INVITE STORAGE
+		if(InviteController.getInstance().checkOverlaps(user,appt)){
+			return true;
+		}
+		
 		return false;
 	}
 
@@ -199,7 +206,7 @@ public class ApptStorageMemory extends ApptStorage implements JsonStorable {
 				if(!a.getLocation().getName().equals("-"))
 					a.getLocation().decreaseCountForLocation();
 
-				removeNotification(a.getNotification());
+				removeNotification(user,a.getNotification());
 				return true;
 			}
 		}
@@ -208,16 +215,16 @@ public class ApptStorageMemory extends ApptStorage implements JsonStorable {
 	}
 
 	@Override
-	public void removeNotification(Notification noti){
+	public void removeNotification(User user,Notification noti){
 		if (noti!=null){
-			NotificationController.getInstance().removeNotification(UserController.getInstance().getCurrentUser(), noti);
+			NotificationController.getInstance().removeNotification(user, noti);
 		}
 	}
 
 	@Override
-	public void saveNotification(Notification noti){
+	public void saveNotification(User user,Notification noti){
 		if (noti!=null){
-			NotificationController.getInstance().saveNewNotification(UserController.getInstance().getCurrentUser(), noti);
+			NotificationController.getInstance().saveNewNotification(user, noti);
 		}
 	}
 	public int getTotalApptCount(){

@@ -36,12 +36,24 @@ public class Appt implements Serializable {
 	}
 	
 	public Appt(Appt appt){
-		mApptID = 0;
+		mApptID = appt.getID();
 		mTimeSpan = appt.getTimeSpan();
 		mTitle = appt.getTitle();
 		mInfo = appt.getInfo();
 		repeatType = appt.getRepeatType();
 		location_id = appt.getLocationID();
+		notification_id = appt.getNotificationID();
+		isPublic = appt.getisPublic();
+	}
+	
+	public void copyInfoFrom(Appt appt){
+		mApptID = appt.getID();
+		mTimeSpan = appt.getTimeSpan();
+		mTitle = appt.getTitle();
+		mInfo = appt.getInfo();
+		repeatType = appt.getRepeatType();
+		location_id = appt.getLocationID();
+		notification_id = appt.getNotificationID();
 		isPublic = appt.getisPublic();
 	}
 	

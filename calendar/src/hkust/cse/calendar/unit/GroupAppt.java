@@ -116,4 +116,12 @@ public class GroupAppt extends Appt {
 		}
 		return false;
 	}
+	
+	public void copyChangedInfoFrom(GroupAppt gAppt){
+		mApptID=gAppt.getID();
+		mTimeSpan=gAppt.getTimeSpan();
+		mTitle = gAppt.getTitle();
+		mInfo= gAppt.getInfo();
+		location_id = gAppt.getLocationID();
+	}
 }

@@ -6,9 +6,11 @@ import hkust.cse.calendar.apptstorage.ApptStorageMemory;
 import hkust.cse.calendar.diskstorage.FileManager;
 import hkust.cse.calendar.diskstorage.JsonStorable;
 import hkust.cse.calendar.unit.GroupAppt;
+import hkust.cse.calendar.unit.TimeSpan;
 import hkust.cse.calendar.unit.User;
 import hkust.cse.calendar.userstorage.UserController;
 
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -66,22 +68,6 @@ public class InviteStorage implements JsonStorable {
 		}
 	}
 	
-	public String getFileName(){
-		return "DISK_INVITE.txt";
-	}
-	
-	public Object loadFromJson(){
-		Gson gson = new Gson();
-		String json = FileManager.getInstance().loadFromFile(getFileName());
-		if (json.equals("")) return null;
-		return gson.fromJson(json, InviteStorage.class);
-	}
-	
-	public void saveToJson(){
-		Gson gson = new Gson();
-		FileManager.getInstance().writeToFile(gson.toJson(this), getFileName());
-	}
-	
 	private boolean capacityCheck(Appt appt, LinkedList<String> attendList){
 		
 		if(appt.getLocation()!=null){
@@ -100,6 +86,7 @@ public class InviteStorage implements JsonStorable {
 	}
 	
 	private boolean timeclashCheck(Appt appt, LinkedList<String> attendList){
+		//check confirmed appt clash
 		for(String userID : attendList){
 			for(Appt a : ApptController.RetrieveApptsInList(UserController.getInstance().getUser(userID))){
 				if(appt.getTimeSpan().Overlap(a.getTimeSpan())){
@@ -108,6 +95,67 @@ public class InviteStorage implements JsonStorable {
 				}
 			}	
 		}
+		
+		//check group appt clash
+		for(String userID : attendList){
+			for(GroupAppt gAppt : RetrieveGroupApptsInList(UserController.getInstance().getUser(userID))){
+				if(appt.getTimeSpan().Overlap(gAppt.getTimeSpan())){
+					System.out.println("Time clash with "+(UserController.getInstance().getUser(userID).getFullName())
+							+gAppt.getTimeSpan());
+					return false;
+				}
+			}
+		}
+		
 		return true;
 	}
+	
+	public List<GroupAppt> RetrieveGroupApptsInList(User user) {
+		if (!hasNoAppts(user)){
+			return getAllGroupAppts(user);
+		}
+		return new LinkedList<GroupAppt>();
+	}
+	
+	private boolean hasNoAppts(User user){
+		for(GroupAppt gAppt: invites){
+			for(String userString : gAppt.getAttendList()){
+				if(user == UserController.getInstance().getUser(userString)){
+					return false;
+				}
+			}
+		}
+		return true;
+	}
+	
+	private List<GroupAppt> getAllGroupAppts(User user){
+		List<GroupAppt> attendingList = new ArrayList<GroupAppt>();
+		
+		for(GroupAppt gAppt: invites){
+			for(String userString : gAppt.getAttendList()){
+				if(user == UserController.getInstance().getUser(userString)){
+					attendingList.add(gAppt);
+				}
+			}
+		}
+		
+		return attendingList;
+	}
+	
+	public String getFileName(){
+		return "DISK_INVITE.txt";
+	}
+	
+	public Object loadFromJson(){
+		Gson gson = new Gson();
+		String json = FileManager.getInstance().loadFromFile(getFileName());
+		if (json.equals("")) return null;
+		return gson.fromJson(json, InviteStorage.class);
+	}
+	
+	public void saveToJson(){
+		Gson gson = new Gson();
+		FileManager.getInstance().writeToFile(gson.toJson(this), getFileName());
+	}
+	
 }

@@ -34,9 +34,9 @@ public abstract class ApptStorage {
 	
 	public abstract boolean checkOverlaps(User user, Appt appt);
 	
-	public abstract void saveNotification(Notification noti);
+	public abstract void saveNotification(User user,Notification noti);
 	
-	public abstract void removeNotification(Notification noti);
+	public abstract void removeNotification(User user,Notification noti);
 	
 	public abstract int getIDCount();
 

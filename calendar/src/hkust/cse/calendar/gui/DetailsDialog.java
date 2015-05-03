@@ -120,7 +120,9 @@ public class DetailsDialog extends JFrame implements ActionListener {
 		}
 		if (appt instanceof GroupAppt){
 			area.append("\nParticipants:\n");
-			area.append("  Attend:");
+			area.append("  Owner:");
+			area.append("  "+((GroupAppt)appt).getOwner());
+			area.append("\n  Attend:");
 			LinkedList<String> attendList = ((GroupAppt)appt).getAttendList();
 			if(attendList != null)
 			{

@@ -1,6 +1,7 @@
 package hkust.cse.calendar.invite;
 
 import java.util.LinkedList;
+import java.util.List;
 
 import hkust.cse.calendar.apptstorage.ApptController;
 import hkust.cse.calendar.apptstorage.ApptStorage;
@@ -13,6 +14,7 @@ import hkust.cse.calendar.notification.NotificationController;
 import hkust.cse.calendar.unit.Appt;
 import hkust.cse.calendar.unit.GroupAppt;
 import hkust.cse.calendar.unit.Notification;
+import hkust.cse.calendar.unit.TimeSpan;
 import hkust.cse.calendar.unit.User;
 import hkust.cse.calendar.userstorage.UserController;
 
@@ -60,7 +62,7 @@ public class InviteController {
 			return true;
 		}
 	}
-
+	
 	public boolean saveNewGroupAppt(Appt appt, LinkedList<String> attendList, String ownerID, int hoursBefore, int minutesBefore){
 		GroupAppt tempAppt= mInviteStorage.createGroupApptInvite(appt, attendList, ownerID);
 		if(tempAppt == null){
@@ -84,7 +86,6 @@ public class InviteController {
 		if(response == true){		//when the user accepts
 			gAppt.removeWaiting(user.getID());
 			if(gAppt.checkAllConfirmed()){		//check if all attendees accepted.
-				System.out.println("All confirmed!!");
 				setConfirmedGroupAppt(gAppt);
 			}
 		}
@@ -98,7 +99,6 @@ public class InviteController {
 		mInviteStorage.removeGroupAppt(gAppt);
 		Notification notification = gAppt.getNotification();
 		for(String attendee : gAppt.getAttendList()){
-			System.out.println("Attendee" + attendee);
 			User attendingUser = UserController.getInstance().getUser(attendee);
 			GroupAppt tempGroupAppt = new GroupAppt(gAppt);
 			if(notification != null){
@@ -114,6 +114,32 @@ public class InviteController {
 			NotificationController.getInstance().removeNotification(UserController.getInstance().getUser(gAppt.getOwner()), notification);
 		updateDiskStorage();
 	}
+	
+	public boolean checkOverlaps(User user, Appt appt){
+		for(GroupAppt gAppt : mInviteStorage.RetrieveGroupApptsInList(user)){
+			if(appt.getTimeSpan().Overlap(gAppt.getTimeSpan())){
+				System.out.println("Time clash with "+(user.getFullName())
+					+gAppt.getTimeSpan());
+					return true;
+				}
+			}
+		return false;
+	}
+			
+	public boolean checkOverlaps(GroupAppt gAppt){
+		for(String userID : gAppt.getAttendList()){
+			User attendee = UserController.getInstance().getUser(userID);
+			for(GroupAppt tempGroupAppt : mInviteStorage.RetrieveGroupApptsInList(attendee)){
+				if(gAppt.getTimeSpan().Overlap(tempGroupAppt.getTimeSpan())){
+					System.out.println("Time clash with "+(attendee.getFullName())
+							+gAppt.getTimeSpan());
+					return true;
+				}
+			}
+		}
+		return false;
+	}
+	
 	
 	
 	private void updateDiskStorage(){
