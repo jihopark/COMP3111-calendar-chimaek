@@ -201,6 +201,8 @@ public class GroupInvitationListDialog_TimeSlot extends JFrame implements Action
 			for(int i = 0; i<rightListModel.getSize();i++){
 				inviteeList.add(UserController.getInstance().getUser(rightListModel.get(i).toString()));
 			}
+	    	inviteeList.add(UserController.getInstance().getCurrentUser());
+
 			
 			ArrayList<Date> dateList = new ArrayList<Date>();
 			

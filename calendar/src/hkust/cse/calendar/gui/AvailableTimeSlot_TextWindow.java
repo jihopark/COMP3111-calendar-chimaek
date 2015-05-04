@@ -5,6 +5,7 @@ import hkust.cse.calendar.apptstorage.ApptController;
 import hkust.cse.calendar.time.TimeController;
 import hkust.cse.calendar.unit.TimeSpan;
 import hkust.cse.calendar.unit.User;
+import hkust.cse.calendar.userstorage.UserController;
 
 import java.awt.Component;
 import java.awt.Container;
