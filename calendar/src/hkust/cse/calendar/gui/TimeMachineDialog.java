@@ -127,15 +127,21 @@ public class TimeMachineDialog extends JFrame implements ActionListener
 				int Day = Integer.parseInt(dayField.getText());
 				int hour = Integer.parseInt(startTimeHourField.getText());
 				int minute = Integer.parseInt(startTimeMinuteField.getText());
-				Timestamp changedTime = TimeController.getInstance().dateInputToTimestamp(year, month, Day, hour, minute, 0);
-
-				// When button is clicked, change time		
-				OnButton.setEnabled(timeController.getInstance().isOnTimeMachineMode());
-				timeController.getInstance().enableTimeMachineMode();
-				OffButton.setEnabled(timeController.getInstance().isOnTimeMachineMode());				Date date = new Date(changedTime.getTime());
-				timeController.getInstance().setTimeMachine(date);
 				
-				System.out.println("Time Machine is Turned ON: " + timeController.getInstance().isOnTimeMachineMode());	
+				if(TimeController.getInstance().checkValidInput(year,month,Day,hour,minute)){
+					Timestamp changedTime = TimeController.getInstance().dateInputToTimestamp(year, month, Day, hour, minute, 0);
+	
+					// When button is clicked, change time		
+					OnButton.setEnabled(timeController.getInstance().isOnTimeMachineMode());
+					timeController.getInstance().enableTimeMachineMode();
+					OffButton.setEnabled(timeController.getInstance().isOnTimeMachineMode());				Date date = new Date(changedTime.getTime());
+					timeController.getInstance().setTimeMachine(date);
+					
+					System.out.println("Time Machine is Turned ON: " + timeController.getInstance().isOnTimeMachineMode());
+				}
+				else{
+					JOptionPane.showMessageDialog(this,"Please input proper date/time","Error",JOptionPane.ERROR_MESSAGE);
+				}
 			}
 
 		}
@@ -157,9 +163,5 @@ public class TimeMachineDialog extends JFrame implements ActionListener
 			return false;
 		}
 	}
-
-
-
-	
 
 }

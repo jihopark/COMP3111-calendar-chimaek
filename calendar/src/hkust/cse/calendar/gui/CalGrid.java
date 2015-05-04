@@ -816,7 +816,7 @@ public class CalGrid extends JFrame implements ActionListener {
 		}
 		else if(originalHour == 12)
 		{
-			this.setTitle(originalHour + ":" + changedMinute + "PM");
+			this.setTitle(mCurrTitle + originalHour + ":" + changedMinute + "PM");
 		}
 		else
 		{

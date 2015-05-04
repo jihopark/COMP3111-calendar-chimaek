@@ -132,6 +132,36 @@ public class TimeController {
 		
 	}
 	
+	public int numOfDaysInMonth(int year, int month)
+	{
+		int[] monthDays = {31,28,31,30,31,30,31,31,30,31,30,31};
+		int currentMonth;
+		int currentYear;
+		
+		currentMonth = month;
+		currentYear = year;
+		
+		//System.out.println("Function numOfDaysInMonth(): currentMonth: " + currentMonth);
+		//System.out.println("Function numOfDaysInMonth(): currentYear: " + currentYear);
+		//System.out.println("Function numOfDaysInMonth(): currentMonthDays: "+monthDays[currentMonth-1]);
+		if(this.isLeapYear(currentYear))
+		{
+			if(currentMonth == 2)
+			{	
+				return 29;
+			}
+			else
+			{
+				return monthDays[currentMonth-1];
+			}
+		}
+		else
+		{
+			return monthDays[currentMonth-1];
+		}
+		
+	}
+	
 	
 	/*TimeController as standard time source*/
 	
@@ -268,5 +298,43 @@ public class TimeController {
 		return tempCalendar.getTimeInMillis();
 	}
 	
+	public boolean checkValidYear(int year){
+		if(year < 1 || year > 9999){
+			return false;
+		}
+		return true;
+	}
+	
+	public boolean checkValidMonth(int month){
+		if(month < 1 || month > 12){
+			return false;
+		}
+		return true;
+	}
+	
+	public boolean checkValidDate(int year, int month, int day){
+		int daysInMonth = numOfDaysInMonth(year,month);
+		if(day < 1 || day > daysInMonth){
+			return false;
+		}
+		return true;
+	}
+	
+	public boolean checkValidTime(int hour, int minute){
+		if(hour < 0 || hour > 23){
+			return false;
+		}
+		if(minute < 0 || minute > 59){
+			return false;
+		}
+		return true;
+	}
+	
+	public boolean checkValidInput(int year, int month, int day, int hour, int minutes){
+		TimeController time = TimeController.getInstance();
+		return (time.checkValidYear(year)&&time.checkValidMonth(month)&&time.checkValidDate(year, month, day)
+				&&time.checkValidTime(hour, minutes));
+
+	}
 	
 }
