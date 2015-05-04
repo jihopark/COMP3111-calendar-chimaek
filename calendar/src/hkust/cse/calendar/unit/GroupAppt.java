@@ -6,13 +6,16 @@ public class GroupAppt extends Appt {
 	private LinkedList<String> attend;			// The Attendant list
 	private LinkedList<String> waiting;			// The waiting list
 	private String owner_id =null;
-	
+	private boolean isVote=false;
+	private LinkedList<TimeSpan> voteTimeList=null;
 	
 	public GroupAppt(){
 		mApptID = 0;
 		mTimeSpan = null;
 		mTitle = "Untitled";
 		mInfo = "";
+		isVote=false;
+		voteTimeList=null;
 		
 		attend=null;
 		waiting=null;
@@ -30,6 +33,7 @@ public class GroupAppt extends Appt {
 		waiting = new LinkedList<String>(attendList);
 		waiting.remove(ownerID);
 		owner_id=ownerID;
+		isVote=false;
 		
 	}
 	
@@ -54,6 +58,7 @@ public class GroupAppt extends Appt {
 		this.waiting = new LinkedList<String>(attendList);			// The waiting list
 		this.waiting.remove(ownerID);
 		this.owner_id = ownerID;
+		this.isVote = false;
 	}
 
 	public GroupAppt(GroupAppt gAppt){
@@ -67,6 +72,31 @@ public class GroupAppt extends Appt {
 		waiting = new LinkedList<String>(gAppt.getAttendList());
 		waiting.remove(gAppt.getOwner());
 		owner_id=gAppt.getOwner();
+		isVote = false;
+	}
+	
+	public GroupAppt(Appt appt, LinkedList<String> attendList, String ownerID, LinkedList<TimeSpan> timeList){
+		mApptID=appt.getID();
+		mTimeSpan=appt.getTimeSpan();
+		mTitle = appt.getTitle();
+		mInfo= appt.getInfo();
+		location_id = appt.getLocationID();
+		notification_id = appt.getNotificationID();
+		attend = attendList;
+		waiting = new LinkedList<String>(attendList);
+		waiting.remove(ownerID);
+		owner_id=ownerID;
+		
+		isVote=true;
+		voteTimeList = timeList;
+	}
+	
+	public boolean getisVote(){
+		return isVote;
+	}
+	
+	public void setisVote(boolean val){
+		isVote=val;
 	}
 	
 	public String getOwner(){
