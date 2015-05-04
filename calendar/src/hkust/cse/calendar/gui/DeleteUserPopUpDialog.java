@@ -9,6 +9,7 @@ import java.sql.Timestamp;
 import java.util.Date;
 import java.util.List;
 
+import hkust.cse.calendar.Main.CalendarMain;
 import hkust.cse.calendar.invite.InviteController;
 import hkust.cse.calendar.time.TimeController;
 import hkust.cse.calendar.unit.DeleteRequest;
@@ -137,7 +138,18 @@ public class DeleteUserPopUpDialog extends JFrame implements ActionListener{
 	}
 	
 	private void acceptUserDeleteRequest(){
+		//System.out.println("Current User: "+ _currentUser);
+		//System.out.println("Get Delted User: "+ _request.getDeleteUser());
 		UserController.getInstance().respondToDeleteRequest(true, _request);
+
+		
+		if(_currentUser.getID().equals(_request.getDeleteUser().toString())) {
+			dispose();
+			CalendarMain.logOut = true;
+			_parent.dispose();
+			LoginDialog loginDialog = new LoginDialog();
+		}
+		return;
 	}
 	
 	private void declineUserDeleteRequest(){

@@ -324,6 +324,43 @@ public class ApptController {
 		return true;
 	}
 	
+	public boolean removeUserFromGroupAppt(GroupAppt gAppt, User user){
+		LinkedList<String> attendList = new LinkedList<String>(gAppt.getAttendList());
+		LinkedList<String> waitingList = new LinkedList<String>(gAppt.getWaitingList());
+		// Case 1) When Deleted user is the owner of the Group Event
+		if(user.toString().equals(gAppt.getOwner())) {
+			// Delete The Group Event for Individuals
+			for(String attendee: attendList) {
+				System.out.println("ApptController/removeUserFromGroupAppt: Deleting Group Event " +gAppt.getTitle()+ " from " +attendee+"'s Group Event");
+				for(Appt a: ApptController.getInstance().RetrieveApptsInList(UserController.getInstance().getUser(attendee))) {
+					if(a instanceof GroupAppt) {
+						//System.out.println("Owner is: " +((GroupAppt) a).getOwner()+ " and User is: " +user.toString());						
+						if(user.toString().equals(((GroupAppt) a).getOwner())) {
+							ApptController.getInstance().removeAppt(UserController.getInstance().getUser(attendee), a);
+							System.out.println("ApptController/removeUserFromGroupAppt: Deleted " +a.getTitle()+ " from " +attendee+" Appt Controller");
+						}
+					}
+				}
+			}
+		// Case 2) When Deleted user is only a participant of the Group Event	
+		} else {
+		// Delete User from individual participant's group event	
+			for(String attendee: attendList) {
+				System.out.println("ApptController/removeUserFromGroupAppt: Deleting Particiapant " +user+ " from " +attendee+"'s Group Event");
+				for(Appt a: ApptController.getInstance().RetrieveApptsInList(UserController.getInstance().getUser(attendee))) {
+					if(a instanceof GroupAppt) {
+						((GroupAppt) a).removeAttendant(user.toString());
+						((GroupAppt) a).removeWaiting(user.toString());
+						System.out.println("ApptController/removeUserFromGroupAppt: Removed " +user.toString() + " from " + a.getTitle()+" Group Event");
+					}
+				}
+			}
+		}
+		
+		
+		return true;
+	}
+	
 	
 	public boolean modifyGroupApptWithoutNotification(GroupAppt gAppt, TimeSpan timeSpanBeforeModified){
 		
@@ -456,7 +493,6 @@ public class ApptController {
 		
 		return tmp;
 	}
-	
 
 	//Remove appt of user. Return true if successfully removed
 	public boolean removeAppt(User user, Appt appt){
@@ -597,5 +633,6 @@ public class ApptController {
 			if (tmp != null) mApptStorage = tmp;
 		}
 	}
+
 
 }

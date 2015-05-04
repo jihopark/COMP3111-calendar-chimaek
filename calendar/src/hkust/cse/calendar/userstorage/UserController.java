@@ -3,10 +3,12 @@ package hkust.cse.calendar.userstorage;
 
 import hkust.cse.calendar.apptstorage.ApptController;
 import hkust.cse.calendar.diskstorage.JsonStorable;
+import hkust.cse.calendar.notification.NotificationController;
 import hkust.cse.calendar.unit.Appt;
 import hkust.cse.calendar.unit.DeleteRequest;
 import hkust.cse.calendar.unit.GroupAppt;
 import hkust.cse.calendar.unit.ModifyNotification;
+import hkust.cse.calendar.unit.Notification;
 import hkust.cse.calendar.unit.User;
 
 import java.util.ArrayList;
@@ -79,8 +81,26 @@ public class UserController {
 				shouldDelete = false;
 			}
 		}
-		if (shouldDelete)
+		if (shouldDelete) {
+			for(Notification n: NotificationController.getInstance().retrieveNotification(UserController.getInstance().getUser(id))) {
+				NotificationController.getInstance().removeNotification(UserController.getInstance().getUser(id), n);
+				System.out.println("UserController/removeUser: Notification Controller Deleted Notificatoin " + n.getName() + " from Appt " + 
+						n.getAppointmentTime());
+			}
+			for(Appt a : ApptController.getInstance().RetrieveApptsInList(UserController.getInstance().getUser(id))) {
+				if (a instanceof GroupAppt){
+					GroupAppt gAppt = (GroupAppt)a;
+					ApptController.getInstance().removeUserFromGroupAppt(gAppt,UserController.getInstance().getUser(id));
+					ApptController.getInstance().removeAppt(UserController.getInstance().getUser(id), gAppt);
+				} else {
+					ApptController.getInstance().removeAppt(UserController.getInstance().getUser(id), a);
+					System.out.println("UserController/removeUser: User Controller Deleted Appt " + a.getTitle() + " from User " + 
+							UserController.getInstance().getUser(id));
+				}
+			}
 			mUserStorage.RemoveUser(id);
+		}
+			
 		return shouldDelete;
 	}
 

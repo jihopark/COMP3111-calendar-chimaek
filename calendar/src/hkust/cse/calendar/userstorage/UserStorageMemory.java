@@ -1,9 +1,14 @@
 package hkust.cse.calendar.userstorage;
 
+import hkust.cse.calendar.apptstorage.ApptController;
 import hkust.cse.calendar.diskstorage.FileManager;
 import hkust.cse.calendar.diskstorage.JsonStorable;
+import hkust.cse.calendar.notification.NotificationController;
+import hkust.cse.calendar.unit.Appt;
 import hkust.cse.calendar.unit.DeleteRequest;
+import hkust.cse.calendar.unit.GroupAppt;
 import hkust.cse.calendar.unit.ModifyNotification;
+import hkust.cse.calendar.unit.Notification;
 import hkust.cse.calendar.unit.User;
 
 import java.util.ArrayList;
@@ -159,8 +164,30 @@ public class UserStorageMemory extends UserStorage implements JsonStorable{
 				break;
 		}
 		System.out.println("UserStorageMemory/removeDeleteRequest " + deleteRequestList);
-		if (deleteUser)
+		if (deleteUser) {
+			
+			for(Notification n: NotificationController.getInstance().retrieveNotification(UserController.getInstance().getUser(request.getDeleteUser()))) {
+				NotificationController.getInstance().removeNotification(UserController.getInstance().getUser(request.getDeleteUser()), n);
+				System.out.println("UserStorageMemory/removeUser: Notification Controller Deleted Notificatoin " + n.getName() + " from Appt " + 
+						n.getAppointmentTime());
+			}
+			
+			for(Appt a : ApptController.getInstance().RetrieveApptsInList(UserController.getInstance().getUser(request.getDeleteUser()))) {
+				if (a instanceof GroupAppt){
+					GroupAppt gAppt = (GroupAppt)a;
+					//Delete ALL request.getDeleteUser from all related GroupAppts
+					ApptController.getInstance().removeUserFromGroupAppt(gAppt,UserController.getInstance().getUser(request.getDeleteUser()));
+					ApptController.getInstance().removeAppt(UserController.getInstance().getUser(request.getDeleteUser()), gAppt);
+				} else {
+					ApptController.getInstance().removeAppt(UserController.getInstance().getUser(request.getDeleteUser()), a);
+					System.out.println("UserStorageMemory/removeUser: User Controller Deleted Appt " + a.getTitle() + " from User " + 
+							UserController.getInstance().getUser(request.getDeleteUser()));
+				}
+			}
+			
 			RemoveUser(request.getDeleteUser());
+		}
+			
 		saveToJson();
 		return true;
 	}

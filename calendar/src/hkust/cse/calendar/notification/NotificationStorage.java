@@ -30,4 +30,6 @@ public abstract class NotificationStorage {
 
 	public abstract NotificationTime RetrieveNotificationTime(Notification notification);
 
+	public abstract List<Notification> RetrieveNotification(User user);
+
 }

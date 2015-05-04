@@ -87,6 +87,18 @@ public class NotificationStorageMemory extends NotificationStorage implements Js
 		return notis;
 	}
 
+	@Override
+	public List<Notification> RetrieveNotification(User user) {
+		ArrayList<Notification> notis = new ArrayList<Notification>();
+		if (notifications.get(user.toString()) == null)
+			return notis;
+		for (Notification a : notifications.get(user.toString())){ //for each notification
+			notis.add(a);
+			System.out.println("NotificationStorageMemory/RetrieveNotification:  Notification Retrieved " + a.getAppointmentTime());
+		}
+		return notis;
+	}
+
 	/*
 	@Deprecated
 	@Override

@@ -90,6 +90,11 @@ public class GroupAppt extends Appt {
 			attend = new LinkedList<String>();
 		attend.add(addID);
 	}
+	
+	public void removeAttendant(String removeID){
+		if (attend !=null)
+			attend.remove(removeID);
+	}
 
 	public void addWaiting(String addID){
 		if (waiting == null)
