@@ -3,6 +3,7 @@ package hkust.cse.calendar.userstorage;
 
 import hkust.cse.calendar.apptstorage.ApptController;
 import hkust.cse.calendar.diskstorage.JsonStorable;
+import hkust.cse.calendar.invite.InviteController;
 import hkust.cse.calendar.notification.NotificationController;
 import hkust.cse.calendar.unit.Appt;
 import hkust.cse.calendar.unit.DeleteRequest;
@@ -98,7 +99,9 @@ public class UserController {
 							UserController.getInstance().getUser(id));
 				}
 			}
-			mUserStorage.RemoveUser(id);
+			if(InviteController.getInstance().removeUserFromAllInvite(UserController.getInstance().getUser(id))) {
+				mUserStorage.RemoveUser(id);
+			}
 		}
 			
 		return shouldDelete;

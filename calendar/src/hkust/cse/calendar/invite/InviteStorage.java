@@ -1,12 +1,10 @@
 package hkust.cse.calendar.invite;
 
 import hkust.cse.calendar.apptstorage.ApptController;
-import hkust.cse.calendar.unit.Appt;
-import hkust.cse.calendar.apptstorage.ApptStorageMemory;
 import hkust.cse.calendar.diskstorage.FileManager;
 import hkust.cse.calendar.diskstorage.JsonStorable;
+import hkust.cse.calendar.unit.Appt;
 import hkust.cse.calendar.unit.GroupAppt;
-import hkust.cse.calendar.unit.TimeSpan;
 import hkust.cse.calendar.unit.User;
 import hkust.cse.calendar.userstorage.UserController;
 
@@ -44,6 +42,17 @@ public class InviteStorage implements JsonStorable {
 		invites.add(gAppt);
 	}
 	
+	public boolean removeUserFromAllInvite(User user) {
+		if(!invites.isEmpty()){
+			for(GroupAppt gAppt : invites) {
+				System.out.println("InviteStorage/removeUserFromAllInvite: removing " +user.getID()+ "from all invites" );
+				gAppt.removeWaiting(user.getID());
+				gAppt.removeAttendant(user.getID());
+			}
+		}
+		return true;
+		
+	}
 	public LinkedList<GroupAppt> checkIfUserHasInvite(User user){
 		
 		//List of GroupAppt that the current user is involved in.
@@ -157,5 +166,7 @@ public class InviteStorage implements JsonStorable {
 		Gson gson = new Gson();
 		FileManager.getInstance().writeToFile(gson.toJson(this), getFileName());
 	}
+
+
 	
 }

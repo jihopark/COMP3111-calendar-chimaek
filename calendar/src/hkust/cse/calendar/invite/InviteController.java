@@ -82,6 +82,14 @@ public class InviteController {
 		return mInviteStorage.checkIfUserHasInvite(user);
 	}
 	
+	public boolean removeUserFromAllInvite(User user){
+		if(mInviteStorage.removeUserFromAllInvite(user)){
+			updateDiskStorage();
+			return true;
+		} else {
+			return false;
+		}
+	}
 	public void setResponse(User user, GroupAppt gAppt, boolean response){
 		if(response == true){		//when the user accepts
 			gAppt.removeWaiting(user.getID());
