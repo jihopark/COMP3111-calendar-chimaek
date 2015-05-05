@@ -5,6 +5,7 @@ import hkust.cse.calendar.diskstorage.FileManager;
 import hkust.cse.calendar.diskstorage.JsonStorable;
 import hkust.cse.calendar.unit.Appt;
 import hkust.cse.calendar.unit.GroupAppt;
+import hkust.cse.calendar.unit.TimeSpan;
 import hkust.cse.calendar.unit.User;
 import hkust.cse.calendar.userstorage.UserController;
 
@@ -31,8 +32,21 @@ public class InviteStorage implements JsonStorable {
 			System.out.println("InviteStorage/createGroupApptInvite: Invitations sent");
 			return groupappt;
 		}
+		System.out.println("location capacity error OR timeclash");
 		return null;
 	}
+	
+	public GroupAppt createGroupApptVote(Appt appt, LinkedList<String> attendList, String ownerID, ArrayList<TimeSpan> slotList){
+		//location capacity check
+		if(capacityCheck(appt, attendList) && timeclashCheck(appt, attendList)){
+			GroupAppt groupappt = new GroupAppt(appt, attendList, ownerID, slotList);
+			System.out.println("InviteStorage/createGroupApptInvite: Invitations sent");
+			return groupappt;
+		}
+		System.out.println("location capacity error OR timeclash");
+		return null;
+	}
+	
 	
 	public void removeGroupAppt(GroupAppt gAppt){
 		invites.remove(gAppt);
@@ -61,10 +75,12 @@ public class InviteStorage implements JsonStorable {
 		if(!invites.isEmpty()){
 			for(GroupAppt gAppt : invites)//check all the group appts that has invites
 			{
-				for(String waitingUserID: gAppt.getWaitingList()){//check if the group appt's waiting list includes user
-					if(waitingUserID.equals(user.getID())){
-						tempGroupApptList.add(gAppt);
-						break;
+				if(!gAppt.getisVote()){ //is not vote type
+					for(String waitingUserID: gAppt.getWaitingList()){//check if the group appt's waiting list includes user
+						if(waitingUserID.equals(user.getID())){
+							tempGroupApptList.add(gAppt);
+							break;
+						}
 					}
 				}
 			}
@@ -76,6 +92,35 @@ public class InviteStorage implements JsonStorable {
 			return null;
 		}
 	}
+	
+	
+	public LinkedList<GroupAppt> checkIfUserHasVote(User user){
+		//List of GroupAppt that the current user is involved in.
+		LinkedList<GroupAppt> tempGroupApptList = new LinkedList<GroupAppt>();
+		
+		if(!invites.isEmpty()){
+			for(GroupAppt gAppt : invites)//check all the group appts that has invites
+			{
+				//check if it is vote
+				if(gAppt.getisVote()){
+					for(String waitingUserID: gAppt.getWaitingList()){//check if the group appt's waiting list includes user
+						if(waitingUserID.equals(user.getID())){
+							tempGroupApptList.add(gAppt);
+							break;
+						}
+					}
+				}
+			}
+		}
+		if(!(tempGroupApptList.isEmpty())){		//if there is any Vote_GroupAppt the current user is involved in
+			return tempGroupApptList;
+		}
+		else{		//if there is no GroupAppt the current user is involved in
+			return null;
+		}
+		
+	}
+	
 	
 	private boolean capacityCheck(Appt appt, LinkedList<String> attendList){
 		

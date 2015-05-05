@@ -73,5 +73,43 @@ public class AvailableTimeSlot_TextWindow extends JFrame{
 		scrollPaneView.setBorder(new BevelBorder(BevelBorder.RAISED));
 		add(scrollPaneView);
     }
+    
+    public AvailableTimeSlot_TextWindow(ArrayList<TimeSpan> slotList) {
+    	
+		JPanel mainPanel = new JPanel();
+
+		this.setAlwaysOnTop(true);
+		this.setVisible(true);
+		
+		mainPanel.setLayout(new BoxLayout(mainPanel, BoxLayout.Y_AXIS));
+		
+    	setTitle("View Available TimeSlot");
+    	//this.getContentPane().setLayout(new BoxLayout(getContentPane(), BoxLayout.Y_AXIS));
+    	setSize(500, 300);
+        // create JTextField
+    	
+
+		JLabel dateLabel= new JLabel("");
+		dateLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+		dateLabel.setText("=="+slotList.get(0).OnlyDatetoString()+"==");
+		
+		mainPanel.add(dateLabel);
+
+		
+
+		for(int j=0; j<slotList.size();j++){
+			JLabel timeslot = new JLabel("");
+			timeslot.setAlignmentX(Component.CENTER_ALIGNMENT);
+			timeslot.setText("("+slotList.get(j).OnlyTimetoString()+")");
+
+			mainPanel.add(timeslot);
+		}
+		JLabel bufferLabel1 = new JLabel("\n");
+		mainPanel.add(bufferLabel1);
+    	
+    	scrollPaneView = new JScrollPane(mainPanel);
+		scrollPaneView.setBorder(new BevelBorder(BevelBorder.RAISED));
+		add(scrollPaneView);
+    }
 
 }

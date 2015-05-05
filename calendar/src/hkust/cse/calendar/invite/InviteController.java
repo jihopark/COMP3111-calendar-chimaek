@@ -1,12 +1,15 @@
 package hkust.cse.calendar.invite;
 
+import java.util.ArrayList;
 import java.util.LinkedList;
+
 import hkust.cse.calendar.apptstorage.ApptController;
 import hkust.cse.calendar.diskstorage.JsonStorable;
 import hkust.cse.calendar.notification.NotificationController;
 import hkust.cse.calendar.unit.Appt;
 import hkust.cse.calendar.unit.GroupAppt;
 import hkust.cse.calendar.unit.Notification;
+import hkust.cse.calendar.unit.TimeSpan;
 import hkust.cse.calendar.unit.User;
 import hkust.cse.calendar.userstorage.UserController;
 
@@ -43,6 +46,19 @@ public class InviteController {
 		return false;
 	}
 
+	public boolean saveNewGroupAppt_Vote(Appt appt, LinkedList<String> attendList, String ownerID, ArrayList<TimeSpan> slotList){
+		GroupAppt tempAppt= mInviteStorage.createGroupApptVote(appt, attendList, ownerID, slotList);
+		if(tempAppt == null){
+			return false;
+		}
+		else{//save to the invite storage
+			mInviteStorage.addGroupAppt(tempAppt);
+			updateDiskStorage();
+			return true;
+		}
+	}
+	
+	
 	public boolean saveNewGroupAppt(Appt appt, LinkedList<String> attendList, String ownerID){
 		GroupAppt tempAppt= mInviteStorage.createGroupApptInvite(appt, attendList, ownerID);
 		if(tempAppt == null){
@@ -82,6 +98,11 @@ public class InviteController {
 			return false;
 		}
 	}
+	
+	public LinkedList<GroupAppt> checkIfUserHasVote(User user){
+		return mInviteStorage.checkIfUserHasVote(user);
+	}
+	
 	public void setResponse(User user, GroupAppt gAppt, boolean response){
 		if(response == true){		//when the user accepts
 			gAppt.removeWaiting(user.getID());

@@ -25,6 +25,7 @@ import java.awt.event.MouseEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.sql.Timestamp;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.LinkedList;
@@ -415,8 +416,8 @@ public class CalGrid extends JFrame implements ActionListener {
 		});			
 		voteTimeSlotMenuItem.addActionListener(new ActionListener() {	
 			public void actionPerformed(ActionEvent arg0) {
-				//need to implement
-				//AppScheduler_Vote dlg = new AppScheduler_Vote(CalGrid.this);
+				
+				AppScheduler_Vote dlg = new AppScheduler_Vote(CalGrid.this);
 			}	
 		});	
 		
@@ -525,6 +526,7 @@ public class CalGrid extends JFrame implements ActionListener {
 		mCurrUser = UserController.getInstance().getCurrentUser();	//get User from ApptController.getInstance().
 		notificationCheckThread.start();
 		checkAndShowAnyInvitation();
+		checkAndShowAnyVote();
 		checkAndShowAnyDeleteRequest();
 		checkAndShowAnyModifyNotification();
 	}
@@ -830,6 +832,17 @@ public class CalGrid extends JFrame implements ActionListener {
 		if(invitedGroupAppt != null){
 			for(GroupAppt gAppt: invitedGroupAppt){
 				InvitationPopUpDialog newInvite = new InvitationPopUpDialog(gAppt,this);
+			}
+		}
+	}
+	
+	public void checkAndShowAnyVote(){
+		LinkedList<GroupAppt> voteGroupAppt = InviteController.getInstance().checkIfUserHasVote(mCurrUser);
+		if(voteGroupAppt != null){
+			for(GroupAppt gAppt: voteGroupAppt){
+				AvailableTimeSlot_TextWindow availableTimeSlot= new AvailableTimeSlot_TextWindow(gAppt.getvoteTimeList());
+				//VotePopUpDialog newVote = new VotePopUpDialog(gAppt,this);
+				System.out.println("You have vote!");
 			}
 		}
 	}

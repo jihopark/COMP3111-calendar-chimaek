@@ -3,7 +3,7 @@ package hkust.cse.calendar.gui;
 import hkust.cse.calendar.apptstorage.ApptController;
 import hkust.cse.calendar.invite.InviteController;
 import hkust.cse.calendar.locationstorage.LocationController;
-import hkust.cse.calendar.locationstorage.LocationStorageMemory;
+import hkust.cse.calendar.locationstorage.LocationStorage;
 import hkust.cse.calendar.time.TimeController;
 import hkust.cse.calendar.unit.Appt;
 import hkust.cse.calendar.unit.Location;
@@ -183,7 +183,8 @@ ComponentListener {
 		panelTitleNLocationNPublic.add(titleField);
 
 		//location list
-		LocationController.getInstance().initLocationStorage(new LocationStorageMemory(UserController.getInstance().getAdmin()));
+		LocationController.getInstance().initLocationStorage(new LocationStorage(UserController.getInstance().getAdmin()));
+
 		ArrayList<Location> locationList = new ArrayList<Location>();
 		for(int i=0; i<LocationController.getInstance().getLocationList().getSize(); i++){
 			locationList.add(LocationController.getInstance().getLocationList().getElementAt(i));
@@ -263,11 +264,14 @@ ComponentListener {
 			
 			///send vote (
 			LinkedList<String> inviteeList = new LinkedList<String>();
-			
+			LinkedList<User> attendList = new LinkedList<User>();
+
 
 			for(int i = 0; i<rightListModel.getSize();i++){
 				inviteeList.add(UserController.getInstance().getUser(rightListModel.get(i).toString()).getID());
+				attendList.add(UserController.getInstance().getUser(rightListModel.get(i).toString()));
 			}
+			attendList.add(UserController.getInstance().getCurrentUser());
 			
 			ArrayList<Date> dateList = new ArrayList<Date>();
 		
@@ -288,6 +292,7 @@ ComponentListener {
 			
 			
 			//set Appt info	
+			tempAppt = new Appt();
 			tempAppt.setTimeSpan(timeSpanForAppt);
 			tempAppt.setTitle(titleField.getText());
 			tempAppt.setInfo(detailArea.getText());
@@ -302,9 +307,13 @@ ComponentListener {
 			}
 			tempAppt.setLocation(locationObject);
 			
-			//date = TimeController.dateInputToDate(validDate[0],validDate[1], validDate[2], 0,0,0);
+			date = TimeController.dateInputToDate(validDate[0],validDate[1], validDate[2], 0,0,0);
 			
-			if(sendVote(inviteeList, tempAppt))
+			ArrayList<TimeSpan> slotList = new ArrayList<TimeSpan>();
+			slotList = ApptController.getInstance().getSchedulableTimeSpan(attendList, date);
+			
+			
+			if(sendVote(inviteeList, tempAppt, slotList))
 				JOptionPane.showMessageDialog(this,  "Sent vote invitation successfully");
 			else{
 				JOptionPane.showMessageDialog(this, "Failed to send invitation!");
@@ -312,12 +321,15 @@ ComponentListener {
 		}
 	}
 	
-	private boolean sendVote(LinkedList<String> inviteeList, Appt curAppt){
-		if(..InviteController.getInstance().saveNewGroupAppt(curAppt,inviteeList,
-				UserController.getInstance().getCurrentUser().getID())){
+	private boolean sendVote(LinkedList<String> inviteeList, Appt curAppt, ArrayList<TimeSpan> slot){
+		
+		
+		if(InviteController.getInstance().saveNewGroupAppt_Vote(curAppt,inviteeList,
+				UserController.getInstance().getCurrentUser().getID(), slot)){
 			JOptionPane.showMessageDialog(this, "Saved group appointment_VOTE withOUT notification!");
 			setVisible(false);
 			dispose();
+			return true;
 		}
 		else{
 			JOptionPane.showMessageDialog(this, "Failed to save group appointment!");

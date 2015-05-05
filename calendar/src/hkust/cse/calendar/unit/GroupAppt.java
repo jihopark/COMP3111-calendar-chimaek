@@ -1,5 +1,6 @@
 package hkust.cse.calendar.unit;
 
+import java.util.ArrayList;
 import java.util.LinkedList;
 
 public class GroupAppt extends Appt {
@@ -7,7 +8,7 @@ public class GroupAppt extends Appt {
 	private LinkedList<String> waiting;			// The waiting list
 	private String owner_id =null;
 	private boolean isVote=false;
-	private LinkedList<TimeSpan> voteTimeList=null;
+	private ArrayList<TimeSpan> voteTimeList=null;
 	
 	public GroupAppt(){
 		mApptID = 0;
@@ -75,7 +76,7 @@ public class GroupAppt extends Appt {
 		isVote = false;
 	}
 	
-	public GroupAppt(Appt appt, LinkedList<String> attendList, String ownerID, LinkedList<TimeSpan> timeList){
+	public GroupAppt(Appt appt, LinkedList<String> attendList, String ownerID, ArrayList<TimeSpan> timeList){
 		mApptID=appt.getID();
 		mTimeSpan=appt.getTimeSpan();
 		mTitle = appt.getTitle();
@@ -97,6 +98,10 @@ public class GroupAppt extends Appt {
 	
 	public void setisVote(boolean val){
 		isVote=val;
+	}
+	
+	public ArrayList<TimeSpan> getvoteTimeList(){
+		return voteTimeList;
 	}
 	
 	public String getOwner(){
