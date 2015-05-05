@@ -13,5 +13,9 @@ Controllers, each of which hold data objects like Appt, User, Notification, Invi
 Integrations among different data objects, such as Appt and Notification, or User and Appt, are handled through different methods of controllers. 
 As a result, each controller has one-to-many relationship with data objects, which makes the code maintenance simpler with centralized control logic.
 
+## Class Diagram
+
+![Mediator Diagram](mediator_diagram.png)
+
 
   
