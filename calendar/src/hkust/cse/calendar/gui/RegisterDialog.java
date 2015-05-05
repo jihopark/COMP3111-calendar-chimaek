@@ -1,7 +1,7 @@
 package hkust.cse.calendar.gui;
 
 import hkust.cse.calendar.userstorage.UserController;
-import hkust.cse.calendar.userstorage.UserStorageMemory;
+import hkust.cse.calendar.userstorage.UserStorage;
 import java.awt.*;
 import java.awt.event.*;
 import javax.swing.*;
@@ -116,7 +116,7 @@ public class RegisterDialog extends JFrame implements ActionListener {
 			}
 			System.out.println("RegisterDialog/actionPerformed: No Error and called UserController");
 			// call user controller and close
-			UserController.getInstance().initUserStorage(new UserStorageMemory());
+			UserController.getInstance().initUserStorage(new UserStorage());
 			if(adminCheckBox.isSelected()){
 				System.out.println("RegisterDialog/actionPerformed: Admin Checkbox is Checked and User is Saved");
 				if(UserController.getInstance().saveUser(userName.getText(), firstPassword.getText(), firstName.getText(), lastName.getText(), emailAddress.getText(), true)) {				

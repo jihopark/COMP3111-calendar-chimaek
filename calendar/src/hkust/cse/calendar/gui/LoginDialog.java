@@ -10,7 +10,7 @@ import hkust.cse.calendar.notification.NotificationController;
 import hkust.cse.calendar.notification.NotificationStorage;
 import hkust.cse.calendar.unit.User;
 import hkust.cse.calendar.userstorage.UserController;
-import hkust.cse.calendar.userstorage.UserStorageMemory;
+import hkust.cse.calendar.userstorage.UserStorage;
 
 import java.awt.Container;
 import java.awt.FlowLayout;
@@ -134,7 +134,7 @@ public class LoginDialog extends JFrame implements ActionListener
 	}
 	
 	private boolean attemptLogin(String id, String pw){
-		UserController.getInstance().initUserStorage(new UserStorageMemory());
+		UserController.getInstance().initUserStorage(new UserStorage());
 		User user = UserController.getInstance().getUserFromCredential(id, pw);
 		if (user == null)
 			return false;
