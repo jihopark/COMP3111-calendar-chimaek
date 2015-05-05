@@ -9,7 +9,7 @@ import java.util.LinkedList;
 import javax.swing.UIManager;
 
 import hkust.cse.calendar.apptstorage.ApptController;
-import hkust.cse.calendar.apptstorage.ApptStorageMemory;
+import hkust.cse.calendar.apptstorage.ApptStorage;
 import hkust.cse.calendar.gui.LoginDialog;
 import hkust.cse.calendar.gui.TimeMachineDialog;
 import hkust.cse.calendar.locationstorage.LocationController;

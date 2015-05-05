@@ -1,6 +1,5 @@
 package hkust.cse.calendar.locationstorage;
 
-import hkust.cse.calendar.apptstorage.ApptStorageMemory;
 import hkust.cse.calendar.diskstorage.FileManager;
 import hkust.cse.calendar.diskstorage.JsonStorable;
 import hkust.cse.calendar.unit.Location;

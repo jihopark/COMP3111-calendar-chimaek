@@ -23,13 +23,7 @@ public class ApptController {
 	private static ApptController instance = null;
 	//private static int apptIDCount = 1;
 	public static final int DAILY = 1, WEEKLY = 2, MONTHLY = 3;
-	@Deprecated
-	public final static int REMOVE = 1;
-	@Deprecated	
-	public final static int MODIFY = 2;
-	@Deprecated	
-	public final static int NEW = 3;
-
+	
 	/* The Appt storage */
 	private static ApptStorage mApptStorage = null;
 	private static boolean shouldSave = true;
@@ -46,7 +40,7 @@ public class ApptController {
 		return instance;
 	}
 
-	//Initialize mApptStorage. Returns false if ApptStorage object already exists
+	//Initialize mApptStorageMemory. Returns false if ApptStorageMemory object already exists
 	public boolean initApptStorage(ApptStorage storage){
 		if (mApptStorage == null){
 			mApptStorage = storage;
@@ -79,39 +73,6 @@ public class ApptController {
 		return mApptStorage.RetrievePublicApptsInList(user);
 	}
 
-	/* Manage the Appt in the storage
-	 * parameters: the Appt involved, the action to take on the Appt */
-	/*public void ManageAppt(Appt appt, int action) {
-
-		if (action == NEW) {				// Save the Appt into the storage if it is new and non-null
-			if (appt == null)
-				return;
-			mApptStorage.SaveAppt(appt);
-		} else if (action == MODIFY) {		// Update the Appt in the storage if it is modified and non-null
-			if (appt == null)
-				return;
-			//		mApptStorage.UpdateAppt(appt);
-		} else if (action == REMOVE) {		// Remove the Appt from the storage if it should be removed
-			mApptStorage.RemoveAppt(appt);
-		} 
-	}*/
-
-	/*
-	//Save Appt with Notification
-	@Deprecated
-	public boolean saveNewAppt(User user, Appt appt, 
-			boolean flagOne, boolean flagTwo, boolean flagThree, boolean flagFour){
-		appt.setID(mApptStorage.getIDCount());
-		if (flagOne || flagTwo || flagThree || flagFour)
-			setNotificationForAppt(appt, flagOne, flagTwo, flagThree, flagFour);
-		boolean tmp = mApptStorage.SaveAppt(user, appt);
-		
-		
-		if (tmp) updateDiskStorage();
-		
-		return tmp;
-	}*/
-	
 	public boolean saveNewAppt(User user,Appt appt, boolean notificationEnabled,
 			int notificationHoursBefore, int notificationMinutesBefore){
 		appt.setID(mApptStorage.getIDCount());
@@ -131,27 +92,6 @@ public class ApptController {
 		if (tmp) updateDiskStorage();
 		return tmp;
 	}
-	
-	/*
-	//Save Repeated Appt with Notification
-	@Deprecated
-	public boolean saveRepeatedNewAppt(User user, Appt appt, Date repeatEndDate, 
-			boolean flagOne, boolean flagTwo, boolean flagThree, boolean flagFour){
-		List<Appt> tmpList;
-		tmpList = getRepeatedApptList(appt, repeatEndDate);
-		if (mApptStorage.checkOverlaps(user, tmpList))
-			return false;
-		for (Appt a : tmpList){
-			if (!saveNewAppt(user, a))
-				return false;
-			if (flagOne || flagTwo || flagThree || flagFour)
-				setNotificationForAppt(a, flagOne, flagTwo, flagThree, flagFour);
-		}
-		linkRepeatedAppt(tmpList);
-		updateDiskStorage();
-		return true;
-	}*/
-	
 	
 	public boolean saveRepeatedNewAppt(User user, Appt appt, Date repeatEndDate, 
 			boolean notificationEnabled, int notificationHoursBefore, int notificationMinutesBefore){
@@ -231,40 +171,6 @@ public class ApptController {
 		}
 		return list;
 	}
-
-	//Modify appt of user. Return true if successfully modified
-	/*
-	public boolean modifyAppt(User user, Appt appt){
-		if (!TimeController.getInstance().isNotPast(appt)){
-			return false;
-		}
-		//Remove Appt First
-		List<Boolean> tmp = appt.getNotification().getFlags();
-		if (removeAppt(user, appt)){
-			return saveNewAppt(user, appt);
-		}
-
-		return false;
-	}*/
-
-	/*
-	@Deprecated
-	public boolean modifyAppt(User user, Appt appt, 
-			boolean flagOne, boolean flagTwo, boolean flagThree, boolean flagFour){
-		if (!TimeController.getInstance().isNotPast(appt)){
-			return false;
-		}
-		//Remove Appt First
-		if (removeAppt(user, appt)){
-			if (flagOne || flagTwo || flagThree || flagFour)
-				return saveNewAppt(user, appt,flagOne, flagTwo, flagThree, flagFour);
-			else 
-				return saveNewAppt(user, appt);
-		}
-
-		return false;
-	}*/
-	
 	
 	public boolean modifyAppt(User user, Appt appt, 
 			boolean notificationEnabled, int notificationHoursBefore, int notificationMinutesBefore){
@@ -429,38 +335,6 @@ public class ApptController {
 		return false;
 	}
 	
-	/*public boolean modifyRepeatedNewAppt(User user, Appt appt, Date repeatEndDate,
-			boolean flagOne, boolean flagTwo, boolean flagThree, boolean flagFour){
-		//If repeated, then modify all repeated appts. However, past appts will not be modified
-		if (!TimeController.getInstance().isNotPast(appt)){
-			return false;
-		}
-		//Remove Appt First
-		removeAppt(user, appt);
-
-		//Save Modified Appt
-		if (flagOne || flagTwo || flagThree || flagFour)
-			return saveRepeatedNewAppt(user, appt, repeatEndDate, flagOne, flagTwo, flagThree, flagFour);
-		return saveRepeatedNewAppt(user, appt, repeatEndDate);		
-	}*/
-
-	/*
-	@Deprecated
-	public boolean modifyRepeatedNewAppt(User user, Appt appt, Date repeatEndDate,
-			boolean flagOne, boolean flagTwo, boolean flagThree, boolean flagFour){
-		//If repeated, then modify all repeated appts. However, past appts will not be modified
-		if (!TimeController.getInstance().isNotPast(appt)){
-			return false;
-		}
-		//Remove Appt First
-		removeAppt(user, appt);
-
-		//Save Modified Appt
-		if (flagOne || flagTwo || flagThree || flagFour)
-			return saveRepeatedNewAppt(user, appt, repeatEndDate, flagOne, flagTwo, flagThree, flagFour);
-		return saveRepeatedNewAppt(user, appt, repeatEndDate);		
-	}*/
-
 	public boolean modifyRepeatedNewAppt(User user, Appt appt, Date repeatEndDate,
 			boolean notificationEnabled, int notificationHoursBefore, int notificationMinutesBefore){
 		//If repeated, then modify all repeated appts. However, past appts will not be modified
@@ -581,19 +455,6 @@ public class ApptController {
 			((JsonStorable) mApptStorage).saveToJson();
 	}
 
-	/*
-	@Deprecated
-	public boolean setNotificationForAppt(Appt appt, 
-			boolean flagOne, boolean flagTwo, boolean flagThree, boolean flagFour){
-		System.out.println("ApptController/setNotificationForAppt Notification For " + appt.TimeSpan());
-		Notification noti = new Notification(appt, appt.getTitle(), appt.getTimeSpan().StartTime(),
-				flagOne, flagTwo, flagThree, flagFour);
-		boolean tmp = NotificationController.getInstance().saveNewNotification(UserController.getInstance().getCurrentUser(), noti);
-		if (tmp)
-			appt.setNotification(noti);
-		return tmp;
-	}*/
-	
 	public boolean setNotificationForAppt(Appt appt, User user, int notificationHoursBefore, int notificationMinutesBefore)
 	{
 		Notification notification = new Notification(appt,notificationHoursBefore, notificationMinutesBefore);
@@ -614,7 +475,7 @@ public class ApptController {
 	}
 
 	
-	/* Get the defaultUser of mApptStorage */
+	/* Get the defaultUser of mApptStorageMemory */
 	public User getDefaultUser() {
 		return UserController.getInstance().getCurrentUser();
 	}
@@ -624,12 +485,12 @@ public class ApptController {
 	}
 	
 	/*
-	 * Load ApptStorage Again back from Disk
+	 * Load ApptStorageMemory Again back from Disk
 	 * */
 	
 	public void rollback(){
-		if (mApptStorage instanceof JsonStorable && mApptStorage instanceof ApptStorageMemory){
-			ApptStorageMemory tmp = (ApptStorageMemory) ((JsonStorable)mApptStorage).loadFromJson();
+		if (mApptStorage instanceof JsonStorable){
+			ApptStorage tmp = (ApptStorage) ((JsonStorable)mApptStorage).loadFromJson();
 			if (tmp != null) mApptStorage = tmp;
 		}
 	}

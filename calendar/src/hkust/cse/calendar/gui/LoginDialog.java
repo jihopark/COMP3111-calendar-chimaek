@@ -1,7 +1,7 @@
 	package hkust.cse.calendar.gui;
 
 import hkust.cse.calendar.apptstorage.ApptController;
-import hkust.cse.calendar.apptstorage.ApptStorageMemory;
+import hkust.cse.calendar.apptstorage.ApptStorage;
 import hkust.cse.calendar.invite.InviteController;
 import hkust.cse.calendar.invite.InviteStorage;
 import hkust.cse.calendar.locationstorage.LocationController;
@@ -140,7 +140,7 @@ public class LoginDialog extends JFrame implements ActionListener
 			return false;
 		
 		UserController.getInstance().setCurrentUser(user);
-		ApptController.getInstance().initApptStorage(new ApptStorageMemory());
+		ApptController.getInstance().initApptStorage(new ApptStorage());
 		LocationController.getInstance().initLocationStorage(new LocationStorageMemory(user));
 		NotificationController.getInstance().initNotificationStorage(new NotificationStorageMemory(user));
 		InviteController.getInstance().initInviteStorage(new InviteStorage());

@@ -1,7 +1,7 @@
 package hkust.cse.calendar.gui;
 
 import hkust.cse.calendar.apptstorage.ApptController;
-import hkust.cse.calendar.apptstorage.ApptStorageMemory;
+import hkust.cse.calendar.apptstorage.ApptStorage;
 import hkust.cse.calendar.time.TimeController;
 import hkust.cse.calendar.unit.User;
 import hkust.cse.calendar.userstorage.UserController;

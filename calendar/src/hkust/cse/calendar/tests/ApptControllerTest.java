@@ -3,7 +3,7 @@ package hkust.cse.calendar.tests;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import hkust.cse.calendar.apptstorage.ApptController;
-import hkust.cse.calendar.apptstorage.ApptStorageMemory;
+import hkust.cse.calendar.apptstorage.ApptStorage;
 import hkust.cse.calendar.time.TimeController;
 import hkust.cse.calendar.unit.Appt;
 import hkust.cse.calendar.unit.TimeSpan;
@@ -20,7 +20,7 @@ public class ApptControllerTest {
 	
 	@Before
 	public void initiateApptController(){
-		ApptController.getInstance().initApptStorage(new ApptStorageMemory());
+		ApptController.getInstance().initApptStorage(new ApptStorage());
 	}
 	
 	@Test
