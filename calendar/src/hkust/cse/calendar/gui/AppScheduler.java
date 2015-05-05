@@ -3,7 +3,7 @@ package hkust.cse.calendar.gui;
 import hkust.cse.calendar.apptstorage.ApptController;
 import hkust.cse.calendar.invite.InviteController;
 import hkust.cse.calendar.locationstorage.LocationController;
-import hkust.cse.calendar.locationstorage.LocationStorageMemory;
+import hkust.cse.calendar.locationstorage.LocationStorage;
 import hkust.cse.calendar.time.TimeController;
 import hkust.cse.calendar.unit.Appt;
 import hkust.cse.calendar.unit.GroupAppt;
@@ -517,7 +517,7 @@ ComponentListener {
 		panelTitleNLocationNPublic.add(titleField);
 
 		//location list
-		LocationController.getInstance().initLocationStorage(new LocationStorageMemory(UserController.getInstance().getAdmin()));
+		LocationController.getInstance().initLocationStorage(new LocationStorage(UserController.getInstance().getAdmin()));
 		ArrayList<Location> locationList = new ArrayList<Location>();
 		for(int i=0; i<LocationController.getInstance().getLocationList().getSize(); i++){
 			locationList.add(LocationController.getInstance().getLocationList().getElementAt(i));

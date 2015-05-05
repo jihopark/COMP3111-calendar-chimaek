@@ -31,8 +31,8 @@ public class LocationController {
 	public boolean initLocationStorage(LocationStorage storage){
 		if (mLocationStorage == null){
 			mLocationStorage = storage;
-			if (mLocationStorage instanceof LocationStorageMemory && mLocationStorage instanceof JsonStorable){
-				mLocationStorage = (LocationStorageMemory) ((JsonStorable)mLocationStorage).loadFromJson();
+			if (mLocationStorage instanceof JsonStorable){
+				mLocationStorage = (LocationStorage) ((JsonStorable)mLocationStorage).loadFromJson();
 				if (mLocationStorage == null) mLocationStorage = storage;
 			}
 			return true;

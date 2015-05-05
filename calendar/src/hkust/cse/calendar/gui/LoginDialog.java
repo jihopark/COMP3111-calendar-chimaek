@@ -5,7 +5,7 @@ import hkust.cse.calendar.apptstorage.ApptStorage;
 import hkust.cse.calendar.invite.InviteController;
 import hkust.cse.calendar.invite.InviteStorage;
 import hkust.cse.calendar.locationstorage.LocationController;
-import hkust.cse.calendar.locationstorage.LocationStorageMemory;
+import hkust.cse.calendar.locationstorage.LocationStorage;
 import hkust.cse.calendar.notification.NotificationController;
 import hkust.cse.calendar.notification.NotificationStorageMemory;
 import hkust.cse.calendar.unit.User;
@@ -141,7 +141,7 @@ public class LoginDialog extends JFrame implements ActionListener
 		
 		UserController.getInstance().setCurrentUser(user);
 		ApptController.getInstance().initApptStorage(new ApptStorage());
-		LocationController.getInstance().initLocationStorage(new LocationStorageMemory(user));
+		LocationController.getInstance().initLocationStorage(new LocationStorage(user));
 		NotificationController.getInstance().initNotificationStorage(new NotificationStorageMemory(user));
 		InviteController.getInstance().initInviteStorage(new InviteStorage());
 		CalGrid grid = new CalGrid();
