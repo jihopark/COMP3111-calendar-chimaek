@@ -61,7 +61,7 @@ public class ApptController {
 		return mApptStorage.RetrieveApptsInList(user, time);
 	}
 	
-	public static List<Appt> RetrieveApptsInList(User user) {
+	public List<Appt> RetrieveApptsInList(User user) {
 		return mApptStorage.RetrieveApptsInList(user);
 	}
 

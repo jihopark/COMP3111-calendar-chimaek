@@ -97,7 +97,7 @@ public class InviteStorage implements JsonStorable {
 	private boolean timeclashCheck(Appt appt, LinkedList<String> attendList){
 		//check confirmed appt clash
 		for(String userID : attendList){
-			for(Appt a : ApptController.RetrieveApptsInList(UserController.getInstance().getUser(userID))){
+			for(Appt a : ApptController.getInstance().RetrieveApptsInList(UserController.getInstance().getUser(userID))){
 				if(appt.getTimeSpan().Overlap(a.getTimeSpan())){
 					System.out.println("Time clash with "+(UserController.getInstance().getUser(userID).getFullName()));
 					return false;

@@ -36,7 +36,6 @@ public class TimeMachineDialog extends JFrame implements ActionListener
 	private JTextField startTimeHourField;
 	private JLabel startTimeMinuteLabel;
 	private JTextField startTimeMinuteField;
-	private TimeController timeController = new TimeController();
 	public TimeMachineDialog()		// Create a dialog to log in
 	{
 		
@@ -138,9 +137,9 @@ public class TimeMachineDialog extends JFrame implements ActionListener
 		else if(e.getSource() == OffButton)
 		{
 			OffButton.setEnabled(!TimeController.getInstance().isOnTimeMachineMode());
-			timeController.getInstance().disableTimeMachineMode();
-			OnButton.setEnabled(!timeController.getInstance().isOnTimeMachineMode());
-			System.out.println("Time Machine is Turned OFF: " + timeController.getInstance().isOnTimeMachineMode());
+			TimeController.getInstance().disableTimeMachineMode();
+			OnButton.setEnabled(!TimeController.getInstance().isOnTimeMachineMode());
+			System.out.println("Time Machine is Turned OFF: " + TimeController.getInstance().isOnTimeMachineMode());
 		}
 	}
 
