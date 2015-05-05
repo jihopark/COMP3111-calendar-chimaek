@@ -4,7 +4,6 @@ import hkust.cse.calendar.gui.CalGrid;
 import hkust.cse.calendar.time.TimeController;
 import hkust.cse.calendar.userstorage.UserController;
 
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 

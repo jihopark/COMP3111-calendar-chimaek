@@ -1,20 +1,10 @@
 package hkust.cse.calendar.gui;
 
 import hkust.cse.calendar.unit.Location;
-import hkust.cse.calendar.unit.User;
 import hkust.cse.calendar.userstorage.UserController;
-import hkust.cse.calendar.apptstorage.ApptController;
-import hkust.cse.calendar.apptstorage.ApptStorage;
 import hkust.cse.calendar.locationstorage.LocationController;
-import hkust.cse.calendar.locationstorage.LocationStorageMemory;
-import hkust.cse.calendar.tests.GUITest;
-
 import java.awt.*;
 import java.awt.event.*;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Vector;
-
 import javax.swing.*;
 import javax.swing.event.*;
 

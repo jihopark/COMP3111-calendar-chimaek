@@ -7,8 +7,6 @@ import hkust.cse.calendar.time.TimeController;
 
 import java.io.Serializable;
 import java.sql.Timestamp;
-import java.util.Date;
-import java.util.LinkedList;
 
 public class Appt implements Serializable {
 	

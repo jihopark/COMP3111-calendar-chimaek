@@ -12,7 +12,6 @@ import hkust.cse.calendar.unit.ModifyNotification;
 import hkust.cse.calendar.unit.Notification;
 import hkust.cse.calendar.unit.User;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class UserController {

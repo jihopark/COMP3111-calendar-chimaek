@@ -1,10 +1,6 @@
 package hkust.cse.calendar.tests;
 
-import java.util.ArrayList;
-
 import javax.swing.DefaultListModel;
-import javax.swing.ListModel;
-
 import hkust.cse.calendar.gui.ManageLocationDialog;
 import hkust.cse.calendar.locationstorage.LocationController;
 import hkust.cse.calendar.unit.Location;

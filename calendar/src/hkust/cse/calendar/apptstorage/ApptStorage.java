@@ -10,8 +10,6 @@ import hkust.cse.calendar.unit.GroupAppt;
 import hkust.cse.calendar.unit.Notification;
 import hkust.cse.calendar.unit.TimeSpan;
 import hkust.cse.calendar.unit.User;
-import hkust.cse.calendar.userstorage.UserController;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;

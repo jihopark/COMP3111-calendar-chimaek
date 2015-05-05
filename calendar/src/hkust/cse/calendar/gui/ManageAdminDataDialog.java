@@ -1,7 +1,5 @@
 package hkust.cse.calendar.gui;
 
-import hkust.cse.calendar.apptstorage.ApptController;
-import hkust.cse.calendar.unit.DeleteRequest;
 import hkust.cse.calendar.unit.ModifyNotification;
 import hkust.cse.calendar.unit.User;
 import hkust.cse.calendar.userstorage.UserController;

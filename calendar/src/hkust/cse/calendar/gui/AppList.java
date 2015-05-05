@@ -4,7 +4,6 @@ import hkust.cse.calendar.apptstorage.ApptController;
 import hkust.cse.calendar.time.TimeController;
 import hkust.cse.calendar.unit.Appt;
 import hkust.cse.calendar.unit.GroupAppt;
-import hkust.cse.calendar.unit.TimeSpan;
 import hkust.cse.calendar.unit.User;
 import hkust.cse.calendar.userstorage.UserController;
 
@@ -18,8 +17,6 @@ import java.awt.event.InputEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.sql.Timestamp;
-import java.util.Date;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Random;
 

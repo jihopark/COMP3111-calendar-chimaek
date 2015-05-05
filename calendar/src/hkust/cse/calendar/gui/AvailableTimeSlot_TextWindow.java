@@ -5,23 +5,16 @@ import hkust.cse.calendar.apptstorage.ApptController;
 import hkust.cse.calendar.time.TimeController;
 import hkust.cse.calendar.unit.TimeSpan;
 import hkust.cse.calendar.unit.User;
-import hkust.cse.calendar.userstorage.UserController;
-
 import java.awt.Component;
 import java.awt.Container;
-import java.awt.FlowLayout;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
-
 import javax.swing.BoxLayout;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
-import javax.swing.JTextField;
 import javax.swing.border.BevelBorder;
-import javax.swing.table.TableModel;
 
 public class AvailableTimeSlot_TextWindow extends JFrame{
 	private static final long serialVersionUID = 1L;

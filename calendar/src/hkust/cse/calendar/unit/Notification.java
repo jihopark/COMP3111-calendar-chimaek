@@ -3,10 +3,8 @@ package hkust.cse.calendar.unit;
 import hkust.cse.calendar.apptstorage.ApptController;
 import hkust.cse.calendar.notification.NotificationTime;
 
-import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.List;
 
 public class Notification {
 	private static final int ONE_HOUR = 0;

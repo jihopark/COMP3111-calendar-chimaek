@@ -2,7 +2,6 @@ package hkust.cse.calendar.notification;
 
 import hkust.cse.calendar.diskstorage.FileManager;
 import hkust.cse.calendar.diskstorage.JsonStorable;
-import hkust.cse.calendar.locationstorage.LocationStorageMemory;
 import hkust.cse.calendar.unit.Notification;
 import hkust.cse.calendar.unit.User;
 

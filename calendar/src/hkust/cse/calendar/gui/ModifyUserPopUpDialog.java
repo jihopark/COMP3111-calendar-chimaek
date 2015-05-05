@@ -1,18 +1,9 @@
 package hkust.cse.calendar.gui;
 
-import java.awt.BorderLayout;
 import java.awt.Container;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.sql.Timestamp;
-import java.util.Date;
-import java.util.List;
-
-import hkust.cse.calendar.invite.InviteController;
-import hkust.cse.calendar.time.TimeController;
-import hkust.cse.calendar.unit.DeleteRequest;
-import hkust.cse.calendar.unit.GroupAppt;
 import hkust.cse.calendar.unit.ModifyNotification;
 import hkust.cse.calendar.unit.User;
 import hkust.cse.calendar.userstorage.UserController;

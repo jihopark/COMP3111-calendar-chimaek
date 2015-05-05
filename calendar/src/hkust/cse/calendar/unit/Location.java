@@ -1,7 +1,5 @@
 package hkust.cse.calendar.unit;
 
-import hkust.cse.calendar.locationstorage.LocationController;
-
 public class Location {
 	private String _name;
 	private int _locationID;

@@ -1,7 +1,5 @@
 package hkust.cse.calendar.unit;
 
-import hkust.cse.calendar.userstorage.UserController;
-
 public class DeleteRequest {
 	private String deleteUserID;
 	private String requestUserID;

@@ -1,19 +1,12 @@
 package hkust.cse.calendar.invite;
 
 import java.util.LinkedList;
-import java.util.List;
-
 import hkust.cse.calendar.apptstorage.ApptController;
-import hkust.cse.calendar.apptstorage.ApptStorage;
 import hkust.cse.calendar.diskstorage.JsonStorable;
-import hkust.cse.calendar.locationstorage.LocationController;
-import hkust.cse.calendar.locationstorage.LocationStorage;
-import hkust.cse.calendar.locationstorage.LocationStorageMemory;
 import hkust.cse.calendar.notification.NotificationController;
 import hkust.cse.calendar.unit.Appt;
 import hkust.cse.calendar.unit.GroupAppt;
 import hkust.cse.calendar.unit.Notification;
-import hkust.cse.calendar.unit.TimeSpan;
 import hkust.cse.calendar.unit.User;
 import hkust.cse.calendar.userstorage.UserController;
 

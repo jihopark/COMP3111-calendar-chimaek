@@ -1,13 +1,6 @@
 package hkust.cse.calendar.locationstorage;
 
-import hkust.cse.calendar.unit.Appt;
-import hkust.cse.calendar.unit.TimeSpan;
-import hkust.cse.calendar.unit.User;
 import hkust.cse.calendar.unit.Location;
-
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
 
 import javax.swing.DefaultListModel;
 
