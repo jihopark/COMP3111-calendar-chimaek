@@ -34,7 +34,7 @@ lead to waste of resources. If too many objects are created in this way, this mi
 ## Solution  
 
 We implemented the controller units of the different types of data in Singleton Pattern, which we learnt from the lecture, to ensure that only ONE object is instantiated for each controller unit classes.
-As a consequence of using Singleton Pattern, there was no wastage of resources since it prevented creating controller objects unneccesarily. 
+As a consequence of using Singleton Pattern, there was no waste of memory resources since it prevented creating controller objects unneccesarily. 
 Manipulation of data of a specific type is done by referring to the Singleton object of the controller of its type. 
 For example, when creating an Appt, a method *createNewAppt()* is called from the Singleton object of the ApptController. 
 Singleton Pattern not only improved efficiency and stability of the program but also enhanced the code style and maintenability, due to the fact that no extra lines of instantiation of controller objects were required and all data manipulation referred to one single object.
