@@ -38,3 +38,7 @@ As a consequence of using Singleton Pattern, there was no waste of memory resour
 Manipulation of data of a specific type is done by referring to the Singleton object of the controller of its type. 
 For example, when creating an Appt, a method *createNewAppt()* is called from the Singleton object of the ApptController. 
 Singleton Pattern not only improved efficiency and stability of the program but also enhanced the code style and maintenability, due to the fact that no extra lines of instantiation of controller objects were required and all data manipulation referred to one single object.
+
+## Class Diagram
+
+![Singleton Diagram](3111 Singleton Diagram.png)
