@@ -41,4 +41,4 @@ Singleton Pattern not only improved efficiency and stability of the program but 
 
 ## Class Diagram
 
-![Singleton Diagram](3111 Singleton Diagram.png)
+![Singleton Diagram](singleton_diagram.png)
