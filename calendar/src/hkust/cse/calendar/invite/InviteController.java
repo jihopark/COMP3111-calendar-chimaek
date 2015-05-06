@@ -116,6 +116,22 @@ public class InviteController {
 		updateDiskStorage();
 	}
 	
+	public void setVoteResponse(User user, GroupAppt gAppt, boolean response, ArrayList<TimeSpan> selectedTimeSlotList){
+		if(response == true){		//when the user accepts
+			gAppt.removeWaiting(user.getID());
+			ArrayList<TimeSpan>tempList = new ArrayList<TimeSpan> ();
+			tempList = selectedTimeSlotList;
+			gAppt.setvoteTimeList(tempList);
+			if(gAppt.checkAllConfirmed()){		//check if all attendees accepted.
+				setConfirmedGroupAppt(gAppt);
+			}
+		}
+		else{		//when the user declines
+			mInviteStorage.removeGroupAppt(gAppt);
+		}
+		updateDiskStorage();
+	}
+	
 	private void setConfirmedGroupAppt(GroupAppt gAppt){
 		mInviteStorage.removeGroupAppt(gAppt);
 		Notification notification = gAppt.getNotification();

@@ -103,6 +103,9 @@ public class GroupAppt extends Appt {
 	public ArrayList<TimeSpan> getvoteTimeList(){
 		return voteTimeList;
 	}
+	public void setvoteTimeList(ArrayList<TimeSpan> list){
+		voteTimeList = list;
+	}
 	
 	public String getOwner(){
 		return owner_id;
