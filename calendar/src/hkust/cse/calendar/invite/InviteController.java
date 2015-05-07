@@ -5,6 +5,8 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.LinkedList;
 
+import javax.swing.JOptionPane;
+
 import hkust.cse.calendar.apptstorage.ApptController;
 import hkust.cse.calendar.diskstorage.JsonStorable;
 import hkust.cse.calendar.notification.NotificationController;
@@ -118,7 +120,7 @@ public class InviteController {
 		updateDiskStorage();
 	}
 	
-	public void setVoteResponse(User user, GroupAppt gAppt, boolean response, ArrayList<TimeSpan> selectedTimeSlotList){
+	public boolean setVoteResponse( User user, GroupAppt gAppt, boolean response, ArrayList<TimeSpan> selectedTimeSlotList){
 		if(response == true){		//when the user accepts
 			gAppt.removeWaiting(user.getID());
 			ArrayList<TimeSpan>tempList = new ArrayList<TimeSpan> ();
@@ -135,6 +137,9 @@ public class InviteController {
 			gAppt.setvoteTimeList(tempList);
 			if(gAppt.checkAllConfirmed()){		//check if all attendees accepted.
 				gAppt.setTimeSpan(tempList.get(0));
+				if(!ApptController.getInstance().canUseLocation(gAppt.getTimeSpan(), gAppt.getLocation())){
+					return false;
+				}
 				setConfirmedGroupAppt(gAppt);
 			}
 		}
@@ -142,6 +147,7 @@ public class InviteController {
 			mInviteStorage.removeGroupAppt(gAppt);
 		}
 		updateDiskStorage();
+		return true;
 	}
 	
 	private void setConfirmedGroupAppt(GroupAppt gAppt){

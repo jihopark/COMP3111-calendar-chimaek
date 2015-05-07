@@ -12,6 +12,7 @@ import hkust.cse.calendar.unit.Location;
 import hkust.cse.calendar.unit.Notification;
 import hkust.cse.calendar.unit.TimeSpan;
 import hkust.cse.calendar.unit.User;
+import hkust.cse.calendar.userstorage.UserController;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -70,11 +71,18 @@ public class ApptStorage implements JsonStorable {
 	
 	public boolean hasOverlaps(TimeSpan t, Location loc){
 		if(loc.getAppointmentCount()!=0){
-			LinkedList<Appt> appts = new LinkedList<Appt>();
-			
-			for(Appt a : getAllAppts(user)){
-				
-			}	
+			LinkedList<User> users = new LinkedList<User>();
+			users=(LinkedList<User>) UserController.getInstance().getUserList();
+			if(users!=null)
+			{
+				for(User u : users)
+				{
+					for(Appt a : getAllAppts(u)){
+						if(a.getLocation().equals(loc) && a.TimeSpan().Overlap(t))
+							return true;
+					}
+				}
+			}
 		}
 		return false;
 		

@@ -487,6 +487,7 @@ public class ApptController {
 		return UserController.getInstance().getCurrentUser();
 	}
 	
+
 	/*
 	 * Load ApptStorageMemory Again back from Disk
 	 * */
@@ -495,7 +496,7 @@ public class ApptController {
 		if (mApptStorage instanceof JsonStorable && shouldSave)
 			((JsonStorable) mApptStorage).saveToJson();
 	}
-	
+
 	public void rollback(){
 		if (mApptStorage instanceof JsonStorable){
 			ApptStorage tmp = (ApptStorage) ((JsonStorable)mApptStorage).loadFromJson();
@@ -504,8 +505,7 @@ public class ApptController {
 	}
 
 	public boolean canUseLocation(TimeSpan time, Location loc){
-		//!!!!
-		if(hasOverlaps(time, loc))
+		if(mApptStorage.hasOverlaps(time, loc))
 			return false;
 		return true;
 	}

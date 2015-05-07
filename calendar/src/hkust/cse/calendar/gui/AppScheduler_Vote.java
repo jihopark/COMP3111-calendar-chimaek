@@ -302,6 +302,8 @@ ComponentListener {
 			//SAVE LOCATION
 			String locationString = (String) locationField.getSelectedItem();
 			Location locationObject = LocationController.getInstance().RetrieveLocations(locationString);
+				
+			
 			if(tempAppt.getLocation()!=null && !(tempAppt.getLocation().getName().equals(locationObject.getName()))){
 				tempAppt.getLocation().decreaseCountForLocation();
 			}

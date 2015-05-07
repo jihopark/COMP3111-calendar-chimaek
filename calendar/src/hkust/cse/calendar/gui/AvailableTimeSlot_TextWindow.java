@@ -22,6 +22,7 @@ import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.border.BevelBorder;
@@ -176,8 +177,11 @@ public class AvailableTimeSlot_TextWindow extends JFrame implements ActionListen
 		okButton = new JButton("Ok");
 		okButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				InviteController.getInstance().setVoteResponse(_currentUser, groupAppt , true, _voteTimeSpan);
-				System.out.println(_voteTimeSpan);
+
+				if(!InviteController.getInstance().setVoteResponse(_currentUser, groupAppt , true, _voteTimeSpan)){
+					JOptionPane.showMessageDialog(parent, "Location is already being used",
+							"Location Error", JOptionPane.ERROR_MESSAGE);	
+				}
 				dispose();
 			}
 		});

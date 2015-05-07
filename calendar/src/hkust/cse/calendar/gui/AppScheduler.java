@@ -1084,9 +1084,17 @@ ComponentListener {
 		//SAVE LOCATION
 		String locationString = (String) locationField.getSelectedItem();
 		Location locationObject = LocationController.getInstance().RetrieveLocations(locationString);
+		if(!ApptController.getInstance().canUseLocation(timeSpanForAppt, locationObject)){
+			JOptionPane.showMessageDialog(this, "Location is already being used",
+					"Location Error", JOptionPane.ERROR_MESSAGE);
+			return false;
+		}
+		
 		if(currentAppt.getLocation()!=null && !(currentAppt.getLocation().getName().equals(locationObject.getName()))){
 			currentAppt.getLocation().decreaseCountForLocation();
 		}
+		
+		
 		currentAppt.setLocation(locationObject);
 		
 		return true;
