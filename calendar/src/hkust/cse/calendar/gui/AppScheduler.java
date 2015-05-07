@@ -599,6 +599,9 @@ ComponentListener {
 	private void initiateGroupEventButton() {
 		groupEventButton = new JButton("Save as Group Event");
 		groupEventButton.addActionListener(this);
+		if((!isGroupEvent) && isModifying){
+			groupEventButton.setEnabled(false);
+		}
 	}
 
 	//Constructor	
@@ -1276,7 +1279,9 @@ ComponentListener {
 		{
 			notificationEnableBox.setSelected(true);
 			notificationHourField.setText(Integer.toString(currentAppt.getNotification().getHoursBefore()));
+			notificationHourField.setEnabled(true);
 			notificationMinuteField.setText(Integer.toString(currentAppt.getNotification().getMinutesBefore()));
+			notificationMinuteField.setEnabled(true);
 		}
 		
 		titleField.setText(currentAppt.getTitle());

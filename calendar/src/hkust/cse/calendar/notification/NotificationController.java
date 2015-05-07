@@ -13,7 +13,7 @@ public class NotificationController {
 		private static NotificationController instance = null;
 		
 		//Notification Storage
-		private static NotificationStorage mNotificationStorag = null;
+		private static NotificationStorage mNotificationStorage = null;
 		
 		//Empty Constructor with getInstasnce
 		public NotificationController() {
@@ -28,11 +28,11 @@ public class NotificationController {
 		
 		//initialize
 		public boolean initNotificationStorage(NotificationStorage storage){
-			if (mNotificationStorag == null){
-				mNotificationStorag = storage;
-				if (mNotificationStorag instanceof JsonStorable){
-					mNotificationStorag = (NotificationStorage) ((JsonStorable)mNotificationStorag).loadFromJson();
-					if (mNotificationStorag == null) mNotificationStorag = storage; 
+			if (mNotificationStorage == null){
+				mNotificationStorage = storage;
+				if (mNotificationStorage instanceof JsonStorable){
+					mNotificationStorage = (NotificationStorage) ((JsonStorable)mNotificationStorage).loadFromJson();
+					if (mNotificationStorage == null) mNotificationStorage = storage; 
 				}
 					
 				return true;
@@ -43,17 +43,17 @@ public class NotificationController {
 		
 		//Retrieve
 		public Notification retrieveNotification(int notificationID) {
-			return mNotificationStorag.RetrieveNotification(notificationID);
+			return mNotificationStorage.RetrieveNotification(notificationID);
 		}
 		
 		public List<Notification> retrieveNotification(User user) {
-			return mNotificationStorag.RetrieveNotification(user);
+			return mNotificationStorage.RetrieveNotification(user);
 		}
 		
 		//Retrieve Notification with currentTime. returns empty arraylist if no notification
 
 		public List<NotificationTime> retrieveNotification(User user, Date currentTime) {
-			return mNotificationStorag.RetrieveNotificationAtCurrentTime(user, currentTime);
+			return mNotificationStorage.RetrieveNotificationAtCurrentTime(user, currentTime);
 		}
 		
 		/*
@@ -63,12 +63,12 @@ public class NotificationController {
 		}*/
 		
 		public NotificationTime retrieveNotificationTime(Notification notification){
-			return mNotificationStorag.RetrieveNotificationTime(notification);
+			return mNotificationStorage.RetrieveNotificationTime(notification);
 		}
 		
 		//Update
 		public boolean updateNotification(User user, Notification notification){
-			boolean temp = mNotificationStorag.UpdateNotification(user, notification);
+			boolean temp = mNotificationStorage.UpdateNotification(user, notification);
 			if(temp)
 				updateDiskStorage();
 			return temp;
@@ -76,9 +76,9 @@ public class NotificationController {
 		
 		//Save New
 		public boolean saveNewNotification(User user, Notification notification){
-			notification.setID(mNotificationStorag.getIDCount());
+			notification.setID(mNotificationStorage.getIDCount());
 			System.out.println("NotificationController/saveNewNotification Saved. ID is " + notification.getID());
-			boolean temp = mNotificationStorag.SaveNotification(user, notification);
+			boolean temp = mNotificationStorage.SaveNotification(user, notification);
 			if(temp)
 				updateDiskStorage();
 			return temp;
@@ -87,14 +87,14 @@ public class NotificationController {
 		//remove
 		public boolean removeNotification(User user, Notification notification){
 			System.out.println("NotificationController/removeNewNotification Removed: " + notification.getID());
-			boolean temp = mNotificationStorag.RemoveNotification(user, notification);
+			boolean temp = mNotificationStorage.RemoveNotification(user, notification);
 			if(temp)
 				updateDiskStorage();
 			return temp;
 		}
 		
 		public Notification getNotificationByID(int id){
-			return mNotificationStorag.RetrieveNotification(id);
+			return mNotificationStorage.RetrieveNotification(id);
 		}
 		
 		public void setDelivered(Notification noti){
@@ -103,7 +103,7 @@ public class NotificationController {
 		}
 		
 		private void updateDiskStorage(){
-			if (mNotificationStorag instanceof JsonStorable)
-				((JsonStorable) mNotificationStorag).saveToJson();
+			if (mNotificationStorage instanceof JsonStorable)
+				((JsonStorable) mNotificationStorage).saveToJson();
 		}
 }

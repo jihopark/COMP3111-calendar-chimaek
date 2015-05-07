@@ -33,7 +33,7 @@ public class NotificationCheckThread extends Thread {
 					for (NotificationTime time : notifications){
 						if ((!time.getParent().isDelivered()) && (!time.getParent().isPending())){
 							NotificationController.getInstance().setDelivered(time.getParent());
-							JOptionPane.showMessageDialog(null, "You have an appointment!\n" + time.getParent().getName() + "at " + time.getParent().getAppt().TimeSpan());
+							JOptionPane.showMessageDialog(null, "You have an appointment!\n" + time.getParent().getName() + " at " + time.getParent().getAppt().TimeSpan());
 						}
 					}
 				}
