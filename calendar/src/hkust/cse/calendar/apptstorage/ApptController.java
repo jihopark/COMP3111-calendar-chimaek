@@ -504,7 +504,7 @@ public class ApptController {
 	}
 
 	public boolean canUseLocation(TimeSpan time, Location loc){
-		!!!!
+		//!!!!
 		return false;
 	}
 }
