@@ -107,12 +107,13 @@ public class WeeklyDataVisualizationDialog extends JFrame implements ActionListe
 				if(totalNumberAppt == 0){
 					component = new CircleComponent(5 + radius[j]);
 				} else {
-					component = new CircleComponent(5 + 30*radius[j]/totalNumberAppt);
+					component = new CircleComponent(5 + 35*radius[j]/totalNumberAppt);
 				}
 				component.setLocation(20, 20);
 				component.setSize(component.getPreferredSize());
 				gridPanel.add(component);
 				gridPanel.repaint();
+				
 				for(int k = 0;k<7;k++){
 					radius[k]=0;
 				}

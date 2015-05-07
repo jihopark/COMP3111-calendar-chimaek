@@ -29,13 +29,31 @@ public class CircleComponent extends JPanel
 
        public void paintComponent(Graphics g)
        {  
-           super.paintComponent(g);
+    	   /**
+    	   if(iForColor > 3) {
+        	   iForColor = (int) (Math.random() * 4);
+    	   }
+    	   
+    	   **/
+    	   int iForColor = (int) (Math.random() * 4);
+    	   
+    	   
+    	   super.paintComponent(g);
            Graphics2D g2 = (Graphics2D) g;
-           g2.setColor(Color.red);
+           if(iForColor == 0){
+        	   g2.setColor(Color.red);
+           } else if(iForColor ==1) {
+        	   g2.setColor(Color.cyan);
+           } else if(iForColor ==2) {
+        	   g2.setColor(Color.green);
+           } else {
+        	   g2.setColor(Color.ORANGE);
+           }
+           
            g2.fill(circle);
 
-       } 
-
+       }
+       
        public void setWidth(int aWidth)
        {
             width = aWidth;
