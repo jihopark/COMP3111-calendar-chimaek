@@ -381,6 +381,8 @@ public class CalGrid extends JFrame implements ActionListener {
 
 			}
 		});
+		
+		
 
 		menuBar.add(Appmenu);
 		Appmenu.setEnabled(false);
@@ -452,8 +454,14 @@ public class CalGrid extends JFrame implements ActionListener {
 		});	
 		Appmenu.add(mi); 
 		
-		
-		
+		mi = (JMenuItem) Access.add(new JMenuItem("Bonus"));
+		mi.setMnemonic('B');
+		mi.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				WeeklyDataVisualizationDialog temp = new WeeklyDataVisualizationDialog();
+			}
+		});
+		Appmenu.add(mi);
 		JMenu TimeMachine = (JMenu) menuBar.add(new JMenu("TimeMachine"));
 		TimeMachine.setMnemonic('T');
 		TimeMachine.getAccessibleContext().setAccessibleDescription(
