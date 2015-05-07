@@ -93,7 +93,7 @@ public class AvailableTimeSlot_TextWindow extends JFrame implements ActionListen
 		add(scrollPaneView);
     }
     
-    public AvailableTimeSlot_TextWindow(GroupAppt groupAppt) {
+    public AvailableTimeSlot_TextWindow(final GroupAppt groupAppt) {
     	_currentUser = UserController.getInstance().getCurrentUser();
     	ArrayList<TimeSpan> slotList = groupAppt.getvoteTimeList();
     	_voteTimeSpan = new ArrayList<TimeSpan>();
@@ -123,7 +123,7 @@ public class AvailableTimeSlot_TextWindow extends JFrame implements ActionListen
 			timeslot.setAlignmentX(Component.CENTER_ALIGNMENT);
 			timeslot.setText("("+slotList.get(j).OnlyTimetoString()+")");
 						
-			JButton temp = new JButton("Vote");
+			final JButton temp = new JButton("Vote");
 			temp.setText("Vote for: "+ slotList.get(j));
 			temp.setAlignmentX(Component.CENTER_ALIGNMENT);
     		temp.addActionListener(new ActionListener() {
