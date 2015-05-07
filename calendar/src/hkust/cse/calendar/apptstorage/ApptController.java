@@ -360,7 +360,8 @@ public class ApptController {
 		if (notificationEnabled)
 			tmp = saveRepeatedNewAppt(user, start, repeatEndDate, notificationEnabled,
 					notificationHoursBefore, notificationMinutesBefore);
-		tmp = saveRepeatedNewAppt(user, start, repeatEndDate);
+		else
+			tmp = saveRepeatedNewAppt(user, start, repeatEndDate);
 		shouldSave = true;
 		if (!tmp) rollback();
 		else updateDiskStorage();
