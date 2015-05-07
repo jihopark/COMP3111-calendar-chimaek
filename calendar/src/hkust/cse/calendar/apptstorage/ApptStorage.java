@@ -8,6 +8,7 @@ import hkust.cse.calendar.notification.NotificationController;
 import hkust.cse.calendar.time.TimeController;
 import hkust.cse.calendar.unit.Appt;
 import hkust.cse.calendar.unit.GroupAppt;
+import hkust.cse.calendar.unit.Location;
 import hkust.cse.calendar.unit.Notification;
 import hkust.cse.calendar.unit.TimeSpan;
 import hkust.cse.calendar.unit.User;
@@ -65,6 +66,18 @@ public class ApptStorage implements JsonStorable {
 		}
 		
 		return false;
+	}
+	
+	public boolean hasOverlaps(TimeSpan t, Location loc){
+		if(loc.getAppointmentCount()!=0){
+			LinkedList<Appt> appts = new LinkedList<Appt>();
+			
+			for(Appt a : getAllAppts(user)){
+				
+			}	
+		}
+		return false;
+		
 	}
 
 	public boolean checkOverlaps(User user, List<Appt> appts){

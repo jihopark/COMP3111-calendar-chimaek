@@ -125,4 +125,7 @@ public class LocationController {
 		else
 			return false;
 	}
+	public int getLocationApptCount(Location location){
+		return mLocationStorage.getLocationApptCount(location);
+	}
 }

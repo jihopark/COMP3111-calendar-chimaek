@@ -93,6 +93,7 @@ public class AvailableTimeSlot_TextWindow extends JFrame implements ActionListen
 		add(scrollPaneView);
     }
     
+
     public AvailableTimeSlot_TextWindow(final GroupAppt groupAppt) {
     	_currentUser = UserController.getInstance().getCurrentUser();
     	groupAppt.addAttendant(groupAppt.getOwner());
@@ -135,17 +136,7 @@ public class AvailableTimeSlot_TextWindow extends JFrame implements ActionListen
     				//TimeSpan From 2015-05-15 00:30 to 2015-05-15 00:45
     				//201505150000
     				//201505150015
-    				/**
-    				System.out.println("The Start Year is : " +voteTime.substring(0, 4));
-    				System.out.println("The Start Month is : " +voteTime.substring(4, 6));
-    				System.out.println("The Start Date is : " +voteTime.substring(6, 8));
-    				System.out.println("The Start Time is : " +voteTime.substring(8, 12));
-    				
-    				System.out.println("The End Year is : " +voteTime.substring(12, 16));
-    				System.out.println("The End Month is : " +voteTime.substring(16, 18));
-    				System.out.println("The End Date is : " +voteTime.substring(18, 20));
-    				System.out.println("The End Time is : " +voteTime.substring(20, 24));
-    				 **/
+  
     				
     				int startYear = Integer.parseInt(voteTime.substring(0, 4));
     				int startMonth = Integer.parseInt(voteTime.substring(4, 6));
@@ -202,6 +193,7 @@ public class AvailableTimeSlot_TextWindow extends JFrame implements ActionListen
     	scrollPaneView = new JScrollPane(mainPanel);
 		scrollPaneView.setBorder(new BevelBorder(BevelBorder.RAISED));
 		add(scrollPaneView);
+
     }
     
 

@@ -505,6 +505,8 @@ public class ApptController {
 
 	public boolean canUseLocation(TimeSpan time, Location loc){
 		//!!!!
-		return false;
+		if(hasOverlaps(time, loc))
+			return false;
+		return true;
 	}
 }
