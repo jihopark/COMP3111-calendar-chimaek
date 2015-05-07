@@ -33,6 +33,7 @@ public class AvailableTimeSlot_TextWindow extends JFrame implements ActionListen
 	private Container contentPane;
 	private JButton pendingButton;
 	private JButton declineButton;
+	private JButton okButton;
 	private User _currentUser;
 	private TimeSpan _selectedTimeSlot;
 	private ArrayList<TimeSpan> _voteTimeSpan;
@@ -163,8 +164,7 @@ public class AvailableTimeSlot_TextWindow extends JFrame implements ActionListen
     				TimeSpan returnTimeSpan = new TimeSpan(startTime, endTime);
     				_voteTimeSpan.add(returnTimeSpan);
     				System.out.println(tempVoteDate);
-    				InviteController.getInstance().setVoteResponse(_currentUser, groupAppt , true, _voteTimeSpan);
-    				dispose();
+    				temp.setEnabled(false);
     			}
     		});
     		
@@ -181,10 +181,18 @@ public class AvailableTimeSlot_TextWindow extends JFrame implements ActionListen
 				dispose();
 			}
 		});
+		okButton = new JButton("Ok");
+		okButton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				InviteController.getInstance().setVoteResponse(_currentUser, groupAppt , true, _voteTimeSpan);
+				dispose();
+			}
+		});
 		
 		JPanel buttonPanel = new JPanel();
 		buttonPanel.setLayout(new FlowLayout());
 		buttonPanel.add(declineButton);
+		buttonPanel.add(okButton);
 		buttonPanel.add(pendingButton);
 		
 		mainPanel.add(buttonPanel);
