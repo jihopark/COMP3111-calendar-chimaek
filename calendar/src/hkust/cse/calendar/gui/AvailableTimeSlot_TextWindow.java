@@ -95,6 +95,7 @@ public class AvailableTimeSlot_TextWindow extends JFrame implements ActionListen
     
     public AvailableTimeSlot_TextWindow(final GroupAppt groupAppt) {
     	_currentUser = UserController.getInstance().getCurrentUser();
+    	groupAppt.addAttendant(groupAppt.getOwner());
     	ArrayList<TimeSpan> slotList = groupAppt.getvoteTimeList();
     	_voteTimeSpan = new ArrayList<TimeSpan>();
 		JPanel mainPanel = new JPanel();
@@ -185,6 +186,7 @@ public class AvailableTimeSlot_TextWindow extends JFrame implements ActionListen
 		okButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				InviteController.getInstance().setVoteResponse(_currentUser, groupAppt , true, _voteTimeSpan);
+				System.out.println(_voteTimeSpan);
 				dispose();
 			}
 		});

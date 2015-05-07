@@ -1,6 +1,8 @@
 package hkust.cse.calendar.invite;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.LinkedList;
 
 import hkust.cse.calendar.apptstorage.ApptController;
@@ -121,8 +123,18 @@ public class InviteController {
 			gAppt.removeWaiting(user.getID());
 			ArrayList<TimeSpan>tempList = new ArrayList<TimeSpan> ();
 			tempList = selectedTimeSlotList;
+			Collections.sort(tempList, new Comparator<TimeSpan>() {
+
+				@Override
+				public int compare(TimeSpan o1, TimeSpan o2) {
+					return o1.compareTo(o2);
+				}
+				
+			});
+			System.out.println(tempList);
 			gAppt.setvoteTimeList(tempList);
 			if(gAppt.checkAllConfirmed()){		//check if all attendees accepted.
+				gAppt.setTimeSpan(tempList.get(0));
 				setConfirmedGroupAppt(gAppt);
 			}
 		}
@@ -135,6 +147,7 @@ public class InviteController {
 	private void setConfirmedGroupAppt(GroupAppt gAppt){
 		mInviteStorage.removeGroupAppt(gAppt);
 		Notification notification = gAppt.getNotification();
+		//gAppt.addAttendant(gAppt.getOwner());
 		for(String attendee : gAppt.getAttendList()){
 			User attendingUser = UserController.getInstance().getUser(attendee);
 			GroupAppt tempGroupAppt = new GroupAppt(gAppt);

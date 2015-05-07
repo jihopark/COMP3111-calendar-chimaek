@@ -102,4 +102,15 @@ public class TimeSpan implements Serializable {
 				TimeController.getInstance().getMinuteFrom(newEnd), 
 				TimeController.getInstance().getSecondFrom(newEnd)));
 	}
+	
+	public int compareTo(TimeSpan thatTimeSpan) {
+	    Timestamp thatStartTime = thatTimeSpan.StartTime();
+	    if(this.StartTime().after(thatStartTime)) {
+	    	return 1;
+	    } else if(this.StartTime().before(thatStartTime)) {
+	    	return -1;
+	    } else {
+	    	return 0;
+	    }
+	}
 }
