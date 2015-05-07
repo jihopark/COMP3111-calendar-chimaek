@@ -66,4 +66,4 @@ state changes in the appt storage related to daily view and monthly view, the GU
 
 ## Class Diagram
 
-
+![Observer Diagram](observer_diagram.png)
