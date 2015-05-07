@@ -840,7 +840,7 @@ public class CalGrid extends JFrame implements ActionListener {
 		LinkedList<GroupAppt> voteGroupAppt = InviteController.getInstance().checkIfUserHasVote(mCurrUser);
 		if(voteGroupAppt != null){
 			for(GroupAppt gAppt: voteGroupAppt){
-				AvailableTimeSlot_TextWindow availableTimeSlot= new AvailableTimeSlot_TextWindow(gAppt.getvoteTimeList());
+				AvailableTimeSlot_TextWindow availableTimeSlot= new AvailableTimeSlot_TextWindow(gAppt);
 				//VotePopUpDialog newVote = new VotePopUpDialog(gAppt,this);
 				System.out.println("You have vote!");
 			}
@@ -850,11 +850,6 @@ public class CalGrid extends JFrame implements ActionListener {
 	private void checkAndShowAnyDeleteRequest(){
 		List<DeleteRequest> deleteRequests = UserController.getInstance().getDeleteRequests(mCurrUser);
 		System.out.println("CalGrid/checkAndShowAnyDeleteRequest " + deleteRequests);
-		/*delete Request 있는거 다 받음다음에 pop 창 띄우기 invite user처럼 (삭제하려는 유저 = request.getDeleteUser())
-		 * accept라면 UserController.getInstance().respondToDeleteRequest(true, request)
-		 * decline 이면 UserController.getInstance().respondToDeleteRequest(false, request)
-		 * 하면 알아서 컨트롤러가 다 처리해줌
-		 * */
 		for(DeleteRequest a: deleteRequests){
 			DeleteUserPopUpDialog dialog = new DeleteUserPopUpDialog(a,this);
 		}
@@ -864,10 +859,7 @@ public class CalGrid extends JFrame implements ActionListener {
 	private void checkAndShowAnyModifyNotification(){
 		List<ModifyNotification> modifyNotis = UserController.getInstance().getModifyNotifications(mCurrUser);
 		System.out.println("CalGrid/checkAndShowAnyModifyNotification " + modifyNotis);
-		/*
-		 * Modify Notification 있으면 alert 창 띄우기. getAdminUser해서 어떤 admin user가 수정했는지 보여주기
-		 * 창 띄우고 나서 remove할 것.
-		 * */
+
 		for(ModifyNotification n: modifyNotis){
 			ModifyUserPopUpDialog dialog = new ModifyUserPopUpDialog(n,this);
 			UserController.getInstance().removeModifyNotification(n);
