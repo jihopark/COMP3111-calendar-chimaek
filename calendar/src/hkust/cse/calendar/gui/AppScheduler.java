@@ -1279,11 +1279,14 @@ ComponentListener {
 		{
 			notificationEnableBox.setSelected(true);
 			notificationHourField.setText(Integer.toString(currentAppt.getNotification().getHoursBefore()));
-			notificationHourField.setEnabled(true);
+			notificationHourField.setEditable(true);
 			notificationMinuteField.setText(Integer.toString(currentAppt.getNotification().getMinutesBefore()));
-			notificationMinuteField.setEnabled(true);
+			notificationMinuteField.setEditable(true);
 		}
 		
+		if(currentAppt.getisPublic()){
+			setPublicCheckBox.setSelected(true);
+		}
 		titleField.setText(currentAppt.getTitle());
 		detailArea.setText(currentAppt.getInfo());	
 	}
