@@ -170,5 +170,6 @@ public class GroupAppt extends Appt {
 		mTitle = gAppt.getTitle();
 		mInfo= gAppt.getInfo();
 		location_id = gAppt.getLocationID();
+		isPublic = gAppt.getisPublic();
 	}
 }

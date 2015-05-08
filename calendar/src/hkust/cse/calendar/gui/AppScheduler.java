@@ -1080,6 +1080,8 @@ ComponentListener {
 		currentAppt.setInfo(detailArea.getText());
 		if(setPublicCheckBox.isSelected()){
 			currentAppt.setIsPublic(true);
+		}else{
+			currentAppt.setIsPublic(false);
 		}
 
 		//SAVE LOCATION
