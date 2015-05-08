@@ -85,7 +85,7 @@ public class LoginDialog extends JFrame implements ActionListener
 		JPanel butPanel = new JPanel();
 		butPanel.setLayout(new FlowLayout(FlowLayout.RIGHT));
 
-		button = new JButton("Log in (Use Default User)");
+		button = new JButton("Log in");
 		button.addActionListener(this);
 		butPanel.add(button);
 		
