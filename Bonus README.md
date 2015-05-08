@@ -5,3 +5,5 @@ The frequency of appointments is shown in a form of circle - thus the radius of 
 By this feature, we can see which day the user is busy and can compare among users. This will help user to see which day is overloaded and distribute his appointments accordingly.
 
 We used Graphic 2D library in Java Swing to implement this feature.  
+
+![Bonus GUI PNG](BonusGUI.png)
