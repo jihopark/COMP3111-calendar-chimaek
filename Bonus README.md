@@ -6,4 +6,6 @@ By this feature, we can see which day the user is busy and can compare among use
 
 We used Graphic 2D library in Java Swing to implement this feature.  
 
+We have brainstormed the idea and architecture together, and the implementation is done by Jihyok Kim.
+
 ![Bonus GUI PNG](BonusGUI.png)
