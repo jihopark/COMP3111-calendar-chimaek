@@ -506,9 +506,8 @@ public class ApptController {
 		}
 	}
 
-	public boolean canUseLocation(TimeSpan time, Location loc){
-		if(mApptStorage.hasOverlaps(time, loc))
-			return false;
-		return true;
+	public boolean hasOverlapsInLocation(TimeSpan t, Location loc){
+		return mApptStorage.hasOverlapsInLocation(t, loc);
 	}
+	
 }
