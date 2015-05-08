@@ -83,7 +83,7 @@ public class LoginDialog extends JFrame implements ActionListener
 		contentPane.add("North", top);
 		
 		JPanel butPanel = new JPanel();
-		butPanel.setLayout(new FlowLayout(FlowLayout.RIGHT));
+		butPanel.setLayout(new FlowLayout(FlowLayout.CENTER));
 
 		button = new JButton("Log in");
 		button.addActionListener(this);
