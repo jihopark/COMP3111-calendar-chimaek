@@ -136,11 +136,17 @@ public class InviteController {
 			System.out.println(tempList);
 			gAppt.setvoteTimeList(tempList);
 			if(gAppt.checkAllConfirmed()){		//check if all attendees accepted.
-
-				gAppt.setTimeSpan(tempList.get(0));
-				/*if(!ApptController.getInstance().canUseLocation(gAppt.getTimeSpan(), gAppt.getLocation())){
-					return false;
-				}*/
+				TimeSpan tempSpan = new TimeSpan(tempList.get(0).StartTime(), tempList.get(0).EndTime());
+				int z=1;
+				while(z<tempList.size()){
+					System.out.println("iteration: "+tempList.get(z));
+					if(tempSpan.EndTime().getTime()/1000 == tempList.get(z).StartTime().getTime()/1000){
+						tempSpan.EndTime(tempList.get(z).EndTime());
+						System.out.println("Modified TimeSpan: "+ tempSpan);
+					}
+					z++;
+				}
+				gAppt.setTimeSpan(tempSpan);
 				setConfirmedGroupAppt(gAppt);
 			}
 		}
