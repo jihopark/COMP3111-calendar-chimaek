@@ -178,7 +178,8 @@ public class ApptController {
 		
 		//check if it is group appt
 		
-		if (!TimeController.getInstance().isNotPast(appt) || mApptStorage.checkOverlaps(user, appt)){
+		if (!TimeController.getInstance().isNotPast(appt) || mApptStorage.checkOverlaps(user, appt)
+				|| mApptStorage.hasOverlapsInLocation(appt, appt.TimeSpan(), appt.getLocation())){
 			rollback();
 			return false;
 		}
