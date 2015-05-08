@@ -99,6 +99,12 @@ public class LocationController {
 		}
 	}
 	
+	public boolean checkValidCapacity(int capacity){
+		if(capacity < 1){
+			return false;
+		}
+		return true;
+	}
 
 	public void updateDiskStorage(){
 		if (mLocationStorage instanceof JsonStorable)
