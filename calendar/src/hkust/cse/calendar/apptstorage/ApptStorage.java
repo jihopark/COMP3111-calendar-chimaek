@@ -56,7 +56,7 @@ public class ApptStorage implements JsonStorable {
 			return false;
 		for (Appt a : getAllAppts(user)){
 			if (!a.equals(appt) && a.TimeSpan().Overlap(appt.TimeSpan())){
-				System.out.println("\nApptStorage/checkOverlaps: Overlaps!" + appt.toString() + " " + appt.TimeSpan());
+				System.out.println("\nApptStorage/checkOverlaps: Overlaps! ");
 				return true;
 			}
 		}

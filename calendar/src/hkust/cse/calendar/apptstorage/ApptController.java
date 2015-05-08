@@ -205,8 +205,14 @@ public class ApptController {
 			
 			//Get the group appt to be modified from each user.
 			User attendee = UserController.getInstance().getUser(attendeeString);
-			List<Appt> listContainingGroupApptToBeModified = ApptController.getInstance().RetrieveApptsInList(attendee,
+			List<Appt> listContainingGroupApptToBeModified;
+			if(attendee == UserController.getInstance().getUser(gAppt.getOwner())){
+				listContainingGroupApptToBeModified = ApptController.getInstance().RetrieveApptsInList(attendee,
+						timeSpanBeforeModified);
+			}else{
+				listContainingGroupApptToBeModified = ApptController.getInstance().RetrieveApptsInList(attendee,
 					timeSpanBeforeModified);
+			}
 			GroupAppt eachUserGroupAppt;
 			if(listContainingGroupApptToBeModified.size() <= 1 && listContainingGroupApptToBeModified.size() != 0){
 				eachUserGroupAppt = (GroupAppt)listContainingGroupApptToBeModified.get(0);
@@ -321,18 +327,16 @@ public class ApptController {
 			else{
 				listContainingApptToBeModified= ApptController.getInstance().RetrieveApptsInList(attendee,
 					timeSpanBeforeModify);
-			}
-			GroupAppt eachUserGroupAppt;
+			} 
+			Appt eachUserGroupAppt;
 			if(!listContainingApptToBeModified.isEmpty()){
-				eachUserGroupAppt = (GroupAppt)listContainingApptToBeModified.get(0);
+				
+				eachUserGroupAppt = listContainingApptToBeModified.get(0);
 				tempTimeSpan = eachUserGroupAppt.getTimeSpan();
-				System.out.println("CURRENT TIME SPAN: " + tempTimeSpan);
 				eachUserGroupAppt.setTimeSpan(timeSpanAfterModify);		//change time span just for checking purpose.
-				System.out.println("CHANGED TIME SPAN: " + eachUserGroupAppt.TimeSpan());
 				boolean temp = mApptStorage.checkOverlaps(attendee, eachUserGroupAppt);
-				System.out.println("TEMP: " + temp);
 				eachUserGroupAppt.setTimeSpan(tempTimeSpan);	//set the time span back to orignal.
-				System.out.println("RETURNED TIME SPAN: " + eachUserGroupAppt.TimeSpan());
+				
 				if(temp){	//if overlaps.
 					return true;
 				}
