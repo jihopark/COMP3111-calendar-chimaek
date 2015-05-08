@@ -456,13 +456,13 @@ public class ApptController {
 			//System.out.println("ApptController/getSchedualableTimeSpan Iterating user " + user.toString());
 			for (Appt appt : mApptStorage.RetrieveApptsInList(user, oneDay)){
 				TimeSpan slot = timeSlots.get(0);
-				for (Iterator<TimeSpan> it = timeSlots.iterator();; 
-						slot = it.next()){
+				Iterator<TimeSpan> it = timeSlots.iterator();
+				while (true){
+					slot = it.next();
 					if (appt.getTimeSpan().Overlap(slot)){
-						//System.out.println("ApptController/getSchedualableTimeSpan Removed " + slot);
 						System.out.println("Appt TimeSpan: "+ appt.getTimeSpan().OnlyTimetoString());
 						System.out.println("Slot TimeSpan: "+slot.OnlyTimetoString());
-						it.remove();						
+						it.remove();
 					}
 					if (!it.hasNext()) break;
 				}
