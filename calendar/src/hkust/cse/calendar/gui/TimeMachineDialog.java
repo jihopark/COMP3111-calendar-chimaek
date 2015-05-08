@@ -149,8 +149,13 @@ public class TimeMachineDialog extends JFrame implements ActionListener
 		if(text.equals("")) {
 			return true;
 		} else {
-			return false;
+			int temp = Utility.getNumber(text);
+			if(temp == -1) {
+				return true;
+			}
+			//System.out.println(temp);
 		}
+		return false;
 	}
 
 }

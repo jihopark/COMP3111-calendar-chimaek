@@ -21,6 +21,7 @@ import java.awt.geom.Ellipse2D;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
 import javax.swing.DefaultListModel;
 import javax.swing.JButton;
@@ -29,6 +30,7 @@ import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
+import javax.swing.SwingConstants;
 
 public class WeeklyDataVisualizationDialog extends JFrame implements ActionListener {
 	private Container contentPane;
@@ -36,6 +38,15 @@ public class WeeklyDataVisualizationDialog extends JFrame implements ActionListe
 	private JButton okButton;
 	private JPanel gridPanel;
 	private JPanel bottomPanel;
+	
+	private JLabel sunday;
+	private JLabel monday;
+	private JLabel tuesday;
+	private JLabel wednesday;
+	private JLabel thursday;
+	private JLabel friday;
+	private JLabel saturday;
+	
 	private CircleComponent component;
 	
 	private List<User> users;
@@ -61,20 +72,60 @@ public class WeeklyDataVisualizationDialog extends JFrame implements ActionListe
 		gridPanel.setAlignmentY(CENTER_ALIGNMENT);
 		gridPanel.setAlignmentX(CENTER_ALIGNMENT);
 		gridPanel.setLayout(new GridLayout(lines + 1, length, 5,5));
+		//gridPanel.setBorder(BorderFactory.createEmptyBorder(0,0,0,0));
 		gridPanel.add(new JLabel(" "));
-		gridPanel.add(new JLabel("Sunday"));
-		gridPanel.add(new JLabel("Monday"));
-		gridPanel.add(new JLabel("Tuesday"));
-		gridPanel.add(new JLabel("Wednesday"));
-		gridPanel.add(new JLabel("Thursday"));
-		gridPanel.add(new JLabel("Friday"));
-		gridPanel.add(new JLabel("Saturday"));
+		
+		sunday = new JLabel("Sunday");
+		//sunday.setBorder(BorderFactory.createLineBorder(Color.BLACK));
+		sunday.setHorizontalAlignment(SwingConstants.LEFT);
+		sunday.setVerticalAlignment(SwingConstants.CENTER);
+		gridPanel.add(sunday);
+		
+		monday = new JLabel("monday");
+		//monday.setBorder(BorderFactory.createLineBorder(Color.BLACK));
+		monday.setHorizontalAlignment(SwingConstants.LEFT);
+		monday.setVerticalAlignment(SwingConstants.CENTER);
+		gridPanel.add(monday);
+		
+		tuesday = new JLabel("Tuesday");
+		//tuesday.setBorder(BorderFactory.createLineBorder(Color.BLACK));
+		tuesday.setHorizontalAlignment(SwingConstants.LEFT);
+		tuesday.setVerticalAlignment(SwingConstants.CENTER);
+		gridPanel.add(tuesday);
+		
+		wednesday = new JLabel("Wednesday");
+		//wednesday.setBorder(BorderFactory.createLineBorder(Color.BLACK));
+		wednesday.setHorizontalAlignment(SwingConstants.LEFT);
+		wednesday.setVerticalAlignment(SwingConstants.CENTER);
+		gridPanel.add(wednesday);
+		
+		thursday = new JLabel("Thursday");
+		//thursday.setBorder(BorderFactory.createLineBorder(Color.BLACK));
+		thursday.setHorizontalAlignment(SwingConstants.LEFT);
+		thursday.setVerticalAlignment(SwingConstants.CENTER);
+		gridPanel.add(thursday);
+		
+		friday = new JLabel("Friday");
+		//friday.setBorder(BorderFactory.createLineBorder(Color.BLACK));
+		friday.setHorizontalAlignment(SwingConstants.LEFT);
+		friday.setVerticalAlignment(SwingConstants.CENTER);
+		gridPanel.add(friday);
+		
+		saturday = new JLabel("Saturday");
+		//saturday.setBorder(BorderFactory.createLineBorder(Color.BLACK));
+		saturday.setHorizontalAlignment(SwingConstants.LEFT);
+		saturday.setVerticalAlignment(SwingConstants.CENTER);
+		gridPanel.add(saturday);
+		
+	
 		
 		
 		for(int i =0; i < lines; i++) {
 			JLabel userName = new JLabel(users.get(i).toString());
-			userName.setAlignmentY(CENTER_ALIGNMENT);
-			userName.setAlignmentX(CENTER_ALIGNMENT);
+			//userName.setBorder(BorderFactory.createLineBorder(Color.BLACK));
+			userName.setHorizontalAlignment(SwingConstants.CENTER);
+			userName.setVerticalAlignment(SwingConstants.TOP);
+			//userName.setHorizontalAlignment(SwingConstants.NORTH);
 			usersAppts = ApptController.getInstance().RetrieveApptsInList(users.get(i));
 			gridPanel.add(userName);
 			for(int j = 0; j<7;j++) {
@@ -109,8 +160,11 @@ public class WeeklyDataVisualizationDialog extends JFrame implements ActionListe
 				} else {
 					component = new CircleComponent(5 + 35*radius[j]/totalNumberAppt);
 				}
-				component.setLocation(20, 20);
+				
+				component.setLocation(80, 80);
 				component.setSize(component.getPreferredSize());
+				//component.setBorder(BorderFactory.createLineBorder(Color.BLACK));
+				//component.setHorizontalAlignment(SwingConstants.CENTER);
 				gridPanel.add(component);
 				gridPanel.repaint();
 				
