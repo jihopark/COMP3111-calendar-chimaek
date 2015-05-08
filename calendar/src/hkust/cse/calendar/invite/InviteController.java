@@ -137,9 +137,9 @@ public class InviteController {
 			gAppt.setvoteTimeList(tempList);
 			if(gAppt.checkAllConfirmed()){		//check if all attendees accepted.
 				gAppt.setTimeSpan(tempList.get(0));
-				if(!ApptController.getInstance().canUseLocation(gAppt.getTimeSpan(), gAppt.getLocation())){
+				/*if(!ApptController.getInstance().canUseLocation(gAppt.getTimeSpan(), gAppt.getLocation())){
 					return false;
-				}
+				}*/
 				setConfirmedGroupAppt(gAppt);
 			}
 		}

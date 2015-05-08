@@ -69,7 +69,11 @@ public class ApptStorage implements JsonStorable {
 		return false;
 	}
 	
-	public boolean hasOverlaps(TimeSpan t, Location loc){
+	public boolean hasOverlapsInLocation(TimeSpan t, Location loc){
+		
+		if (loc.getID() == 0)
+			return false;
+		
 		if(loc.getAppointmentCount()!=0){
 			LinkedList<User> users = new LinkedList<User>();
 			users=(LinkedList<User>) UserController.getInstance().getUserList();
@@ -78,8 +82,10 @@ public class ApptStorage implements JsonStorable {
 				for(User u : users)
 				{
 					for(Appt a : getAllAppts(u)){
-						if(a.getLocation().equals(loc) && a.TimeSpan().Overlap(t))
+						if(a.getLocation().getID()==loc.getID() && a.TimeSpan().Overlap(t)){
+							System.out.println("ApptStorage/hasOverlapsInLocation Location Overlaps");
 							return true;
+						}
 					}
 				}
 			}
@@ -99,7 +105,7 @@ public class ApptStorage implements JsonStorable {
 	
 	public boolean SaveAppt(User user, Appt appt) {
 		if (appt!=null && appt.isValid()){
-			if (!checkOverlaps(user, appt) && TimeController.getInstance().isNotPast(appt)){
+			if (!checkOverlaps(user, appt) && TimeController.getInstance().isNotPast(appt) && !hasOverlapsInLocation(appt.getTimeSpan(),appt.getLocation())){
 				if (appt instanceof GroupAppt){
 					if (mGroupAppts.get(user.toString())==null){
 						mGroupAppts.put(user.toString(), new LinkedList<GroupAppt>());
