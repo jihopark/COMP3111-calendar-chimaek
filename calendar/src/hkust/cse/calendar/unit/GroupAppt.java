@@ -34,11 +34,14 @@ public class GroupAppt extends Appt {
 		waiting = new LinkedList<String>(attendList);
 		waiting.remove(ownerID);
 		owner_id=ownerID;
+		isPublic = appt.getisPublic();
 		isVote=false;
 		
 	}
 	
-	public GroupAppt(int repeatType, TimeSpan timespan, String title, String info, int ApptID, int nextRepeatedApptID, int prevRepeatedApptID, int locationID, int notificationID, LinkedList<String> attendList, String ownerID){
+	public GroupAppt(int repeatType, TimeSpan timespan, String title, String info, int ApptID, 
+			int nextRepeatedApptID, int prevRepeatedApptID, int locationID, int notificationID, 
+			LinkedList<String> attendList, String ownerID, boolean isPublic){
 		
 		this.repeatType = repeatType;
 		this.mTimeSpan=timespan;					// Include day, start time and end time of the appointments
@@ -60,6 +63,7 @@ public class GroupAppt extends Appt {
 		this.waiting.remove(ownerID);
 		this.owner_id = ownerID;
 		this.isVote = false;
+		this.isPublic = isPublic;
 	}
 
 	public GroupAppt(GroupAppt gAppt){
@@ -70,9 +74,9 @@ public class GroupAppt extends Appt {
 		location_id = gAppt.getLocationID();
 		notification_id = gAppt.getNotificationID();
 		attend = new LinkedList<String>(gAppt.getAttendList());
-		waiting = new LinkedList<String>(gAppt.getAttendList());
-		waiting.remove(gAppt.getOwner());
+		waiting = new LinkedList<String>(gAppt.getWaitingList());
 		owner_id=gAppt.getOwner();
+		isPublic = gAppt.getisPublic();
 		isVote = false;
 	}
 	
@@ -87,7 +91,7 @@ public class GroupAppt extends Appt {
 		waiting = new LinkedList<String>(attendList);
 		waiting.remove(ownerID);
 		owner_id=ownerID;
-		
+		isPublic = appt.getisPublic();
 		isVote=true;
 		voteTimeList = timeList;
 	}

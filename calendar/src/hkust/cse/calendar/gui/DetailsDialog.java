@@ -118,6 +118,13 @@ public class DetailsDialog extends JFrame implements ActionListener {
 		{
 			area.append("Notifications at: -");
 		}
+		
+		if(appt.getisPublic()){
+			area.append("\nisPublic: YES");
+		}
+		else{
+			area.append("\nisPublic: NO");
+		}
 		if (appt instanceof GroupAppt){
 			area.append("\nParticipants:\n");
 			area.append("  Owner:");
