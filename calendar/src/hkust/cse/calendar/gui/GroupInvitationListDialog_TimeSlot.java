@@ -217,12 +217,13 @@ public class GroupInvitationListDialog_TimeSlot extends JFrame implements Action
 			d1 = TimeController.dateInputToDate(validDate1[0],validDate1[1], validDate1[2], 0,0,0);
 			d2 = TimeController.dateInputToDate(validDate2[0],validDate2[1], validDate2[2], 24,0,0);
 			
-			System.out.println("d2: "+d2.getTime());
-			System.out.println("d1: "+d1.getTime());
-			System.out.println("numDays = "+(d2.getTime()-d1.getTime())/(1000*60*60*24));
+			//System.out.println("d2: "+d2.getTime());
+			//System.out.println("d1: "+d1.getTime());
+			//System.out.println("numDays = "+(d2.getTime()-d1.getTime())/(1000*60*60*24));
 			
 			if(d2.getTime()<=d1.getTime()){
-				System.out.println("end date should be later than the start date");
+				JOptionPane.showMessageDialog(this, "End date should be later than the start date!",
+						"Input Error", JOptionPane.ERROR_MESSAGE);
 				return;
 			}
 			dateList.add(d1);
@@ -304,7 +305,7 @@ public class GroupInvitationListDialog_TimeSlot extends JFrame implements Action
 					JOptionPane.ERROR_MESSAGE);
 			return null;
 		}
-		System.out.println(year.getText()+" "+month.getText()+" "+day.getText());
+		//System.out.println(year.getText()+" "+month.getText()+" "+day.getText());
 		return date;
 	}
 	

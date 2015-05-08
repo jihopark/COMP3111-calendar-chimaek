@@ -738,6 +738,8 @@ ComponentListener {
 		}
 		else if(!checkValidTimeSlot(d1, inviteeList1, dateList1)){
 			System.out.println("Not a valid timeslot");
+			JOptionPane.showMessageDialog(this, "Not a valid timeslot",
+					"Input Error", JOptionPane.ERROR_MESSAGE);
 			return;
 		}
 		else if(checkGroupEventConditions()){
@@ -799,14 +801,20 @@ ComponentListener {
     	TimeSpan tempSpan = new TimeSpan(d.StartTime(), d.EndTime());
     	for(int i =0; i<dateList.size(); i++) {
 			slotList = ApptController.getInstance().getSchedulableTimeSpan(inviteeList, dateList.get(i));
-
+			
 			for(int j=0; j<slotList.size();j++){
 				if(slotList.get(j).Overlap(tempSpan)){
-					if(slotList.get(j).TimeLength()<tempSpan.TimeLength()){
+					//System.out.println("YO "+tempSpan.OnlyTimetoString());
+					//System.out.println("tempSpan Length: "+ tempSpan.TimeLength()/1000);
+					//System.out.println("slotList Length: "+ slotList.get(j).TimeLength()/1000);
+					//System.out.println();
+					if(slotList.get(j).TimeLength()/1000<tempSpan.TimeLength()/1000){
 						tempSpan.StartTime(slotList.get(j).StartTime());
 					}
-					if(slotList.get(j).TimeLength()==tempSpan.TimeLength())
+					if(slotList.get(j).TimeLength()/1000>=tempSpan.TimeLength()/1000){
+						//System.out.println("===END===");
 						return true;
+					}
 				}
 			}
     	}
