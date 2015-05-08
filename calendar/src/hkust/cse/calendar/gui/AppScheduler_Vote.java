@@ -271,7 +271,7 @@ ComponentListener {
 				inviteeList.add(UserController.getInstance().getUser(rightListModel.get(i).toString()).getID());
 				attendList.add(UserController.getInstance().getUser(rightListModel.get(i).toString()));
 			}
-			attendList.add(UserController.getInstance().getCurrentUser());
+			//attendList.add(UserController.getInstance().getCurrentUser());
 			
 			ArrayList<Date> dateList = new ArrayList<Date>();
 		
