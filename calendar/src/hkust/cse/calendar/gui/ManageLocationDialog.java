@@ -38,6 +38,8 @@ public class ManageLocationDialog extends JPanel
         	public void mouseClicked(MouseEvent e) {
         		if(e.getClickCount() == 2 ) {
         			Location selectedItem = (Location) displayList.getSelectedValue();
+                    System.out.println("Location ApptCount: "+selectedItem.getName()+": "+LocationController.getInstance().getLocationApptCount(selectedItem));
+
         			if(selectedItem.getCapacity() < 2){
                         capacityLabel.setText("This facility is not a group facility");
         			} else {
@@ -107,6 +109,7 @@ public class ManageLocationDialog extends JPanel
             //so go ahead and remove whatever's selected.
             int index = displayList.getSelectedIndex();
         	//System.out.println(retrievedLocationList.getElementAt(index).getName()+": "+retrievedLocationList.getElementAt(index).getAppointmentCount());
+
             
             if(!retrievedLocationList.getElementAt(index).getName().equals("-")) {
             	if(LocationController.getInstance().canDeleteLocation(retrievedLocationList.getElementAt(index))) {

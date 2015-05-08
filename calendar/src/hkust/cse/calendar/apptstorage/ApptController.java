@@ -452,6 +452,8 @@ public class ApptController {
 						slot = it.next()){
 					if (appt.getTimeSpan().Overlap(slot)){
 						//System.out.println("ApptController/getSchedualableTimeSpan Removed " + slot);
+						System.out.println("Appt TimeSpan: "+ appt.getTimeSpan().OnlyTimetoString());
+						System.out.println("Slot TimeSpan: "+slot.OnlyTimetoString());
 						it.remove();						
 					}
 					if (!it.hasNext()) break;
