@@ -352,6 +352,7 @@ public class ApptController {
 		start.setRepeatType(appt.getRepeatType());
 		
 		shouldSave = false;
+		NotificationController.getInstance().setShouldSave(false);
 		//Remove Appts First
 		removeAppt(user, appt);
 		
@@ -363,8 +364,15 @@ public class ApptController {
 		else
 			tmp = saveRepeatedNewAppt(user, start, repeatEndDate);
 		shouldSave = true;
-		if (!tmp) rollback();
-		else updateDiskStorage();
+		NotificationController.getInstance().setShouldSave(true);
+		if (!tmp){
+			rollback();
+			NotificationController.getInstance().rollback();
+		}
+		else {
+			updateDiskStorage();
+			NotificationController.getInstance().updateDiskStorage();
+		}
 		
 		return tmp;
 	}
@@ -452,12 +460,6 @@ public class ApptController {
 		//System.out.println("ApptController/getSchedualableTimeSpan Removed " + timeSlots);
 		return timeSlots;
 	}
-	
-	
-	private void updateDiskStorage(){
-		if (mApptStorage instanceof JsonStorable && shouldSave)
-			((JsonStorable) mApptStorage).saveToJson();
-	}
 
 	public boolean setNotificationForAppt(Appt appt, User user, int notificationHoursBefore, int notificationMinutesBefore)
 	{
@@ -484,13 +486,14 @@ public class ApptController {
 		return UserController.getInstance().getCurrentUser();
 	}
 	
-	public void createNewGroupAppt(){
-		//create new group appt
-	}
-	
 	/*
 	 * Load ApptStorageMemory Again back from Disk
 	 * */
+	
+	public void updateDiskStorage(){
+		if (mApptStorage instanceof JsonStorable && shouldSave)
+			((JsonStorable) mApptStorage).saveToJson();
+	}
 	
 	public void rollback(){
 		if (mApptStorage instanceof JsonStorable){

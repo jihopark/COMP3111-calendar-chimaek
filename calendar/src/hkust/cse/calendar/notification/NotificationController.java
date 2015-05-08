@@ -1,5 +1,6 @@
 package hkust.cse.calendar.notification;
 
+import hkust.cse.calendar.apptstorage.ApptStorage;
 import hkust.cse.calendar.diskstorage.JsonStorable;
 import hkust.cse.calendar.unit.Notification;
 import hkust.cse.calendar.unit.User;
@@ -14,6 +15,8 @@ public class NotificationController {
 		
 		//Notification Storage
 		private static NotificationStorage mNotificationStorage = null;
+		
+		private static boolean shouldSave = true; 
 		
 		//Empty Constructor with getInstasnce
 		public NotificationController() {
@@ -30,17 +33,16 @@ public class NotificationController {
 		public boolean initNotificationStorage(NotificationStorage storage){
 			if (mNotificationStorage == null){
 				mNotificationStorage = storage;
-				if (mNotificationStorage instanceof JsonStorable){
-					mNotificationStorage = (NotificationStorage) ((JsonStorable)mNotificationStorage).loadFromJson();
-					if (mNotificationStorage == null) mNotificationStorage = storage; 
-				}
-					
+				rollback();
 				return true;
 			}
 			return false;
 		}
 		
-		
+		public void setShouldSave(boolean b){
+			shouldSave = b;
+		}
+	
 		//Retrieve
 		public Notification retrieveNotification(int notificationID) {
 			return mNotificationStorage.RetrieveNotification(notificationID);
@@ -64,6 +66,10 @@ public class NotificationController {
 		
 		public NotificationTime retrieveNotificationTime(Notification notification){
 			return mNotificationStorage.RetrieveNotificationTime(notification);
+		}
+		
+		public Notification getNotificationByID(int id){
+			return mNotificationStorage.RetrieveNotification(id);
 		}
 		
 		//Update
@@ -93,17 +99,21 @@ public class NotificationController {
 			return temp;
 		}
 		
-		public Notification getNotificationByID(int id){
-			return mNotificationStorage.RetrieveNotification(id);
-		}
-		
 		public void setDelivered(Notification noti){
 			noti.hasDelivered();
 			updateDiskStorage();
 		}
 		
-		private void updateDiskStorage(){
-			if (mNotificationStorage instanceof JsonStorable)
+		public void updateDiskStorage(){
+			if (mNotificationStorage instanceof JsonStorable && shouldSave)
 				((JsonStorable) mNotificationStorage).saveToJson();
 		}
+		
+		public void rollback() {
+			if (mNotificationStorage instanceof JsonStorable){
+				NotificationStorage tmp = (NotificationStorage) ((JsonStorable)mNotificationStorage).loadFromJson();
+				if (tmp != null) mNotificationStorage = tmp; 
+			}
+		}
+
 }

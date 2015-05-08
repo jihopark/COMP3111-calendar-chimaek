@@ -686,8 +686,7 @@ ComponentListener {
 					//CHECK TIME CLASH WITH MODIFIED TIMESPAN.
 					boolean TIMECLASH = ApptController.getInstance().checkOverlapsForGroupAppt(
 							modifiedGroupAppt.getAttendList(),timeSpanBeforeModify,modifiedGroupAppt.TimeSpan());
-							
-					System.out.println("TIMECLASH: " + TIMECLASH);
+						
 					//IF TIMECLASH
 					if(TIMECLASH){
 						JOptionPane.showMessageDialog(this, "Failed to change group event!");
@@ -712,8 +711,6 @@ ComponentListener {
 					//CHECK TIME CLASH WITH MODIFIED TIMESPAN.
 					boolean TIMECLASH = ApptController.getInstance().checkOverlapsForGroupAppt(
 							modifiedGroupAppt.getAttendList(), timeSpanBeforeModify, modifiedGroupAppt.TimeSpan());
-							
-					System.out.println("TIMECLASH: " + TIMECLASH);
 					
 					//IF TIMECLASH
 					if(TIMECLASH){

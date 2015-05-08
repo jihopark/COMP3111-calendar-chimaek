@@ -108,8 +108,6 @@ public class ManageLocationDialog extends JPanel
             int index = displayList.getSelectedIndex();
         	//System.out.println(retrievedLocationList.getElementAt(index).getName()+": "+retrievedLocationList.getElementAt(index).getAppointmentCount());
             
-            
-            
             if(!retrievedLocationList.getElementAt(index).getName().equals("-")) {
             	if(LocationController.getInstance().canDeleteLocation(retrievedLocationList.getElementAt(index))) {
             		retrievedLocationList.remove(index);
