@@ -388,8 +388,10 @@ public class ApptController {
 			}
 			iterator = appt.getPreviousRepeatedAppt();
 			while (iterator!=null){
-				if (!TimeController.getInstance().isNotPast(iterator))
+				if (!TimeController.getInstance().isNotPast(iterator)){
+					iterator.setNextRepeatedAppt(null);
 					break;
+				}
 				System.out.println("ApptController/removeAppt Remove #" +iterator.getID());
 				mApptStorage.RemoveAppt(user, iterator);
 				iterator = iterator.getPreviousRepeatedAppt();
