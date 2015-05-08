@@ -172,4 +172,9 @@ public class GroupAppt extends Appt {
 		location_id = gAppt.getLocationID();
 		isPublic = gAppt.getisPublic();
 	}
+	
+	public boolean isSameAttendList(LinkedList<String> list){
+		return attend.equals(list);
+	}
+	
 }

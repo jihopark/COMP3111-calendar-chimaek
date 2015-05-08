@@ -305,15 +305,22 @@ public class ApptController {
 		return true;
 	}
 	
-	public boolean checkOverlapsForGroupAppt(List<String> attendList, TimeSpan timeSpanBeforeModify,
+	public boolean checkOverlapsForGroupAppt(GroupAppt gAppt, List<String> attendList, TimeSpan timeSpanBeforeModify,
 			TimeSpan timeSpanAfterModify){
 		
 		for(String userString: attendList){
 			System.out.println("CURRENT USER: " + userString);
 			TimeSpan tempTimeSpan;		//used to save original time span.
 			User attendee = UserController.getInstance().getUser(userString);
-			List<Appt> listContainingApptToBeModified = ApptController.getInstance().RetrieveApptsInList(attendee,
+			List<Appt> listContainingApptToBeModified;
+			if(attendee == UserController.getInstance().getUser(gAppt.getOwner())){
+				listContainingApptToBeModified= ApptController.getInstance().RetrieveApptsInList(attendee,
+						timeSpanAfterModify);
+			}
+			else{
+				listContainingApptToBeModified= ApptController.getInstance().RetrieveApptsInList(attendee,
 					timeSpanBeforeModify);
+			}
 			GroupAppt eachUserGroupAppt;
 			if(!listContainingApptToBeModified.isEmpty()){
 				eachUserGroupAppt = (GroupAppt)listContainingApptToBeModified.get(0);
@@ -506,8 +513,8 @@ public class ApptController {
 		}
 	}
 
-	public boolean hasOverlapsInLocation(TimeSpan t, Location loc){
-		return mApptStorage.hasOverlapsInLocation(t, loc);
+	public boolean hasOverlapsInLocation(Appt appt, TimeSpan t, Location loc){
+		return mApptStorage.hasOverlapsInLocation(appt, t, loc);
 	}
 	
 }

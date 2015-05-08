@@ -684,7 +684,7 @@ ComponentListener {
 					GroupAppt modifiedGroupAppt = (GroupAppt) currentAppt;
 		
 					//CHECK TIME CLASH WITH MODIFIED TIMESPAN.
-					boolean TIMECLASH = ApptController.getInstance().checkOverlapsForGroupAppt(
+					boolean TIMECLASH = ApptController.getInstance().checkOverlapsForGroupAppt(modifiedGroupAppt,
 							modifiedGroupAppt.getAttendList(),timeSpanBeforeModify,modifiedGroupAppt.TimeSpan());
 						
 					//IF TIMECLASH
@@ -709,7 +709,7 @@ ComponentListener {
 					GroupAppt modifiedGroupAppt = (GroupAppt) currentAppt;
 					
 					//CHECK TIME CLASH WITH MODIFIED TIMESPAN.
-					boolean TIMECLASH = ApptController.getInstance().checkOverlapsForGroupAppt(
+					boolean TIMECLASH = ApptController.getInstance().checkOverlapsForGroupAppt( modifiedGroupAppt,
 							modifiedGroupAppt.getAttendList(), timeSpanBeforeModify, modifiedGroupAppt.TimeSpan());
 					
 					//IF TIMECLASH
