@@ -1,5 +1,8 @@
 package hkust.cse.calendar.gui;
 
+import hkust.cse.calendar.unit.User;
+import hkust.cse.calendar.userstorage.UserController;
+
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
@@ -26,7 +29,7 @@ public class CircleComponent extends JPanel
        {
            return new Dimension(90,90);
        }
-
+       
        public void paintComponent(Graphics g)
        {  
     	   /**
@@ -35,7 +38,9 @@ public class CircleComponent extends JPanel
     	   }
     	   
     	   **/
+    	   
     	   int iForColor = (int) (Math.random() * 4);
+    	   
     	   
     	   
     	   super.paintComponent(g);
