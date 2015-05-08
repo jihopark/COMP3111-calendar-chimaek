@@ -3,6 +3,7 @@ package hkust.cse.calendar.apptstorage;
 import hkust.cse.calendar.diskstorage.FileManager;
 import hkust.cse.calendar.diskstorage.JsonStorable;
 import hkust.cse.calendar.invite.InviteController;
+import hkust.cse.calendar.locationstorage.LocationController;
 import hkust.cse.calendar.notification.NotificationController;
 import hkust.cse.calendar.time.TimeController;
 import hkust.cse.calendar.unit.Appt;
@@ -10,6 +11,7 @@ import hkust.cse.calendar.unit.GroupAppt;
 import hkust.cse.calendar.unit.Notification;
 import hkust.cse.calendar.unit.TimeSpan;
 import hkust.cse.calendar.unit.User;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -91,8 +93,9 @@ public class ApptStorage implements JsonStorable {
 				}
 				apptNumber++;
 				System.out.println("ApptStorage/SaveAppt : Saved Appt #"+appt.getID());
-				if(!appt.getLocation().getName().equals("-"))
-					appt.getLocation().increaseCountForLocation();
+				if(!appt.getLocation().getName().equals("-")){
+					LocationController.getInstance().increaseLocationCount(appt.getLocation());
+				}
 
 				return true;
 
@@ -200,7 +203,7 @@ public class ApptStorage implements JsonStorable {
 				apptNumber--;
 				System.out.println("ApptStorage/RemoveAppt : Removed Appt #"+appt.getID());
 				if(!a.getLocation().getName().equals("-"))
-					a.getLocation().decreaseCountForLocation();
+					LocationController.getInstance().decreaseLocationCount(a.getLocation());
 
 				removeNotification(user,a.getNotification());
 				return true;
