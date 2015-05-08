@@ -82,8 +82,8 @@ public class ApptStorage implements JsonStorable {
 				for(User u : users)
 				{
 					for(Appt a : getAllAppts(u)){
-						if(a.getLocation().getID()==loc.getID() && a.TimeSpan().Overlap(t)){
-							if (appt instanceof GroupAppt && a instanceof GroupAppt 
+						if(!appt.equals(a) && a.getLocation().getID()==loc.getID() && a.TimeSpan().Overlap(t)){
+							if 	(appt instanceof GroupAppt && a instanceof GroupAppt 
 									&& ((GroupAppt)appt).isSameAttendList(((GroupAppt)a).getAttendList())){
 								System.out.println("ApptStorage/hasOverlapsInLocation Same GroupAppt Not Overlap");
 							}
