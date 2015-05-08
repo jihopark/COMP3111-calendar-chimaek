@@ -439,12 +439,13 @@ public class ApptController {
 			//System.out.println("ApptController/getSchedualableTimeSpan Iterating user " + user.toString());
 			for (Appt appt : mApptStorage.RetrieveApptsInList(user, oneDay)){
 				TimeSpan slot = timeSlots.get(0);
-				for (Iterator<TimeSpan> it = timeSlots.iterator(); it.hasNext() ; 
+				for (Iterator<TimeSpan> it = timeSlots.iterator();; 
 						slot = it.next()){
 					if (appt.getTimeSpan().Overlap(slot)){
 						//System.out.println("ApptController/getSchedualableTimeSpan Removed " + slot);
 						it.remove();						
 					}
+					if (!it.hasNext()) break;
 				}
 			}
 		}
