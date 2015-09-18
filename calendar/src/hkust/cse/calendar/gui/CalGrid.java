@@ -2,12 +2,16 @@ package hkust.cse.calendar.gui;
 
 import hkust.cse.calendar.Main.CalendarMain;
 import hkust.cse.calendar.apptstorage.ApptController;
-import hkust.cse.calendar.apptstorage.ApptStorageMemory;
+import hkust.cse.calendar.invite.InviteController;
 import hkust.cse.calendar.notification.NotificationCheckThread;
 import hkust.cse.calendar.time.TimeController;
 import hkust.cse.calendar.unit.Appt;
+import hkust.cse.calendar.unit.DeleteRequest;
+import hkust.cse.calendar.unit.GroupAppt;
+import hkust.cse.calendar.unit.ModifyNotification;
 import hkust.cse.calendar.unit.TimeSpan;
 import hkust.cse.calendar.unit.User;
+import hkust.cse.calendar.userstorage.UserController;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
@@ -15,15 +19,16 @@ import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.sql.Timestamp;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
+import java.util.LinkedList;
 import java.util.List;
 
 import javax.swing.JComboBox;
@@ -68,8 +73,8 @@ public class CalGrid extends JFrame implements ActionListener {
 	private int currentCol;
 	private Date currentTime;
 	
-	private BasicArrowButton monthRightArrowButton;
-	private BasicArrowButton monthLeftArrowButton;
+	private BasicArrowButton yearRightArrowButton;
+	private BasicArrowButton yearLeftArrowButton;
 	private JLabel yearLabel;
 	private JComboBox monthComboBox;
 	private NotificationCheckThread notificationCheckThread = new NotificationCheckThread(this);
@@ -94,7 +99,8 @@ public class CalGrid extends JFrame implements ActionListener {
 	private SimpleAttributeSet sabImportantDays = null;
 	// private boolean isLogin = false;
 	private JMenu Appmenu = new JMenu("Appointment");
-	
+	private JMenu groupapptsubmenu;
+	private JMenuItem viewTimeSlotMenuItem, voteTimeSlotMenuItem;
 	
 	private final String[] holidays = {
 			"New Years Day\nSpring Festival\n",
@@ -138,7 +144,6 @@ public class CalGrid extends JFrame implements ActionListener {
 		applistPanel = new AppList(currentlySelectedYear,currentlySelectedMonth,currentlySelectedDay);
 		applistPanel.setParent(this);
 		
-		
 		getDateArray(data);
 
 		JPanel panelMonthYearAndImportantDays = new JPanel();
@@ -155,7 +160,7 @@ public class CalGrid extends JFrame implements ActionListener {
 		sabImportantDays = new SimpleAttributeSet();
 		StyleConstants.setBold(sabImportantDays, true);
 		StyleConstants.setFontSize(sabImportantDays, 20);
-
+		
 		JPanel panelImportantDays = new JPanel();
 		panelImportantDays.setLayout(new BorderLayout());
 		panelImportantDays.add(labelImportantDays, BorderLayout.NORTH);
@@ -163,27 +168,30 @@ public class CalGrid extends JFrame implements ActionListener {
 
 		panelMonthYearAndImportantDays.add(panelImportantDays, BorderLayout.CENTER);
 
-		monthRightArrowButton = new BasicArrowButton(SwingConstants.EAST);
-		monthRightArrowButton.setEnabled(true);
-		monthRightArrowButton.addActionListener(this);
-		monthLeftArrowButton = new BasicArrowButton(SwingConstants.WEST);
-		monthLeftArrowButton.setEnabled(true);
-		monthLeftArrowButton.addActionListener(this);
-
+		yearRightArrowButton = new BasicArrowButton(SwingConstants.EAST);
+		yearRightArrowButton.setEnabled(true);
+		yearRightArrowButton.addActionListener(this);
+		yearLeftArrowButton = new BasicArrowButton(SwingConstants.WEST);
+		yearLeftArrowButton.setEnabled(true);
+		yearLeftArrowButton.addActionListener(this);
+		
 		yearLabel = new JLabel(new Integer(currentlySelectedYear).toString());
 		monthComboBox = new JComboBox();
 		monthComboBox.addActionListener(this);
 		monthComboBox.setPreferredSize(new Dimension(200, 30));
-		for (int cnt = 0; cnt < 12; cnt++)
+		for (int cnt = 0; cnt < 12; cnt++){
 			monthComboBox.addItem(months[cnt]);
-		monthComboBox.setSelectedIndex(currentlySelectedMonth+2);
+		}
+		getTodayDate_TimeController();	
+		System.out.println("Current month: " + currentlySelectedMonth);
+		monthComboBox.setSelectedIndex(currentlySelectedMonth-1);
 
 		JPanel yearGroup = new JPanel();
 		yearGroup.setLayout(new FlowLayout());
 		yearGroup.setBorder(new Flush3DBorder());
-		yearGroup.add(monthLeftArrowButton);
+		yearGroup.add(yearLeftArrowButton);
 		yearGroup.add(yearLabel);
-		yearGroup.add(monthRightArrowButton);
+		yearGroup.add(yearRightArrowButton);
 		yearGroup.add(monthComboBox);
 
 		panelMonthYearAndImportantDays.add(yearGroup, BorderLayout.NORTH);
@@ -198,9 +206,9 @@ public class CalGrid extends JFrame implements ActionListener {
 				if (tem.equals("") == false) {
 					try {
 						
-						if ((todayDate.getYear()+1900) == currentlySelectedYear
-								&& (todayDate.getMonth()+1) == currentlySelectedMonth
-								&& todayDate.getDate() == extract_only_date_string(tem)) {
+						if ((TimeController.getInstance().getYearFrom(todayDate)) == currentlySelectedYear
+								&& (TimeController.getInstance().getMonthFrom(todayDate)) == currentlySelectedMonth
+								&& TimeController.getInstance().getDateFrom(todayDate) == extract_only_date_string(tem)) {
 							return new CalCellRenderer(1); //1 if today
 						}
 						else if(tem.length()>2)
@@ -313,7 +321,6 @@ public class CalGrid extends JFrame implements ActionListener {
 		
 		day %= 7;
 		countApptsInMonth(GetMonthAppts());
-		////////////////////////////
 		paintApptsInCal(day);
 	}
 
@@ -322,10 +329,9 @@ public class CalGrid extends JFrame implements ActionListener {
 		ActionListener listener = new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				if (e.getActionCommand().equals("Manual Scheduling")) {
-					AppScheduler defaultAppt = new AppScheduler("New", CalGrid.this);
-					defaultAppt.updateSettingAppt(hkust.cse.calendar.gui.Utility
-							.createDefaultAppt(currentlySelectedYear, currentlySelectedMonth, currentlySelectedDay,
-								mCurrUser));
+					Appt newAppt = Utility.createDefaultAppt(currentlySelectedYear, currentlySelectedMonth, currentlySelectedDay,mCurrUser);
+					AppScheduler defaultAppt = new AppScheduler("New", "Single",CalGrid.this,newAppt);
+					defaultAppt.updateSettingAppt(newAppt);
 					defaultAppt.setLocationRelativeTo(null);
 					defaultAppt.show();
 					TableModel t = prepareTableModel();
@@ -375,6 +381,8 @@ public class CalGrid extends JFrame implements ActionListener {
 
 			}
 		});
+		
+		
 
 		menuBar.add(Appmenu);
 		Appmenu.setEnabled(false);
@@ -382,11 +390,42 @@ public class CalGrid extends JFrame implements ActionListener {
 		Appmenu.getAccessibleContext().setAccessibleDescription(
 				"Appointment Management");
 		mi = new JMenuItem("Manual Scheduling");
+		mi.setMnemonic(KeyEvent.VK_S);
+
 		mi.addActionListener(listener);
 		Appmenu.add(mi);
 		
+
+		Appmenu.addSeparator();
+		groupapptsubmenu = new JMenu("Create GroupAppt");
+		groupapptsubmenu.setMnemonic(KeyEvent.VK_G);
+
+		viewTimeSlotMenuItem = new JMenuItem("View Available Timeslot");
+		viewTimeSlotMenuItem.setMnemonic(KeyEvent.VK_T);
+		groupapptsubmenu.add(viewTimeSlotMenuItem);
+
+		voteTimeSlotMenuItem = new JMenuItem("Vote Timeslot");
+		voteTimeSlotMenuItem.setMnemonic(KeyEvent.VK_V);
+
+		groupapptsubmenu.add(voteTimeSlotMenuItem);
+		Appmenu.add(groupapptsubmenu);
+		
+		
+		viewTimeSlotMenuItem.addActionListener(new ActionListener() {	
+			public void actionPerformed(ActionEvent arg0) {
+				GroupInvitationListDialog_TimeSlot dlg = new GroupInvitationListDialog_TimeSlot(CalGrid.this);
+			}	
+		});			
+		voteTimeSlotMenuItem.addActionListener(new ActionListener() {	
+			public void actionPerformed(ActionEvent arg0) {
+				
+				AppScheduler_Vote dlg = new AppScheduler_Vote(CalGrid.this);
+			}	
+		});	
+		
 		//Add manage location to CalGrid
 		mi = new JMenuItem("Manage Locations");	
+		mi.setMnemonic(KeyEvent.VK_L);
 		mi.addActionListener(new ActionListener() {	
 			public void actionPerformed(ActionEvent arg0) {
 				//CalGrid grid = new CalGrid(new ApptStorageControllerImpl(new ApptStorageNullImpl(user)));
@@ -400,6 +439,29 @@ public class CalGrid extends JFrame implements ActionListener {
 		Appmenu.add(mi);
 		
 		
+		
+		
+		mi = new JMenuItem("View Users Public Appointments");	
+		mi.setMnemonic(KeyEvent.VK_P);
+		mi.addActionListener(new ActionListener() {	
+			public void actionPerformed(ActionEvent arg0) {
+				//CalGrid grid = new CalGrid(new ApptStorageControllerImpl(new ApptStorageNullImpl(user)));
+				//ApptController.getInstance().initApptStorage(new ApptStorageMemory(user));
+				//CalGrid grid = new CalGrid();
+				
+				UserAppointmentViewDialog dlg = new UserAppointmentViewDialog();
+			}	
+		});	
+		Appmenu.add(mi); 
+		
+		mi = (JMenuItem) Access.add(new JMenuItem("Bonus"));
+		mi.setMnemonic('B');
+		mi.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				WeeklyDataVisualizationDialog temp = new WeeklyDataVisualizationDialog();
+			}
+		});
+		Appmenu.add(mi);
 		JMenu TimeMachine = (JMenu) menuBar.add(new JMenu("TimeMachine"));
 		TimeMachine.setMnemonic('T');
 		TimeMachine.getAccessibleContext().setAccessibleDescription(
@@ -415,31 +477,70 @@ public class CalGrid extends JFrame implements ActionListener {
 			}
 		});
 		
+		JMenu UserInfo = (JMenu) menuBar.add(new JMenu("UserInfo"));
+		UserInfo.setMnemonic('U');
+		UserInfo.getAccessibleContext().setAccessibleDescription(
+				"Manage User Information");
+		//if user is admin
+		if(UserController.getInstance().getCurrentUser().isAdmin()){
+			mi = (JMenuItem) UserInfo.add(new JMenuItem("Manage Users Data"));
+			mi.setMnemonic('U');
+			mi.getAccessibleContext().setAccessibleDescription("Manage All Users Data");	
+			mi.addActionListener(listener);
+			mi.addActionListener(new ActionListener() {	
+				public void actionPerformed(ActionEvent arg0) {
+					//System.out.println(UserController.getInstance().getCurrentUser().isAdmin());
+					//TimeMachineDialog TimeMachineTest = new TimeMachineDialog();
+					//TimeMachineTest.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+					//manage all users data dialog
+					System.out.println("CalGrid/UserInfo: Current User is Admin");
+					ManageAdminDataDialog manageAdminDataDialog = new ManageAdminDataDialog();
+					
+				}
+			});
+		} else {
+			//if user is not admin
+			mi = (JMenuItem) UserInfo.add(new JMenuItem("Manage My Data"));
+			mi.setMnemonic('A');
+			mi.getAccessibleContext().setAccessibleDescription("Manage My Credentials");	
+			mi.addActionListener(listener);
+			mi.addActionListener(new ActionListener() {	
+				public void actionPerformed(ActionEvent arg0) {
+					//TimeMachineDialog TimeMachineTest = new TimeMachineDialog();
+					//TimeMachineTest.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+					System.out.println("CalGrid/UserInfo: Current User is NOT Admin");
+					ManageMyDataDialog manageMyDataDialog = new ManageMyDataDialog();
+					
+				}
+			});
+		}
+
+		
 		return menuBar;
 	}
 	
 	private void getTodayDate_TimeController() {
 		todayDate = TimeController.getInstance().getCurrentTimeInDate();
-		currentlySelectedYear = todayDate.getYear()+1900;
-		currentlySelectedDay = todayDate.getDate();
+		currentlySelectedYear = TimeController.getInstance().getYearFrom(todayDate);
+		currentlySelectedDay = TimeController.getInstance().getDateFrom(todayDate);
 		//int temp = todayDate.getMonth()+1;
 		//currentMonth = 12;
-		currentlySelectedMonth = todayDate.getMonth()+1;
-		System.out.println("currentlySelectedMonth: " + currentlySelectedMonth);
+		currentlySelectedMonth = TimeController.getInstance().getMonthFrom(todayDate);
+		System.out.println("Current month: " + currentlySelectedMonth);
 	}
 
 	private void initializeSystem() {
 
-		mCurrUser = ApptController.getInstance().getDefaultUser();	//get User from ApptController.getInstance().
-		ApptController.getInstance().LoadApptFromXml();
+		mCurrUser = UserController.getInstance().getCurrentUser();	//get User from ApptController.getInstance().
 		notificationCheckThread.start();
-		// Fix Me !
-		// Load the saved appointments from disk
-		checkUpdateJoinAppt();
+		checkAndShowAnyInvitation();
+		checkAndShowAnyVote();
+		checkAndShowAnyDeleteRequest();
+		checkAndShowAnyModifyNotification();
 	}
 
 	public void actionPerformed(ActionEvent e) {
-		if (e.getSource() == monthRightArrowButton) {
+		if (e.getSource() == yearRightArrowButton) {
 			if (yearLabel == null)
 				return;
 			currentlySelectedYear = currentlySelectedYear + 1;
@@ -454,7 +555,7 @@ public class CalGrid extends JFrame implements ActionListener {
 
 			}
 			UpdateCal();
-		} else if (e.getSource() == monthLeftArrowButton) {
+		} else if (e.getSource() == yearLeftArrowButton) {
 			if (yearLabel == null)
 				return;
 			currentlySelectedYear = currentlySelectedYear - 1;
@@ -529,18 +630,20 @@ public class CalGrid extends JFrame implements ActionListener {
 
 	private List<Appt> GetMonthAppts() {
 		Timestamp start = new Timestamp(0);
-		start.setYear(currentlySelectedYear);
-		start.setMonth(currentlySelectedMonth - 1);
-		start.setDate(1);
-		start.setHours(0);
+		TimeController.getInstance().setYear(start,currentlySelectedYear);
+		TimeController.getInstance().setMonth(start,currentlySelectedMonth);
+		TimeController.getInstance().setDate(start,1);
+		TimeController.getInstance().setHour(start,0);
+		
 		Timestamp end = new Timestamp(0);
-		end.setYear(currentlySelectedYear);
-		end.setMonth(currentlySelectedMonth - 1);
-		end.setDate(TimeController.getInstance().numOfDaysInMonth());
+		TimeController.getInstance().setYear(end,currentlySelectedYear);
+		TimeController.getInstance().setMonth(end,currentlySelectedMonth);
+		TimeController.getInstance().setDate(end,TimeController.getInstance().numOfDaysInMonth());
+		TimeController.getInstance().setHour(end,23);
 		//System.out.println("end date: "+TimeController.getInstance().numOfDaysInMonth());
-		end.setHours(23);
+		
 		TimeSpan period = new TimeSpan(start, end);
-		return ApptController.getInstance().RetrieveApptsInList(mCurrUser, period);
+		return ApptController.getInstance().RetrieveApptsInList(UserController.getInstance().getCurrentUser(), period);
 	}
 	
 
@@ -580,8 +683,6 @@ public class CalGrid extends JFrame implements ActionListener {
 				return;
 			}
 		}
-		CalGrid.this.setTitle(mCurrTitle + "(" + currentlySelectedYear + "-" + currentlySelectedMonth
-				+ "-" + currentlySelectedDay + ")");
 		
 		updateAppList();
 	}
@@ -598,45 +699,50 @@ public class CalGrid extends JFrame implements ActionListener {
 	} 	
 	
 	public boolean IsTodayAppt(Appt appt) {
-		if (appt.TimeSpan().StartTime().getYear() + 1900 != currentlySelectedYear)
+		
+		Timestamp todayApptStartTime = appt.TimeSpan().StartTime();
+		
+		if (TimeController.getInstance().getYearFrom(todayApptStartTime) != currentlySelectedYear)
 			return false;
-		if ((appt.TimeSpan().StartTime().getMonth() + 1) != currentlySelectedMonth)
+		if (TimeController.getInstance().getMonthFrom(todayApptStartTime) != currentlySelectedMonth)
 			return false;
-		if (appt.TimeSpan().StartTime().getDate() != currentlySelectedDay)
+		if (TimeController.getInstance().getDateFrom(todayApptStartTime) != currentlySelectedDay)
 			return false;
 		return true;
 	}
 
 	public boolean IsMonthAppts(Appt appt) {
 
-		if (appt.TimeSpan().StartTime().getYear() + 1900 != currentlySelectedYear)
+		Timestamp monthApptStartTime = appt.TimeSpan().StartTime();
+		
+		if (TimeController.getInstance().getYearFrom(monthApptStartTime) != currentlySelectedYear)
 			return false;
 
-		if ((appt.TimeSpan().StartTime().getMonth() + 1) != currentlySelectedMonth)
+		if (TimeController.getInstance().getMonthFrom(monthApptStartTime) != currentlySelectedMonth)
 			return false;
 		return true;
 	}
 
 	public List<Appt> GetTodayAppt() {
-		Integer temp;
-		temp = new Integer(currentlySelectedDay);
+		
 		Timestamp start = new Timestamp(0);
-		start.setYear(currentlySelectedYear);
-		start.setMonth(currentlySelectedMonth-1);
-		start.setDate(currentlySelectedDay);
-		start.setHours(0);
-		start.setMinutes(0);
-		start.setSeconds(0);
+		TimeController.getInstance().setYear(start, currentlySelectedYear);
+		TimeController.getInstance().setMonth(start, currentlySelectedMonth);
+		TimeController.getInstance().setDate(start, currentlySelectedDay);
+		TimeController.getInstance().setHour(start, 0);
+		TimeController.getInstance().setMinute(start, 0);
+		TimeController.getInstance().setSecond(start, 0);
 		
 		Timestamp end = new Timestamp(0);
-		end.setYear(currentlySelectedYear);
-		end.setMonth(currentlySelectedMonth-1);
-		end.setDate(currentlySelectedDay);
-		end.setHours(23);
-		end.setMinutes(59);
-		end.setSeconds(59);
+		TimeController.getInstance().setYear(end, currentlySelectedYear);
+		TimeController.getInstance().setMonth(end, currentlySelectedMonth);
+		TimeController.getInstance().setDate(end, currentlySelectedDay);
+		TimeController.getInstance().setHour(end, 23);
+		TimeController.getInstance().setMinute(end, 59);
+		TimeController.getInstance().setSecond(end, 59);
 		
 		TimeSpan period = new TimeSpan(start, end);
+		
 		return ApptController.getInstance().RetrieveApptsInList(mCurrUser, period);
 	}
 
@@ -647,7 +753,7 @@ public class CalGrid extends JFrame implements ActionListener {
 		
 		int date;
 		for(int i=0; i<list.size(); i++){
-			date = list.get(i).getTimeSpan().StartTime().getDate();
+			date = TimeController.getInstance().getDateFrom(list.get(i).getTimeSpan().StartTime());
 			//System.out.println("apptdate: "+date);
 			apptMarker[date-1]++;
 		}
@@ -700,23 +806,73 @@ public class CalGrid extends JFrame implements ActionListener {
 	public void updateCalGridTitleClock(Date currentTime)
 	{
 		mCurrTitle = "Desktop Calendar - " + mCurrUser.ID() + " - ";
-		if(currentTime.getHours() == 0)
-		{
-			this.setTitle(mCurrTitle + (currentTime.getHours()+12) + ":" + currentTime.getMinutes() + "AM");
+		int originalHour = TimeController.getInstance().getHourFrom(currentTime);
+		int originalMinute = TimeController.getInstance().getMinuteFrom(currentTime);
+		String changedMinute;
+		if(originalMinute/10 < 1){
+			changedMinute = "0"+originalMinute;
 		}
-		else if(currentTime.getHours() < 12)
+		else{
+			changedMinute = ""+ originalMinute;
+		}
+		
+		if(originalHour == 0)
 		{
-			this.setTitle(mCurrTitle + currentTime.getHours() + ":" + currentTime.getMinutes() + "AM");
+			this.setTitle(mCurrTitle + (originalHour+12) + ":" + changedMinute + "AM");
+		}
+		else if(originalHour < 12)
+		{
+			this.setTitle(mCurrTitle + originalHour + ":" + changedMinute + "AM");
+		}
+		else if(originalHour == 12)
+		{
+			this.setTitle(mCurrTitle + originalHour + ":" + changedMinute + "PM");
 		}
 		else
 		{
-			this.setTitle(mCurrTitle + currentTime.getHours() + ":" + currentTime.getMinutes() + "PM");
+			this.setTitle(mCurrTitle + TimeController.getInstance().getHourFrom(currentTime)%12 + ":" + TimeController.getInstance().getMinuteFrom(currentTime) + "PM");
 		}
 	}
 	
-	// check for any invite or update from join appointment
-	public void checkUpdateJoinAppt(){
-		// Fix Me!
+	// check for any invite from group appt.
+	public void checkAndShowAnyInvitation(){
+		LinkedList<GroupAppt> invitedGroupAppt = InviteController.getInstance().checkIfUserHasInvite(mCurrUser);
+		if(invitedGroupAppt != null){
+			for(GroupAppt gAppt: invitedGroupAppt){
+				InvitationPopUpDialog newInvite = new InvitationPopUpDialog(gAppt,this);
+			}
+		}
+	}
+	
+	public void checkAndShowAnyVote(){
+		LinkedList<GroupAppt> voteGroupAppt = InviteController.getInstance().checkIfUserHasVote(mCurrUser);
+		if(voteGroupAppt != null){
+			for(GroupAppt gAppt: voteGroupAppt){
+				AvailableTimeSlot_TextWindow availableTimeSlot= new AvailableTimeSlot_TextWindow(gAppt);
+				//VotePopUpDialog newVote = new VotePopUpDialog(gAppt,this);
+				System.out.println("You have vote!");
+			}
+		}
+	}
+	
+	private void checkAndShowAnyDeleteRequest(){
+		List<DeleteRequest> deleteRequests = UserController.getInstance().getDeleteRequests(mCurrUser);
+		System.out.println("CalGrid/checkAndShowAnyDeleteRequest " + deleteRequests);
+		for(DeleteRequest a: deleteRequests){
+			DeleteUserPopUpDialog dialog = new DeleteUserPopUpDialog(a,this);
+		}
+		
+	}
+	
+	private void checkAndShowAnyModifyNotification(){
+		List<ModifyNotification> modifyNotis = UserController.getInstance().getModifyNotifications(mCurrUser);
+		System.out.println("CalGrid/checkAndShowAnyModifyNotification " + modifyNotis);
+
+		for(ModifyNotification n: modifyNotis){
+			ModifyUserPopUpDialog dialog = new ModifyUserPopUpDialog(n,this);
+			UserController.getInstance().removeModifyNotification(n);
+		}
+		
 	}
 
 }

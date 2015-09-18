@@ -6,8 +6,6 @@ import hkust.cse.calendar.time.TimeController;
 import hkust.cse.calendar.unit.TimeSpan;
 
 import java.sql.Timestamp;
-import java.util.Calendar;
-
 import org.junit.Before;
 import org.junit.Test;
 

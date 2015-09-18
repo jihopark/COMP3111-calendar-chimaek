@@ -1,20 +1,22 @@
 package hkust.cse.calendar.notification;
 
+import hkust.cse.calendar.apptstorage.ApptStorage;
+import hkust.cse.calendar.diskstorage.JsonStorable;
 import hkust.cse.calendar.unit.Notification;
 import hkust.cse.calendar.unit.User;
 
 import java.util.Date;
-import java.util.LinkedList;
 import java.util.List;
 
 public class NotificationController {
 
 		//Singleton Structure
 		private static NotificationController instance = null;
-		private static int notificationIDCount = 1;
 		
 		//Notification Storage
 		private static NotificationStorage mNotificationStorage = null;
+		
+		private static boolean shouldSave = true; 
 		
 		//Empty Constructor with getInstasnce
 		public NotificationController() {
@@ -31,41 +33,87 @@ public class NotificationController {
 		public boolean initNotificationStorage(NotificationStorage storage){
 			if (mNotificationStorage == null){
 				mNotificationStorage = storage;
+				rollback();
 				return true;
 			}
 			return false;
 		}
 		
-		
+		public void setShouldSave(boolean b){
+			shouldSave = b;
+		}
+	
 		//Retrieve
 		public Notification retrieveNotification(int notificationID) {
 			return mNotificationStorage.RetrieveNotification(notificationID);
 		}
 		
-		//Retrieve Notification with currentTime. returns empty arraylist if no notification
-		public List<NotificationTime> retrieveNotification(Date currentTime) {
-			return mNotificationStorage.RetrieveNotification(currentTime);
+		public List<Notification> retrieveNotification(User user) {
+			return mNotificationStorage.RetrieveNotification(user);
 		}
 		
+		//Retrieve Notification with currentTime. returns empty arraylist if no notification
+
+		public List<NotificationTime> retrieveNotification(User user, Date currentTime) {
+			return mNotificationStorage.RetrieveNotificationAtCurrentTime(user, currentTime);
+		}
+		
+		/*
+		@Deprecated
 		public List<NotificationTime> retrieveAllNotificationTimes(Notification notification){
-			return mNotificationStorage.RetrieveAllNotificationTimes(notification);
+			return mNotificationStorag.RetrieveAllNotificationTimes(notification);
+		}*/
+		
+		public NotificationTime retrieveNotificationTime(Notification notification){
+			return mNotificationStorage.RetrieveNotificationTime(notification);
+		}
+		
+		public Notification getNotificationByID(int id){
+			return mNotificationStorage.RetrieveNotification(id);
 		}
 		
 		//Update
 		public boolean updateNotification(User user, Notification notification){
-			return mNotificationStorage.UpdateNotification(notification);
+			boolean temp = mNotificationStorage.UpdateNotification(user, notification);
+			if(temp)
+				updateDiskStorage();
+			return temp;
 		}
 		
 		//Save New
-		public boolean saveNewNotification(Notification notification){
-			notification.setID(notificationIDCount++);
-			System.out.println("NotificationController/saveNewNotification Saved");
-			return mNotificationStorage.SaveNotification(notification);
+		public boolean saveNewNotification(User user, Notification notification){
+			notification.setID(mNotificationStorage.getIDCount());
+			System.out.println("NotificationController/saveNewNotification Saved. ID is " + notification.getID());
+			boolean temp = mNotificationStorage.SaveNotification(user, notification);
+			if(temp)
+				updateDiskStorage();
+			return temp;
 		}
 		
 		//remove
-		public boolean removeNotification(Notification notification){
-			System.out.println("NotificationController/removeNewNotification Removed");
-			return mNotificationStorage.RemoveNotification(notification);
+		public boolean removeNotification(User user, Notification notification){
+			System.out.println("NotificationController/removeNewNotification Removed: " + notification.getID());
+			boolean temp = mNotificationStorage.RemoveNotification(user, notification);
+			if(temp)
+				updateDiskStorage();
+			return temp;
 		}
+		
+		public void setDelivered(Notification noti){
+			noti.hasDelivered();
+			updateDiskStorage();
+		}
+		
+		public void updateDiskStorage(){
+			if (mNotificationStorage instanceof JsonStorable && shouldSave)
+				((JsonStorable) mNotificationStorage).saveToJson();
+		}
+		
+		public void rollback() {
+			if (mNotificationStorage instanceof JsonStorable){
+				NotificationStorage tmp = (NotificationStorage) ((JsonStorable)mNotificationStorage).loadFromJson();
+				if (tmp != null) mNotificationStorage = tmp; 
+			}
+		}
+
 }

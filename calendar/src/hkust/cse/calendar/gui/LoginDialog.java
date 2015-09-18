@@ -1,13 +1,16 @@
 	package hkust.cse.calendar.gui;
 
 import hkust.cse.calendar.apptstorage.ApptController;
-import hkust.cse.calendar.apptstorage.ApptStorageMemory;
+import hkust.cse.calendar.apptstorage.ApptStorage;
+import hkust.cse.calendar.invite.InviteController;
+import hkust.cse.calendar.invite.InviteStorage;
 import hkust.cse.calendar.locationstorage.LocationController;
-import hkust.cse.calendar.locationstorage.LocationStorageNullImpl;
+import hkust.cse.calendar.locationstorage.LocationStorage;
 import hkust.cse.calendar.notification.NotificationController;
-import hkust.cse.calendar.notification.NotificationStorageNullImpl;
+import hkust.cse.calendar.notification.NotificationStorage;
 import hkust.cse.calendar.unit.User;
-import hkust.cse.calendar.user.UserController;
+import hkust.cse.calendar.userstorage.UserController;
+import hkust.cse.calendar.userstorage.UserStorage;
 
 import java.awt.Container;
 import java.awt.FlowLayout;
@@ -68,10 +71,6 @@ public class LoginDialog extends JFrame implements ActionListener
 		password = new JPasswordField(15);
 		pwPanel.add(password);
 		top.add(pwPanel);
-		
-		////////////////set default id&pw /////////////////
-		userName.setText("huamin");
-		password.setText("comp3111");
 
 		
 		JPanel signupPanel = new JPanel();
@@ -84,9 +83,9 @@ public class LoginDialog extends JFrame implements ActionListener
 		contentPane.add("North", top);
 		
 		JPanel butPanel = new JPanel();
-		butPanel.setLayout(new FlowLayout(FlowLayout.RIGHT));
+		butPanel.setLayout(new FlowLayout(FlowLayout.CENTER));
 
-		button = new JButton("Log in (Use Default User)");
+		button = new JButton("Log in");
 		button.addActionListener(this);
 		butPanel.add(button);
 		
@@ -112,8 +111,7 @@ public class LoginDialog extends JFrame implements ActionListener
 		{
 			// When the button is clicked, check the user name and password, and try to log the user in
 			
-
-			if (!attemptLogin(userName.getText(), password.getPassword())){
+			if (!attemptLogin(userName.getText(), String.valueOf(password.getPassword()))){
 				JOptionPane.showMessageDialog(this, "Incorrect Credential",
 						"Input Error", JOptionPane.ERROR_MESSAGE);
 			}
@@ -122,6 +120,9 @@ public class LoginDialog extends JFrame implements ActionListener
 		else if(e.getSource() == signupButton)
 		{
 			// Create a new account
+			RegisterDialog registerDialog = new RegisterDialog();
+			setVisible(false);
+			
 		}
 		else if(e.getSource() == closeButton)
 		{
@@ -132,17 +133,19 @@ public class LoginDialog extends JFrame implements ActionListener
 		}
 	}
 	
-	private boolean attemptLogin(String id, char[] pw){
+	private boolean attemptLogin(String id, String pw){
+		UserController.getInstance().initUserStorage(new UserStorage());
 		User user = UserController.getInstance().getUserFromCredential(id, pw);
 		if (user == null)
 			return false;
 		
-		ApptController.getInstance().initApptStorage(new ApptStorageMemory(user));
-		LocationController.getInstance().initLocationStorage(new LocationStorageNullImpl(user));
-		NotificationController.getInstance().initNotificationStorage(new NotificationStorageNullImpl(user));
+		UserController.getInstance().setCurrentUser(user);
+		ApptController.getInstance().initApptStorage(new ApptStorage());
+		LocationController.getInstance().initLocationStorage(new LocationStorage(user));
+		NotificationController.getInstance().initNotificationStorage(new NotificationStorage(user));
+		InviteController.getInstance().initInviteStorage(new InviteStorage());
 		CalGrid grid = new CalGrid();
 		setVisible( false );
-		
 		return true;
 	}
 	

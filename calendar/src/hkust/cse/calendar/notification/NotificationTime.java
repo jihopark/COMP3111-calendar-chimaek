@@ -6,17 +6,20 @@ import java.util.Date;
 
 public class NotificationTime {		
 	
-	private int _flag;
+	//private int _flag;
 	private Date _notificationTime;
-	private Notification _parent;
+	private int notification_parent_id;
 	
-	public NotificationTime(Notification parent, int flag, Date notificationTime){
-		_parent = parent;
-		_flag = flag;
+	public Notification getParent(){ return NotificationController.getInstance().getNotificationByID(notification_parent_id); }
+	
+	public NotificationTime(Notification parent,Date notificationTime){
+		notification_parent_id = parent.getID();
 		_notificationTime = notificationTime;
 	}
-	
-	public Notification getParent(){ return _parent; }
+
 	public Date getNotificationTime(){ return _notificationTime; }
-	public int getFlag(){ return _flag; }
+	
+	public void setNotificationParentID(int id){
+		notification_parent_id = id;
+	}
 }

@@ -1,19 +1,11 @@
 package hkust.cse.calendar.gui;
 
-import hkust.cse.calendar.apptstorage.ApptController;
-import hkust.cse.calendar.apptstorage.ApptStorageMemory;
 import hkust.cse.calendar.time.TimeController;
-import hkust.cse.calendar.unit.User;
-import hkust.cse.calendar.user.UserController;
-
 import java.awt.BorderLayout;
 import java.awt.Container;
 import java.awt.Dimension;
-import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
 import java.sql.Timestamp;
 import java.util.Date;
 
@@ -21,12 +13,10 @@ import javax.swing.BorderFactory;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
-import javax.swing.JComponent;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
-import javax.swing.JPasswordField;
 import javax.swing.JTextField;
 import javax.swing.border.Border;
 import javax.swing.border.TitledBorder;
@@ -46,7 +36,6 @@ public class TimeMachineDialog extends JFrame implements ActionListener
 	private JTextField startTimeHourField;
 	private JLabel startTimeMinuteLabel;
 	private JTextField startTimeMinuteField;
-	private TimeController timeController = new TimeController();
 	public TimeMachineDialog()		// Create a dialog to log in
 	{
 		
@@ -96,8 +85,8 @@ public class TimeMachineDialog extends JFrame implements ActionListener
 		OffButton = new JButton("Turn Off Time Machine");
 		OffButton.addActionListener(this);
 
-		OnButton.setEnabled(!timeController.getInstance().isOnTimeMachineMode());
-		OffButton.setEnabled(timeController.getInstance().isOnTimeMachineMode());
+		OnButton.setEnabled(!TimeController.getInstance().isOnTimeMachineMode());
+		OffButton.setEnabled(TimeController.getInstance().isOnTimeMachineMode());
 		buttonPane.add(Box.createHorizontalGlue());
 		buttonPane.add(OnButton);
 		buttonPane.add(Box.createRigidArea(new Dimension(10, 0)));
@@ -127,24 +116,30 @@ public class TimeMachineDialog extends JFrame implements ActionListener
 				int Day = Integer.parseInt(dayField.getText());
 				int hour = Integer.parseInt(startTimeHourField.getText());
 				int minute = Integer.parseInt(startTimeMinuteField.getText());
-				Timestamp changedTime = new Timestamp(year-1900, month-1, Day, hour, minute, 0, 0);
-
-				// When button is clicked, change time		
-				OnButton.setEnabled(timeController.getInstance().isOnTimeMachineMode());
-				timeController.getInstance().enableTimeMachineMode();
-				OffButton.setEnabled(timeController.getInstance().isOnTimeMachineMode());				Date date = new Date(changedTime.getTime());
-				timeController.getInstance().setTimeMachine(date);
 				
-				System.out.println("Time Machine is Turned ON: " + timeController.getInstance().isOnTimeMachineMode());	
+				if(TimeController.getInstance().checkValidInput(year,month,Day,hour,minute)){
+					Timestamp changedTime = TimeController.getInstance().dateInputToTimestamp(year, month, Day, hour, minute, 0);
+	
+					// When button is clicked, change time		
+					OnButton.setEnabled(TimeController.getInstance().isOnTimeMachineMode());
+					TimeController.getInstance().enableTimeMachineMode();
+					OffButton.setEnabled(TimeController.getInstance().isOnTimeMachineMode());				Date date = new Date(changedTime.getTime());
+					TimeController.getInstance().setTimeMachine(date);
+					
+					System.out.println("Time Machine is Turned ON: " + TimeController.getInstance().isOnTimeMachineMode());
+				}
+				else{
+					JOptionPane.showMessageDialog(this,"Please input proper date/time","Error",JOptionPane.ERROR_MESSAGE);
+				}
 			}
 
 		}
 		else if(e.getSource() == OffButton)
 		{
-			OffButton.setEnabled(!timeController.getInstance().isOnTimeMachineMode());
-			timeController.getInstance().disableTimeMachineMode();
-			OnButton.setEnabled(!timeController.getInstance().isOnTimeMachineMode());
-			System.out.println("Time Machine is Turned OFF: " + timeController.getInstance().isOnTimeMachineMode());
+			OffButton.setEnabled(!TimeController.getInstance().isOnTimeMachineMode());
+			TimeController.getInstance().disableTimeMachineMode();
+			OnButton.setEnabled(!TimeController.getInstance().isOnTimeMachineMode());
+			System.out.println("Time Machine is Turned OFF: " + TimeController.getInstance().isOnTimeMachineMode());
 		}
 	}
 
@@ -154,12 +149,13 @@ public class TimeMachineDialog extends JFrame implements ActionListener
 		if(text.equals("")) {
 			return true;
 		} else {
-			return false;
+			int temp = Utility.getNumber(text);
+			if(temp == -1) {
+				return true;
+			}
+			//System.out.println(temp);
 		}
+		return false;
 	}
-
-
-
-	
 
 }

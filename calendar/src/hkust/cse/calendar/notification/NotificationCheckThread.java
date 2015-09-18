@@ -2,9 +2,8 @@ package hkust.cse.calendar.notification;
 
 import hkust.cse.calendar.gui.CalGrid;
 import hkust.cse.calendar.time.TimeController;
-import hkust.cse.calendar.unit.Notification;
+import hkust.cse.calendar.userstorage.UserController;
 
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -14,7 +13,6 @@ public class NotificationCheckThread extends Thread {
 
 	public static Date currentTime = new Date();
 	public CalGrid calGrid;
-	private List<NotificationTime> deliveredNotification = new ArrayList<NotificationTime>();
 	
 	public NotificationCheckThread(CalGrid cal)
 	{
@@ -29,12 +27,13 @@ public class NotificationCheckThread extends Thread {
 				currentTime = TimeController.getInstance().getCurrentTimeInDate();
 				calGrid.updateCalGridTitleClock(currentTime);
 				//System.out.println("Current Time is: " + currentTime);
-				List<NotificationTime> notifications = NotificationController.getInstance().retrieveNotification(currentTime);
+
+				List<NotificationTime> notifications = NotificationController.getInstance().retrieveNotification(UserController.getInstance().getCurrentUser(), currentTime);
 				if (notifications.size()!=0){
 					for (NotificationTime time : notifications){
-						if (!deliveredNotification.contains(time)){
+						if ((!time.getParent().isDelivered()) && (!time.getParent().isPending())){
+							NotificationController.getInstance().setDelivered(time.getParent());
 							JOptionPane.showMessageDialog(null, "You have an appointment!\n" + time.getParent().getName() + " at " + time.getParent().getAppt().TimeSpan());
-							deliveredNotification.add(time);
 						}
 					}
 				}

@@ -1,11 +1,10 @@
 package hkust.cse.calendar.unit;
 
+import hkust.cse.calendar.apptstorage.ApptController;
 import hkust.cse.calendar.notification.NotificationTime;
 
-import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.List;
 
 public class Notification {
 	private static final int ONE_HOUR = 0;
@@ -15,46 +14,85 @@ public class Notification {
 	
 	
 	private String _name;
-	private ArrayList<NotificationTime> _times = new ArrayList<NotificationTime>();
+	//private ArrayList<NotificationTime> _times = new ArrayList<NotificationTime>();
 	
 	private Date _appointmentTime;
-	private Appt _appt;
+	private int appt_id = -1;
+	//private Appt _appt;
+	private NotificationTime _notificationTimeObj;
+	private int hoursBefore;
+	private int minutesBefore;
 	private int _notificationID; 
 	private boolean delivered = false;
+	private boolean isPending = false;
 	
 	// A default constructor
 	public Notification() {
 		_name = "";
 		_notificationID = 0;
 		_appointmentTime = Calendar.getInstance().getTime();
+		_notificationTimeObj = null;
+		hoursBefore = 0;
+		minutesBefore = 0;
 	}
 	
+	/*
+	@Deprecated
 	public Notification(Appt appt, String name, Date time, 
 			boolean flagOne, boolean flagTwo, boolean flagThree, boolean flagFour){
-		_appt = appt;
+		appt_id = appt.getID();
 		_name = name;
 		_appointmentTime = time;
 
 		setAlarms(flagOne, flagTwo, flagThree, flagFour);
 	}
+	*/
 	
+	public Notification(Appt appt,int notificationHoursBefore, int notificationMinutesBefore){
+		appt_id = appt.getID();
+		_name = appt.getTitle();
+		_appointmentTime = appt.getTimeSpan().StartTime();
+		hoursBefore = notificationHoursBefore;
+		minutesBefore = notificationMinutesBefore;
+		
+		setAlarms(notificationHoursBefore,notificationMinutesBefore);
+	}
+
 	public Notification(Notification notification ) {
 		_name = notification.getName();
 		_notificationID = 0;
-		_times = notification.getTimes();
+		_notificationTimeObj = new NotificationTime(this,notification.getNotificationTimeObj().getNotificationTime());
+		_appointmentTime = notification.getAppointmentTime();
+		hoursBefore = notification.getHoursBefore();
+		minutesBefore = notification.getMinutesBefore();
 	}
 	
-	public ArrayList<NotificationTime> getTimes(){ return _times; }
-	public void setTimes(ArrayList<NotificationTime> times){ _times = times; } 
+	public void resetNotificationID(){
+		_notificationTimeObj.setNotificationParentID(getID());
+	}
 	
 	public Appt getAppt(){
-		return _appt;
+		return ApptController.getInstance().RetrieveAppt(appt_id);
 	}
 
 	public Date getAppointmentTime() {
 		return _appointmentTime;
 	}
 
+	public NotificationTime getNotificationTimeObj()
+	{
+		return _notificationTimeObj;
+	}
+	
+	public int getHoursBefore()
+	{
+		return hoursBefore;
+	}
+	
+	public int getMinutesBefore()
+	{
+		return minutesBefore;
+	}
 	
 	public String getName() {
 		return _name;
@@ -82,6 +120,15 @@ public class Notification {
 		_notificationID = id;
 	}
 	
+	public boolean isPending(){
+		return isPending;
+	}
+	
+	public void setPending(boolean pending){
+		isPending = pending;
+	}
+	/*
+	@Deprecated
 	public void setAlarms(boolean flagOne, boolean flagTwo, boolean flagThree, boolean flagFour) {
 		//check flag1, set alarm1 repeat 4 times
 		Calendar cal = Calendar.getInstance();
@@ -113,7 +160,19 @@ public class Notification {
 			_times.set(TWENTY_FOUR_HOUR,new NotificationTime(this, TWENTY_FOUR_HOUR,twentyFourHourBack));
 		}
 	}
+	*/
 	
+	public void setAlarms(int notificationHoursBefore, int notificationMinutesBefore){
+		
+		Calendar newCalendar = Calendar.getInstance();
+		newCalendar.setTime(_appointmentTime);
+		newCalendar.add(Calendar.HOUR, (-1)*notificationHoursBefore);
+		newCalendar.add(Calendar.MINUTE, (-1)*notificationMinutesBefore);
+		_notificationTimeObj = new NotificationTime(this,newCalendar.getTime());
+	}
+	
+	/*
+	@Deprecated
 	public List<Boolean> getFlags(){
 		ArrayList<Boolean> flags = new ArrayList<Boolean>();
 		for (int i=0; i<4; i++)
@@ -126,6 +185,9 @@ public class Notification {
 		}
 		return flags;
 	}
+	
+	*/
+	
 	public boolean equals(Notification a){
 		return a.getID() == getID();
 	}

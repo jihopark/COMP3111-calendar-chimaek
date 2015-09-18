@@ -3,8 +3,9 @@ package hkust.cse.calendar.gui;
 import hkust.cse.calendar.apptstorage.ApptController;
 import hkust.cse.calendar.time.TimeController;
 import hkust.cse.calendar.unit.Appt;
-import hkust.cse.calendar.unit.TimeSpan;
-import hkust.cse.calendar.user.UserController;
+import hkust.cse.calendar.unit.GroupAppt;
+import hkust.cse.calendar.unit.User;
+import hkust.cse.calendar.userstorage.UserController;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
@@ -16,8 +17,6 @@ import java.awt.event.InputEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.sql.Timestamp;
-import java.util.Date;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Random;
 
@@ -168,7 +167,7 @@ public class AppList extends JPanel implements ActionListener
 
 
 		setVisible(true);
-		setSize(600, 300);
+		setSize(600, 300);	
 		//this.
 	}
 
@@ -438,8 +437,12 @@ public class AppList extends JPanel implements ActionListener
 		{
 			return;
 		}
+		
 		for (Appt a : list)
+		{
 			addAppt(a);
+		}
+		
 		repaint();
 
 	}
@@ -457,29 +460,35 @@ public class AppList extends JPanel implements ActionListener
 		currColor = Color.getHSBColor(hue, saturation, luminance);	
 		currColorForJoint = Color.getHSBColor(hue, saturation, luminance);
 
-
 		if(!appt.isRepeated())
+		{
 			color = currColor;
+		}
 		else
+		{
 			color = currColorForJoint;
-
-		if (appt == null)
+		}
+		
+		if(appt == null)
+		{
 			return;
+		}
+			
+		Timestamp tempStartTimeStamp = appt.TimeSpan().StartTime();
+		int startDay = TimeController.getInstance().getDateFrom(tempStartTimeStamp);
+		int startMin = TimeController.getInstance().getHourFrom(tempStartTimeStamp) * 60 + TimeController.getInstance().getMinuteFrom(tempStartTimeStamp);
 
-		Timestamp temp;
-
-		temp = appt.TimeSpan().StartTime();
-		int startMin = temp.getHours() * 60 + temp.getMinutes();
-		startMin = startMin - OFFSET * 60;
-
-		temp = appt.TimeSpan().EndTime();
-		int endMin = temp.getHours() * 60 + temp.getMinutes();
-		endMin = endMin - OFFSET * 60;
-
+		Timestamp tempEndTimeStamp = appt.TimeSpan().EndTime();
+		int endDay = TimeController.getInstance().getDateFrom(tempEndTimeStamp);
+		int endMin = TimeController.getInstance().getHourFrom(tempEndTimeStamp)* 60 + TimeController.getInstance().getMinuteFrom(tempEndTimeStamp);
+		
+		if(endMin == 0 && (endDay == (startDay+1)))
+			endMin= endMin + 24*60;
+		
 		int[] pos = new int[2];
 		for (int i = startMin; i < endMin; i = i + SMALLEST_DURATION) 
 		{
-			pos = calRowColNum(i);
+			pos = calculateRowColNum(i);
 			if (i == startMin) 
 			{
 				tableView.getModel().setValueAt(appt, pos[0], pos[1]);
@@ -519,7 +528,7 @@ public class AppList extends JPanel implements ActionListener
 
 	}
 
-	public int[] calRowColNum(int startTime) 
+	public int[] calculateRowColNum(int startTime) 
 	{
 		int[] position = new int[2];
 		position[0] = startTime / SMALLEST_DURATION;
@@ -565,20 +574,57 @@ public class AppList extends JPanel implements ActionListener
 		}
 		else
 		{
-			if (selectedAppt.isRepeated()){
-				int reply = JOptionPane.showConfirmDialog(parent, "This will delete all repeated schedule");
-				if (reply != JOptionPane.YES_OPTION)
-					return ;
-			}
-			if (ApptController.getInstance().removeAppt(UserController.getInstance().getDefaultUser(), selectedAppt)){
-				parent.getAppListPanel().clear();
-				parent.getAppListPanel().setTodayAppt(parent.GetTodayAppt());
-				parent.repaint();
-				JOptionPane.showMessageDialog(parent, "Deleted successfully!");
+			if(selectedAppt instanceof GroupAppt){
+				GroupAppt selectedGroupAppt = (GroupAppt) selectedAppt;
+				String ownerString = selectedGroupAppt.getOwner();
+				User owner = UserController.getInstance().getUser(ownerString);
+				
+				if(UserController.getInstance().getCurrentUser() == owner){		//if the current user is the owner
+					int reply = JOptionPane.showConfirmDialog(parent, "This will delete the group event from all the attending users");
+					if (reply != JOptionPane.YES_OPTION)
+						return;
+					for(String attendeeString :selectedGroupAppt.getAttendList()){
+						User attendee = UserController.getInstance().getUser(attendeeString);
+						List<Appt> eachGroupApptList = ApptController.getInstance().RetrieveApptsInList(attendee,
+								selectedGroupAppt.getTimeSpan());
+						GroupAppt eachGroupAppt;
+						if(eachGroupApptList.size() <= 1 && eachGroupApptList.size() != 0){
+							eachGroupAppt = (GroupAppt)eachGroupApptList.get(0);
+						}
+						else{
+							System.out.println("Something wrong with deleting group appts!");
+							return;
+						}
+						if(eachGroupAppt != null){
+							ApptController.getInstance().removeAppt(attendee, eachGroupAppt);
+						}
+					}
+					parent.getAppListPanel().clear();
+					parent.getAppListPanel().setTodayAppt(parent.GetTodayAppt());
+					parent.repaint();
+					JOptionPane.showMessageDialog(parent, "Deleted successfully!");
+				}
+				else{		//if the current user is NOT the owner.
+					JOptionPane.showMessageDialog(this, "Only the owner of the group appointment can delete/modify!");	
+					return;
+				}
 			}
 			else{
-				JOptionPane.showMessageDialog(parent, "Failed to Delete",
-						"Error", JOptionPane.ERROR_MESSAGE);
+				if (selectedAppt.isRepeated()){
+					int reply = JOptionPane.showConfirmDialog(parent, "This will delete all repeated schedule");
+					if (reply != JOptionPane.YES_OPTION)
+						return ;
+				}
+				if (ApptController.getInstance().removeAppt(UserController.getInstance().getCurrentUser(), selectedAppt)){
+					parent.getAppListPanel().clear();
+					parent.getAppListPanel().setTodayAppt(parent.GetTodayAppt());
+					parent.repaint();
+					JOptionPane.showMessageDialog(parent, "Deleted successfully!");
+				}
+				else{
+					JOptionPane.showMessageDialog(parent, "Failed to Delete",
+							"Error", JOptionPane.ERROR_MESSAGE);
+				}
 			}
 		}
 
@@ -593,16 +639,38 @@ public class AppList extends JPanel implements ActionListener
 		{
 			return;
 		}
-		if (selectedAppt.isRepeated()){
-			int reply = JOptionPane.showConfirmDialog(parent, "This will modify all repeated schedule");
-			if (reply != JOptionPane.YES_OPTION)
-				return ;
+		
+		if(selectedAppt instanceof GroupAppt){
+			GroupAppt selectedGroupAppt = (GroupAppt) selectedAppt;
+			String ownerString = selectedGroupAppt.getOwner();
+			User owner = UserController.getInstance().getUser(ownerString);
+			
+			if(UserController.getInstance().getCurrentUser() == owner){		//if the current user is the owner
+				int reply = JOptionPane.showConfirmDialog(parent, "This will modify the group event for all the attending users");
+				if (reply != JOptionPane.YES_OPTION)
+					return;
+			}
+			else{		//if the current user is NOT the owner.
+				JOptionPane.showMessageDialog(this, "Only the owner of the group appointment can delete/modify!");	
+				return;
+			}
+			AppScheduler setAppDial = new AppScheduler("Modify", "Group", parent, selectedAppt);
+			setAppDial.updateSettingAppt(selectedAppt);
+			setAppDial.show();
+			setAppDial.setResizable(false);
+			
 		}
-		AppScheduler setAppDial = new AppScheduler("Modify", parent, selectedAppt);
-		setAppDial.updateSettingAppt(selectedAppt);
-		setAppDial.show();
-		setAppDial.setResizable(false);
-
+		else{
+			if (selectedAppt.isRepeated()){
+				int reply = JOptionPane.showConfirmDialog(parent, "This will modify all repeated schedule");
+				if (reply != JOptionPane.YES_OPTION)
+					return ;
+			}
+			AppScheduler setAppDial = new AppScheduler("Modify", "Single", parent, selectedAppt);
+			setAppDial.updateSettingAppt(selectedAppt);
+			setAppDial.show();
+			setAppDial.setResizable(false);
+		}
 	}
 
 	public Appt getSelectedApptTitle() 
@@ -658,7 +726,7 @@ public class AppList extends JPanel implements ActionListener
 			startTime = currentRow * 15;
 		else
 			startTime = (currentRow + ROWNUM) * 15;
-		AppScheduler a = new AppScheduler("New", parent);
+		AppScheduler a = new AppScheduler("New","Single",parent);
 		a.updateSettingAppt(hkust.cse.calendar.gui.Utility.createDefaultAppt(
 				parent.getCurrentlySelectedYear(), parent.getCurrentlySelectedMonth(), parent.getCurrentlySelectedDay(),
 				parent.mCurrUser, startTime));

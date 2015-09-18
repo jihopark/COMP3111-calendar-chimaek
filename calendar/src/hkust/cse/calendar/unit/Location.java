@@ -1,37 +1,43 @@
 package hkust.cse.calendar.unit;
 
-import hkust.cse.calendar.locationstorage.LocationController;
-
 public class Location {
 	private String _name;
 	private int _locationID;
 	private int _appointmentCount;
+	private int _capacity;
 	
 	public Location() {
 		_name = "";
 		_locationID = 0;
 		_appointmentCount = 0;
+		_capacity = 0;
 	}
 	
-	public void addCountForLocation() {
+	public Location(Location location) {
+		_name = location.getName();
+		_locationID = location.getID();
+		_appointmentCount = location.getAppointmentCount();
+		_capacity = location.getCapacity();
+	}
+	
+	public void increaseCountForLocation() {
 		_appointmentCount++;
-		System.out.println(_appointmentCount);
 	}
 	
-	public void subtractCountForLocation() {
+	public void decreaseCountForLocation() {
+		if(this.getAppointmentCount()>0)
 		_appointmentCount--;
-		System.out.println(_appointmentCount);
 	}
 	
 	public int getAppointmentCount() {
 		return _appointmentCount;
 	}
 	
-	
-	public Location(Location location) {
-		_name = location.getName();
-		_locationID = location.getID();
-		_appointmentCount = location.getAppointmentCount();
+	public void setCapacity(int num) {
+		_capacity = num;
+	}
+	public int getCapacity() {
+		return _capacity;
 	}
 	
 	public String getName() {

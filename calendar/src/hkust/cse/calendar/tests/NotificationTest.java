@@ -2,12 +2,6 @@ package hkust.cse.calendar.tests;
 
 import static org.junit.Assert.*;
 
-import java.util.Calendar;
-import java.util.LinkedList;
-
-import hkust.cse.calendar.unit.Location;
-import hkust.cse.calendar.unit.Notification;
-
 import org.junit.Test;
 
 public class NotificationTest {

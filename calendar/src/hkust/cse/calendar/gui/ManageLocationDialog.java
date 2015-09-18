@@ -1,19 +1,10 @@
 package hkust.cse.calendar.gui;
 
 import hkust.cse.calendar.unit.Location;
-import hkust.cse.calendar.unit.User;
-import hkust.cse.calendar.apptstorage.ApptController;
-import hkust.cse.calendar.apptstorage.ApptStorageMemory;
+import hkust.cse.calendar.userstorage.UserController;
 import hkust.cse.calendar.locationstorage.LocationController;
-import hkust.cse.calendar.locationstorage.LocationStorageNullImpl;
-import hkust.cse.calendar.tests.GUITest;
-
 import java.awt.*;
 import java.awt.event.*;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Vector;
-
 import javax.swing.*;
 import javax.swing.event.*;
 
@@ -29,11 +20,13 @@ public class ManageLocationDialog extends JPanel
     private DefaultListModel<Location> retrievedLocationList;
 	private JList displayList;
     private JButton deleteButton;
+    private JLabel capacityLabel;
+    private int selectedLocationCapacity = 0;
     private JTextField locationName;
+    private JTextField locationCapacity;
 
     public ManageLocationDialog() {
         super(new BorderLayout());
-        /////////////////////delete when ¿¬µ¿/////////////////
         /*
         User user = new User( "noname", "nopass");
 		LocationController.getInstance().initLocationStorage(new LocationStorageNullImpl(user));
@@ -41,10 +34,24 @@ public class ManageLocationDialog extends JPanel
         */
         retrievedLocationList = LocationController.getInstance().getLocationList();
         displayList = new JList <Location>(retrievedLocationList);
-       
+        MouseListener mouseListener = new MouseAdapter() {
+        	public void mouseClicked(MouseEvent e) {
+        		if(e.getClickCount() == 2 ) {
+        			Location selectedItem = (Location) displayList.getSelectedValue();
+                    System.out.println("Location ApptCount: "+selectedItem.getName()+": "+LocationController.getInstance().getLocationApptCount(selectedItem));
+
+        			if(selectedItem.getCapacity() < 2){
+                        capacityLabel.setText("This facility is not a group facility");
+        			} else {
+        				capacityLabel.setText("The Group Facility's Capacity is: " + selectedItem.getCapacity());
+        			}
+        		}
+        	}
+        };
+        displayList.addMouseListener(mouseListener);
         //Create the list and put it in a scroll pane//
         JScrollPane listScrollPane = new JScrollPane(displayList);
-
+		
         JButton addButton = new JButton(AddButtonString);
         AddListener addListener = new AddListener(addButton);
         addButton.setActionCommand(AddButtonString);
@@ -58,7 +65,11 @@ public class ManageLocationDialog extends JPanel
         locationName = new JTextField(10);
         locationName.addActionListener(addListener);
         locationName.getDocument().addDocumentListener(addListener);
-
+        
+        locationCapacity = new JTextField(3);
+        locationCapacity.setEnabled(false);
+        
+        capacityLabel = new JLabel("The Group Facility Capacity is: " + selectedLocationCapacity);
         //Create a panel that uses BoxLayout.
         JPanel buttonPane = new JPanel();
         buttonPane.setLayout(new BoxLayout(buttonPane,
@@ -70,14 +81,24 @@ public class ManageLocationDialog extends JPanel
         buttonPane.add(locationName);
         buttonPane.add(addButton);
         buttonPane.add(deleteButton);
+        buttonPane.add(locationCapacity);
+        
         if(retrievedLocationList.getSize()==0 || 
         		((retrievedLocationList.getSize()==1) && (retrievedLocationList.getElementAt(0).getName().equals("-") ))) {
             deleteButton.setEnabled(false);
         }
         buttonPane.setBorder(BorderFactory.createEmptyBorder(5,5,5,5));
-
+		
         add(listScrollPane, BorderLayout.CENTER);
+        add(capacityLabel, BorderLayout.LINE_END);
         add(buttonPane, BorderLayout.PAGE_END);
+        
+        if(!UserController.getInstance().getCurrentUser().isAdmin()){
+        	deleteButton.setEnabled(false);
+        	addButton.setEnabled(false);
+        	locationName.setEnabled(false);
+        	locationCapacity.setEnabled(false);
+        }
     }
     
     class DeleteListener implements ActionListener {
@@ -87,9 +108,18 @@ public class ManageLocationDialog extends JPanel
             //there's a valid selection	
             //so go ahead and remove whatever's selected.
             int index = displayList.getSelectedIndex();
+        	//System.out.println(retrievedLocationList.getElementAt(index).getName()+": "+retrievedLocationList.getElementAt(index).getAppointmentCount());
+
+            
             if(!retrievedLocationList.getElementAt(index).getName().equals("-")) {
-            	retrievedLocationList.remove(index);
-            	LocationController.getInstance().removeLocation(index);
+            	if(LocationController.getInstance().canDeleteLocation(retrievedLocationList.getElementAt(index))) {
+            		retrievedLocationList.remove(index);
+            		LocationController.getInstance().removeLocation(index);
+            	}
+            	else {
+            		JOptionPane.showMessageDialog(locationName, "Appointment exists for this location!",
+            				"Error", JOptionPane.ERROR_MESSAGE);
+            	}
             }
             else {
             	//Print error message 
@@ -129,11 +159,12 @@ public class ManageLocationDialog extends JPanel
         //Required by ActionListener.
         public void actionPerformed(ActionEvent e) {
             String name = locationName.getText();
-
-            //User didn't type in a unique name...
-            if (name.equals("") || alreadyInList(name)) {
+            String capacity = locationCapacity.getText();
+            
+            //User didn't type in a unique name...or didn't type any capacity
+            if (capacity.equals("") || name.equals("") || alreadyInList(name)) {
                 Toolkit.getDefaultToolkit().beep();
-    			JOptionPane.showMessageDialog(locationName, "Input location already exists!",
+    			JOptionPane.showMessageDialog(locationName, "Please fill all required fields correctly!",
     					"Input Error", JOptionPane.ERROR_MESSAGE);
                 locationName.requestFocusInWindow();
                 locationName.selectAll();
@@ -142,13 +173,39 @@ public class ManageLocationDialog extends JPanel
 
             
 
-            //adds new location at the end of the retrievedLocationList
+            // adds new location at the end of the retrievedLocationList
             // need to change later to be sorted in order
             Location newLocation = new Location();
             newLocation.setName(name);
-
+            
+            /*
+            //single room
+            if()
+            newLocation.setCapacity(1);
+            
+            //group room
+            else if()
+            	newLocation.setCapacity( );
+            */
+            
+            //check validity of capacity.
+            int locationCapacityNum = Utility.getNumber(locationCapacity.getText());
+            if(!LocationController.getInstance().checkValidCapacity(locationCapacityNum)){
+            	JOptionPane.showMessageDialog(locationCapacity, "Capacity must be a number!",
+    					"Input Error", JOptionPane.ERROR_MESSAGE);
+            	return;
+            }
+            
             retrievedLocationList.addElement(newLocation);
             LocationController.getInstance().saveNewLocation(newLocation);
+            if(LocationController.getInstance().setLocationCapacity(newLocation.getName(), locationCapacityNum)){
+                LocationController.getInstance().modifyLocation(newLocation);
+            	System.out.println("ManageLocation/setLocationCapacity: location capacity saved successful");
+                int tempLocationCapacity = LocationController.getInstance().getLocationCapacity(newLocation.getName());
+                System.out.println("ManageLocation/setLocationCapacity: new location Capcity is: " + tempLocationCapacity );
+            } else {
+            	System.out.println("ManageLocation/setLocationCapacity: location capacity saved failed");
+            }
             
             //LocationController.getInstance().printList();
            
@@ -156,6 +213,7 @@ public class ManageLocationDialog extends JPanel
             //Reset the text field.
             locationName.requestFocusInWindow();
             locationName.setText("");
+            locationCapacity.setText("");
 
             int index = LocationController.getInstance().getListSize()-1; //get selected index
             
@@ -196,12 +254,14 @@ public class ManageLocationDialog extends JPanel
         private void enableButton() {
             if (!alreadyEnabled) {
                 button.setEnabled(true);
+                locationCapacity.setEnabled(true);
             }
         }
 
         private boolean handleEmptyTextField(DocumentEvent e) {
             if (e.getDocument().getLength() <= 0) {
                 button.setEnabled(false);
+                locationCapacity.setEnabled(false);
                 alreadyEnabled = false;
                 return true;
             }
@@ -216,6 +276,7 @@ public class ManageLocationDialog extends JPanel
             if (displayList.getSelectedIndex() == -1) {
             //No selection, disable fire button.
                 deleteButton.setEnabled(false);
+                
 
             } else {
             //Selection, enable the fire button.
@@ -242,6 +303,7 @@ public class ManageLocationDialog extends JPanel
         //Display the window.
         frame.pack();
         frame.setVisible(true);
+        
     }
     
 	

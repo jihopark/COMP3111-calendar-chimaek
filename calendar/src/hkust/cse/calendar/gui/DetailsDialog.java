@@ -1,6 +1,8 @@
 package hkust.cse.calendar.gui;
 
+import hkust.cse.calendar.time.TimeController;
 import hkust.cse.calendar.unit.Appt;
+import hkust.cse.calendar.unit.GroupAppt;
 import hkust.cse.calendar.unit.TimeSpan;
 import hkust.cse.calendar.unit.User;
 
@@ -11,7 +13,6 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.sql.Timestamp;
 import java.util.LinkedList;
-import java.util.List;
 import java.util.Vector;
 
 import javax.swing.JButton;
@@ -46,13 +47,13 @@ public class DetailsDialog extends JFrame implements ActionListener {
 
 		Container content = getContentPane();
 		setTitle(title);
-		
+
 		JScrollPane panel = new JScrollPane();
 		Border border = new TitledBorder(null, "Information");
 		panel.setBorder(border);
 
 		area = new JTextArea(25, 40);
-//		area.setPreferredSize(new Dimension(400, 300));
+		//		area.setPreferredSize(new Dimension(400, 300));
 
 		panel.getViewport().add(area);
 
@@ -80,80 +81,62 @@ public class DetailsDialog extends JFrame implements ActionListener {
 
 	public void Display(Appt appt) {
 
-		Timestamp sTime = appt.TimeSpan().StartTime();
-		Timestamp eTime = appt.TimeSpan().EndTime();
-		String time = sTime.getHours() + ":";
-		if (sTime.getMinutes() == 0)
-			time = time + "00" + " - " + eTime.getHours() + ":";
+		Timestamp startTime = appt.TimeSpan().StartTime();
+		Timestamp endTime = appt.TimeSpan().EndTime();
+		String time = TimeController.getInstance().getHourFrom(startTime) + ":";
+		if (TimeController.getInstance().getMinuteFrom(startTime) == 0)
+			time = time + "00" + " - " + TimeController.getInstance().getHourFrom(endTime) + ":";
 		else
-			time = time + sTime.getMinutes() + " - " + eTime.getHours() + ":";
-		if (eTime.getMinutes() == 0)
+			time = time + TimeController.getInstance().getMinuteFrom(startTime) + " - " + TimeController.getInstance().getHourFrom(endTime) + ":";
+		if (TimeController.getInstance().getMinuteFrom(endTime) == 0)
 			time = time + "00";
 		else
-			time = time + eTime.getMinutes();
+			time = time + TimeController.getInstance().getMinuteFrom(endTime);
 
 		area.setText("Appointment Information \n");
 		area.append("Title: " + appt.getTitle() + "\n");
 		area.append("Time: " + time + "\n");
 
 		area.append("Location: " + appt.getLocation() + "\n");
-		
+
 		//REPEAT DETAILS
 		area.append("Repeated: ");
 		switch(appt.getRepeatType())
 		{
-			case 0:area.append("One-Time \n"); break;
-			case 1:area.append("Daily \n"); break;
-			case 2:area.append("Weekly \n"); break;
-			case 3:area.append("Monthly \n"); break;
+		case 0:area.append("One-Time \n"); break;
+		case 1:area.append("Daily \n"); break;
+		case 2:area.append("Weekly \n"); break;
+		case 3:area.append("Monthly \n"); break;
 		}
-		
+
 		//NOTIFICATION DETAILS
 		if(appt.getNotification() != null)
 		{
-			List<Boolean> alarmFlagList = appt.getNotification().getFlags();
-			area.append("Notifications: ");
-			if(alarmFlagList.get(0))
-				area.append("1 hour   ");
-			if(alarmFlagList.get(1))
-				area.append("3 hours   ");
-			if(alarmFlagList.get(2))
-				area.append("12 hours   ");
-			if(alarmFlagList.get(3))
-				area.append("24 hours   ");
-			area.append("\n");
+			area.append("Notifications at: " + appt.getNotification().getNotificationTimeObj().getNotificationTime());
 		}
 		else
 		{
 			area.append("Notifications at: -");
 		}
 		
-		area.append("\nParticipants:\n");
-		area.append("  Attend:");
-		LinkedList<String> attendList = appt.getAttendList();
-		if(attendList != null)
-		{
-			for(int i = 0; i < attendList.size(); i++)
-			{
-				area.append("  " + attendList.get(i));
-			}
+		if(appt.getisPublic()){
+			area.append("\nisPublic: YES");
 		}
-		area.append("\n\n  Reject:");
-		LinkedList<String> rejectList = appt.getRejectList();
-		if(rejectList != null)
-		{
-			for(int i = 0; i < rejectList.size(); i++)
-			{
-				area.append("  " + rejectList.get(i));
-			}
+		else{
+			area.append("\nisPublic: NO");
 		}
-		area.append("\n\n  Waiting:");
-		LinkedList<String> waitingList = appt.getWaitingList();
-		if(waitingList != null)
-		{
-			for(int i = 0; i < waitingList.size(); i++)
+		if (appt instanceof GroupAppt){
+			area.append("\nParticipants:\n");
+			area.append("  Owner:");
+			area.append("  "+((GroupAppt)appt).getOwner());
+			area.append("\n  Attend:");
+			LinkedList<String> attendList = ((GroupAppt)appt).getAttendList();
+			if(attendList != null)
 			{
-				area.append("  " + waitingList.get(i));
+				for(int i = 0; i < attendList.size(); i++)
+				{
+					area.append("  " + attendList.get(i));
+				}
 			}
 		}
 

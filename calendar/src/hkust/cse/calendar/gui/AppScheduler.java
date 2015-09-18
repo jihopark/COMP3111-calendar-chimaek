@@ -1,13 +1,17 @@
 package hkust.cse.calendar.gui;
 
 import hkust.cse.calendar.apptstorage.ApptController;
+import hkust.cse.calendar.invite.InviteController;
 import hkust.cse.calendar.locationstorage.LocationController;
-import hkust.cse.calendar.locationstorage.LocationStorageNullImpl;
+import hkust.cse.calendar.locationstorage.LocationStorage;
 import hkust.cse.calendar.time.TimeController;
 import hkust.cse.calendar.unit.Appt;
+import hkust.cse.calendar.unit.GroupAppt;
 import hkust.cse.calendar.unit.Location;
+import hkust.cse.calendar.unit.Notification;
 import hkust.cse.calendar.unit.TimeSpan;
-import hkust.cse.calendar.user.UserController;
+import hkust.cse.calendar.unit.User;
+import hkust.cse.calendar.userstorage.UserController;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
@@ -23,8 +27,7 @@ import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.GregorianCalendar;
-import java.util.List;
-
+import java.util.LinkedList;
 import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
 import javax.swing.ButtonGroup;
@@ -77,6 +80,10 @@ ComponentListener {
 	private JRadioButton weeklyButton;
 	private JRadioButton monthlyButton;
 
+	private JCheckBox notificationEnableBox;
+	private JTextField notificationHourField;
+	private JTextField notificationMinuteField;
+
 	private JCheckBox oneHourCheckBox;
 	private JCheckBox threeHourCheckBox;
 	private JCheckBox twelveHourCheckBox;
@@ -85,11 +92,14 @@ ComponentListener {
 
 	private DefaultListModel model;
 	private JTextField titleField;
-
+	private JCheckBox setPublicCheckBox;
+	
 	private JButton saveBut;
 	private JButton CancelBut;
 	private JButton inviteBut;
 	private JButton rejectBut;
+	private JButton groupEventButton;
+	private JButton GroupEventTimeSlotButton;
 
 	private Appt currentAppt;
 	private CalGrid parent;
@@ -110,32 +120,47 @@ ComponentListener {
 	//	private JTextField waitingField;
 	private boolean isModifying = false;
 	private final String MODIFY = "Modify";
+	private boolean isGroupEvent = false;
+	private final String GROUP = "Group";
+	
 
-	private void commonConstructor(String title, CalGrid cal) {
+	//////////////Group Event Time Slot/////////////
+	private TimeSpan d1;
+	private ArrayList<User> inviteeList1;
+	private ArrayList<Date> dateList1;
+	////////////////////////////////////////////////
+	
+	
+	
+	private void commonConstructor(String title, String groupOrSingle, CalGrid cal) {
 
 		parent = cal;
 		this.setAlwaysOnTop(true);
 		setTitle(title);
 		setModal(false);
 
-		if (title.equals(MODIFY)) 
+		if(title.equals(MODIFY)) 
 			isModifying = true;
 
+		if(groupOrSingle.equals(GROUP)){
+			isGroupEvent = true;
+		}
+		
 		Container contentPane;
 		contentPane = getContentPane();
 
 		//Initializing individual panels.
-		JPanel panelTop = initiateTopPanel();
-		JPanel panelDate = initiateDatePanel();
-		JPanel panelStartTime = initiateStartTimePanel();
-		JPanel panelEndTime = initiateEndTimePanel();
-		JPanel panelBothTime = initiateBothTimePanel();
-		JPanel panelDateAndTime = initiateDateAndTimePanel();
-		JPanel panelFreq = initiateFreqPanel();
-		JPanel panelNotification = initiateNotificationPanel();
-		JPanel panelFreqAndNotification = initiateFreqAndNotificationPanel();
-		JPanel panelFreqEndAt = initiateFreqEndAtPanel();
-		JPanel panelEndAtFreqAndNotification = initiateEndAtFreqAndNotificationPanel();
+		JPanel panelTop = initializeTopPanel();
+		JPanel panelDate = initializeDatePanel();
+		JPanel panelStartTime = initializeStartTimePanel();
+		JPanel panelEndTime = initializeEndTimePanel();
+		JPanel panelBothTime = initializeBothTimePanel();
+		JPanel panelDateAndTime = initializeDateAndTimePanel();
+		JPanel panelFreq = initializeFreqPanel();
+		JPanel panelNotification = initializeNotificationPanel();
+		JPanel panelFreqAndNotification = initiatializeFreqAndNotificationPanel();
+		JPanel panelFreqEndAt = initializeFreqEndAtPanel();
+		JPanel panelEndAtFreqAndNotification = initializeEndAtFreqAndNotificationPanel();
 
 		//Adding the panels to respective root panels.
 		panelBothTime.add(panelStartTime);
@@ -143,36 +168,30 @@ ComponentListener {
 		panelDateAndTime.add("North", panelDate);
 		panelDateAndTime.add("South", panelBothTime);
 		panelTop.add(panelDateAndTime, BorderLayout.NORTH);
-
 		panelFreqAndNotification.add(panelFreq);
 		panelFreqAndNotification.add(panelNotification);
 		panelEndAtFreqAndNotification.add("North",panelFreqAndNotification);
 		panelEndAtFreqAndNotification.add("South",panelFreqEndAt);
 		panelTop.add(panelEndAtFreqAndNotification, BorderLayout.CENTER);
-
-		JPanel panelTitleAndText = initiateTitleAndTextPanel();
-		panelDetail = initiateDetailPanel();
-		panelApptDescription = initiateApptDescriptionPanel(panelTitleAndText, panelDetail);
-
+		JPanel panelTitleNLocationNPublic = initializeTitleNLocationNPublicPanel();
+		panelDetail = initializeDetailPanel();
+		panelApptDescription = initializeApptDescriptionPanel(panelTitleNLocationNPublic, panelDetail);
 		panelTop.add(panelApptDescription, BorderLayout.SOUTH);
-
 		contentPane.add("North", panelTop);
 
-		currentAppt = new Appt();
+		//currentAppt = new Appt();
 
 		JPanel panelBottom = new JPanel();
 		panelBottom.setLayout(new FlowLayout(FlowLayout.RIGHT));
-
-		//		inviteBut = new JButton("Invite");
-		//		inviteBut.addActionListener(this);
-		//		panelBottom.add(inviteBut);
 
 		//initiate buttons.
 		initiateSaveButton();
 		initiateRejectButton();
 		initiateCancelButton();
-
+		initiateGroupEventButton();
+		
 		//add them to the panel
+		panelBottom.add(groupEventButton);
 		panelBottom.add(saveBut);
 		panelBottom.add(rejectBut);
 		rejectBut.show(false);
@@ -198,7 +217,77 @@ ComponentListener {
 
 	}
 
-	public JPanel initiateDatePanel()
+	private void commonConstructor(String title, CalGrid cal, ArrayList<User> inviteeList, ArrayList<Date> dateList) {
+
+		parent = cal;
+		this.setAlwaysOnTop(true);
+		setTitle(title);
+		setModal(false);
+		
+		inviteeList1 = new ArrayList<User>();
+		dateList1 = new ArrayList<Date> ();
+		inviteeList1 = inviteeList;
+		dateList1 = dateList;
+		
+		currentAppt = new Appt();
+		
+		Container contentPane;
+		contentPane = getContentPane();
+
+		//Initializing individual panels.
+		JPanel panelTop = initializeTopPanel();
+		JPanel panelDate = initializeDatePanel();
+		JPanel panelStartTime = initializeStartTimePanel();
+		JPanel panelEndTime = initializeEndTimePanel();
+		JPanel panelBothTime = initializeBothTimePanel();
+		JPanel panelDateAndTime = initializeDateAndTimePanel();
+		JPanel panelFreq = initializeFreqPanel();
+		JPanel panelNotification = initializeNotificationPanel();
+		JPanel panelFreqAndNotification = initiatializeFreqAndNotificationPanel();
+		JPanel panelFreqEndAt = initializeFreqEndAtPanel();
+		JPanel panelEndAtFreqAndNotification = initializeEndAtFreqAndNotificationPanel();
+
+		//Adding the panels to respective root panels.
+		panelBothTime.add(panelStartTime);
+		panelBothTime.add(panelEndTime);
+		panelDateAndTime.add("North", panelDate);
+		panelDateAndTime.add("South", panelBothTime);
+		panelTop.add(panelDateAndTime, BorderLayout.NORTH);
+		panelFreqAndNotification.add(panelFreq);
+		panelFreqAndNotification.add(panelNotification);
+		panelEndAtFreqAndNotification.add("North",panelFreqAndNotification);
+		panelEndAtFreqAndNotification.add("South",panelFreqEndAt);
+		panelTop.add(panelEndAtFreqAndNotification, BorderLayout.CENTER);
+		JPanel panelTitleNLocationNPublic = initializeTitleNLocationNPublicPanel();
+		panelDetail = initializeDetailPanel();
+		panelApptDescription = initializeApptDescriptionPanel(panelTitleNLocationNPublic, panelDetail);
+		panelTop.add(panelApptDescription, BorderLayout.SOUTH);
+		contentPane.add("North", panelTop);
+
+		//currentAppt = new Appt();
+
+		JPanel panelBottom = new JPanel();
+		panelBottom.setLayout(new FlowLayout(FlowLayout.RIGHT));
+
+		//initiate buttons.
+		//initiateSaveButton();
+		//initiateRejectButton();
+		initiateCancelButton();
+		//initiateGroupEventButton();
+		initiateGroupEventTimeSlotButton();
+		
+		//add them to the panel
+		panelBottom.add(GroupEventTimeSlotButton);
+		//panelBottom.add(saveBut);
+		//panelBottom.add(rejectBut);
+		//rejectBut.show(false);
+		panelBottom.add(CancelBut);
+		contentPane.add("South", panelBottom);
+		pack();
+
+	}
+
+	public JPanel initializeDatePanel()
 	{
 		JPanel panelDate = new JPanel();
 		Border dateBorder = new TitledBorder(null, "DATE");
@@ -222,20 +311,9 @@ ComponentListener {
 		return panelDate;
 	}
 
-	/*public void initializeDefaultDateSetting()
-	{
-		String defaultYearString = Integer.toString(TimeController.getInstance().getCurrentTimeInDate().getYear()+1900);
-		yearField.setText(defaultYearString);
 
-		String defaultMonthString = Integer.toString(TimeController.getInstance().getCurrentTimeInDate().getMonth()+1);
-		monthField.setText(defaultMonthString);
 
-		String defaultDayString = Integer.toString(TimeController.getInstance().getCurrentTimeInDate().getDate());
-		dayField.setText(defaultDayString);
-
-	}*/
-
-	public JPanel initiateStartTimePanel()
+	public JPanel initializeStartTimePanel()
 	{
 
 		JPanel panelStartTime = new JPanel();
@@ -254,7 +332,7 @@ ComponentListener {
 
 	}
 
-	public JPanel initiateEndTimePanel()
+	public JPanel initializeEndTimePanel()
 	{
 		JPanel panelEndTime = new JPanel();
 		Border etimeBorder = new TitledBorder(null, "END TIME");
@@ -272,7 +350,7 @@ ComponentListener {
 
 	}
 
-	public JPanel initiateBothTimePanel()
+	public JPanel initializeBothTimePanel()
 	{
 		final int ROWS = 1;
 		final int COLUMNS = 2;
@@ -282,14 +360,14 @@ ComponentListener {
 
 	}
 
-	public JPanel initiateDateAndTimePanel()
+	public JPanel initializeDateAndTimePanel()
 	{
 		JPanel panelDateAndTime = new JPanel();
 		panelDateAndTime.setLayout(new BorderLayout());
 		return panelDateAndTime;
 	}
 
-	public JPanel initiateFreqPanel()
+	public JPanel initializeFreqPanel()
 	{
 		JPanel panelFreq = new JPanel();
 		Border freqBorder = new TitledBorder(null, "Frequency");
@@ -323,15 +401,42 @@ ComponentListener {
 
 	}
 
-	public JPanel initiateNotificationPanel()
+	public JPanel initializeNotificationPanel()
 	{
 		JPanel panelNotification = new JPanel();
 		Border notificationBorder = new TitledBorder(null, "Notification");
 		panelNotification.setBorder(notificationBorder);
-		BoxLayout boxLayout = new BoxLayout(panelNotification, BoxLayout.Y_AXIS);
-		panelNotification.setLayout(boxLayout);
-
-		oneHourCheckBox = new JCheckBox("1 hour");
+		panelNotification.setLayout(new BorderLayout());
+		
+		JPanel notificationhHourPanel = new JPanel();
+		notificationhHourPanel.setLayout(new FlowLayout());
+		JLabel hourLabel = new JLabel("Hour(s)");
+		notificationHourField = new JTextField(4);
+		notificationHourField.setEditable(false);
+		notificationhHourPanel.add(notificationHourField);
+		notificationhHourPanel.add(hourLabel);
+		
+		JPanel notificationMinutePanel = new JPanel();
+		notificationMinutePanel.setLayout(new FlowLayout());
+		JLabel minuteLabel = new JLabel("Minutes");
+		notificationMinuteField = new JTextField(4);
+		notificationMinuteField.setEditable(false);
+		notificationMinutePanel.add(notificationMinuteField);
+		notificationMinutePanel.add(minuteLabel);
+		
+		
+		JPanel descriptionPanel = new JPanel();
+		descriptionPanel.setLayout(new FlowLayout());
+		notificationEnableBox = new JCheckBox("Turn on/off notification");
+		descriptionPanel.add(notificationEnableBox);
+		notificationEnableBox.addActionListener(this);
+		
+		panelNotification.add("North", descriptionPanel);
+		panelNotification.add("Center", notificationhHourPanel);
+		panelNotification.add("South", notificationMinutePanel);
+		
+		
+		/*oneHourCheckBox = new JCheckBox("1 hour");
 		threeHourCheckBox = new JCheckBox("3 hours");
 		twelveHourCheckBox = new JCheckBox("12 hours");
 		twentyfourHourCheckBox = new JCheckBox("24 hours");
@@ -340,12 +445,12 @@ ComponentListener {
 		panelNotification.add(threeHourCheckBox);
 		panelNotification.add(twelveHourCheckBox);
 		panelNotification.add(twentyfourHourCheckBox);
-
+		 */
 		return panelNotification;
 
 	}
 
-	public JPanel initiateFreqAndNotificationPanel()
+	public JPanel initiatializeFreqAndNotificationPanel()
 	{
 		final int ROWS = 1;
 		final int COLUMNS = 2;
@@ -355,7 +460,7 @@ ComponentListener {
 		return panelFreqAndNotification;
 	}
 
-	public JPanel initiateFreqEndAtPanel()
+	public JPanel initializeFreqEndAtPanel()
 	{
 		JPanel panelFreqEndAt = new JPanel();
 		Border freqBorder = new TitledBorder(null, "Appointment Ends At");
@@ -383,7 +488,7 @@ ComponentListener {
 		return panelFreqEndAt;
 	}
 
-	public JPanel initiateEndAtFreqAndNotificationPanel()
+	public JPanel initializeEndAtFreqAndNotificationPanel()
 	{
 
 		JPanel panelEndAtFreqAndNotification = new JPanel();
@@ -392,7 +497,7 @@ ComponentListener {
 		return panelEndAtFreqAndNotification;
 	}
 
-	public JPanel initiateTopPanel()
+	public JPanel initializeTopPanel()
 	{
 		JPanel panelTop = new JPanel();
 		panelTop.setLayout(new BorderLayout());
@@ -400,19 +505,19 @@ ComponentListener {
 
 		return panelTop;
 	}
-
-	public JPanel initiateTitleAndTextPanel()
+	
+	public JPanel initializeTitleNLocationNPublicPanel()
 	{
-		JPanel panelTitleAndText = new JPanel();
+		JPanel panelTitleNLocationNPublic = new JPanel();
+		
+		//title label and field.
 		JLabel titleL = new JLabel("TITLE");
-		titleField = new JTextField(15);
-		panelTitleAndText.add(titleL);
-		panelTitleAndText.add(titleField);
+		titleField = new JTextField(12);
+		panelTitleNLocationNPublic.add(titleL);
+		panelTitleNLocationNPublic.add(titleField);
 
-		//GUI for location list.
-		//test for location combobox.
-
-		LocationController.getInstance().initLocationStorage(new LocationStorageNullImpl(UserController.getInstance().getDefaultUser()));
+		//location list
+		LocationController.getInstance().initLocationStorage(new LocationStorage(UserController.getInstance().getAdmin()));
 		ArrayList<Location> locationList = new ArrayList<Location>();
 		for(int i=0; i<LocationController.getInstance().getLocationList().getSize(); i++){
 			locationList.add(LocationController.getInstance().getLocationList().getElementAt(i));
@@ -427,17 +532,19 @@ ComponentListener {
 		}
 
 		JLabel locationLabel = new JLabel("LOCATION");
-
-		//need to change the parameter in the constructor
-		//to load the list of locations.
 		locationField = new JComboBox(locationStringArray);
-		panelTitleAndText.add(locationLabel);
-		panelTitleAndText.add(locationField);
-
-		return panelTitleAndText;
+		panelTitleNLocationNPublic.add(locationLabel);
+		panelTitleNLocationNPublic.add(locationField);
+		
+		//set public checkbox
+		setPublicCheckBox = new JCheckBox("isPublic");
+		panelTitleNLocationNPublic.add(setPublicCheckBox);
+				
+		
+		return panelTitleNLocationNPublic;
 	}
 
-	public JPanel initiateDetailPanel()
+	public JPanel initializeDetailPanel()
 	{
 		JPanel tempPanelDetail = new JPanel();
 		tempPanelDetail.setLayout(new BorderLayout());
@@ -452,7 +559,7 @@ ComponentListener {
 		return tempPanelDetail;
 	}
 
-	public JSplitPane initiateApptDescriptionPanel(JPanel panelTitleAndText, JPanel tempPanelDetail)
+	public JSplitPane initializeApptDescriptionPanel(JPanel panelTitleAndText, JPanel tempPanelDetail)
 	{
 		JSplitPane tempPanelApptDescription = new JSplitPane(JSplitPane.VERTICAL_SPLIT, panelTitleAndText,
 				tempPanelDetail);
@@ -465,7 +572,16 @@ ComponentListener {
 	{
 		saveBut = new JButton("Save");
 		saveBut.addActionListener(this);
+		if(isGroupEvent && isModifying){
+			saveBut.setEnabled(false);
+		}
 
+	}
+	
+	public void initiateGroupEventTimeSlotButton()
+	{
+		GroupEventTimeSlotButton = new JButton("Save Group Event(TimeSlot)");
+		GroupEventTimeSlotButton.addActionListener(this);
 	}
 
 	public void initiateRejectButton()
@@ -480,17 +596,29 @@ ComponentListener {
 		CancelBut = new JButton("Cancel");
 		CancelBut.addActionListener(this);
 	}
+	private void initiateGroupEventButton() {
+		groupEventButton = new JButton("Save as Group Event");
+		groupEventButton.addActionListener(this);
+		if((!isGroupEvent) && isModifying){
+			groupEventButton.setEnabled(false);
+		}
+	}
 
 	//Constructor	
-	AppScheduler(String title, CalGrid cal, Appt appt) {
+	AppScheduler(String title, String groupOrSingle, CalGrid cal, Appt appt) {
 		this.currentAppt = appt;
-		commonConstructor(title, cal);
+		commonConstructor(title, groupOrSingle, cal);
 	}
 
 
 	//Constructor
-	AppScheduler(String title, CalGrid cal) {
-		commonConstructor(title, cal);
+	AppScheduler(String title, String groupOrSingle, CalGrid cal) {
+		commonConstructor(title, groupOrSingle, cal);
+	}
+	
+	//Constructor - Group Event with Timeslot
+	AppScheduler(String title, CalGrid cal, ArrayList<User> inviteeList, ArrayList<Date> dateList){
+		commonConstructor(title, cal, inviteeList, dateList);
 	}
 
 
@@ -499,7 +627,6 @@ ComponentListener {
 		// distinguish which button is clicked and continue with require function
 		if (e.getSource() == CancelBut) 
 		{
-
 			setVisible(false);
 			dispose();
 		}
@@ -508,35 +635,229 @@ ComponentListener {
 			saveButtonResponse();
 
 		}
-		else if (e.getSource() == rejectBut)
+		else if (e.getSource() == groupEventButton) 
 		{
-			if (JOptionPane.showConfirmDialog(this, "Reject this joint appointment?", "Confirmation", JOptionPane.YES_NO_OPTION) == 0)
-			{
-				currentAppt.addReject(getCurrentUser());
-				currentAppt.getAttendList().remove(getCurrentUser());
-				currentAppt.getWaitingList().remove(getCurrentUser());
-				this.setVisible(false);
-				dispose();
-			}
+			groupEventButtonResponse();
+
+		}
+		else if (e.getSource() == GroupEventTimeSlotButton)
+		{
+			GroupEventTimeSlotButtonResponse();
 		}
 		else if(e.getSource() == oneTimeButton)
 		{
 			enableEndAtFields(false);
-
+			enableGroupEventButton(true);
+			
 		}
 		else if(e.getSource() == dailyButton || e.getSource() == weeklyButton || e.getSource() == monthlyButton)
 		{
 			enableEndAtFields(true);
+			enableGroupEventButton(false);
+		}
+		else if(e.getSource() == notificationEnableBox)
+		{
+			modifyNotificationField();
 		}
 		parent.getAppListPanel().clear();
 		parent.getAppListPanel().setTodayAppt(parent.GetTodayAppt());
 		parent.repaint();
 	}
 	
+	private void groupEventButtonResponse() {
+		Appt tempAppt = new Appt(currentAppt);
+		TimeSpan timeSpanBeforeModify = tempAppt.getTimeSpan();
+		
+		//Save modified settings to currentAppt.
+		if(saveInfoToAppt() == false){			//when the input for the appt is invalid.
+			return;
+		}
+		
+		//Check for group event conditions.
+		if(checkGroupEventConditions()){
+			if(checkForNotification()){		//NOTIFICATION
+				int hoursBefore = Utility.getNumber(notificationHourField.getText());
+				int minutesBefore = Utility.getNumber(notificationMinuteField.getText());
+				
+				//WHEN MODIFYING GROUPEVENT.
+				if(isModifying && isGroupEvent){
+					GroupAppt modifiedGroupAppt = (GroupAppt) currentAppt;
+		
+					//CHECK TIME CLASH WITH MODIFIED TIMESPAN.
+					boolean TIMECLASH = ApptController.getInstance().checkOverlapsForGroupAppt(modifiedGroupAppt,
+							modifiedGroupAppt.getAttendList(),timeSpanBeforeModify,modifiedGroupAppt.TimeSpan());
+						
+					//IF TIMECLASH
+					if(TIMECLASH){
+						JOptionPane.showMessageDialog(this, "Failed to change group event!");
+						currentAppt.copyInfoFrom(tempAppt);
+						return;
+					}
+					
+					//MODIFY GROUP APPT FOR ALL ATTENDEES
+					ApptController.getInstance().modifyGroupApptWithNotification(modifiedGroupAppt, timeSpanBeforeModify, hoursBefore, minutesBefore);
+					this.dispose();
+				}
+				//WHEN MAKING A NEW GROUP EVENT
+				else{
+					Notification tempGroupNotification = new Notification(currentAppt, hoursBefore, minutesBefore);
+					GroupInvitationListDialog_Manual groupInvitationDialog = new GroupInvitationListDialog_Manual(currentAppt,this,tempGroupNotification);
+				}
+			}
+			else{ 	//NO NOTIFICAION.
+				if(isModifying && isGroupEvent){
+					GroupAppt modifiedGroupAppt = (GroupAppt) currentAppt;
+					
+					//CHECK TIME CLASH WITH MODIFIED TIMESPAN.
+					boolean TIMECLASH = ApptController.getInstance().checkOverlapsForGroupAppt( modifiedGroupAppt,
+							modifiedGroupAppt.getAttendList(), timeSpanBeforeModify, modifiedGroupAppt.TimeSpan());
+					
+					//IF TIMECLASH
+					if(TIMECLASH){
+						JOptionPane.showMessageDialog(this, "Failed to change group event!");
+						currentAppt.copyInfoFrom(tempAppt);
+						return;
+					}
+					
+					//MODIFY GROUP APPT IN ALL ATTENDEE
+					ApptController.getInstance().modifyGroupApptWithoutNotification(modifiedGroupAppt,
+							timeSpanBeforeModify);
+					this.dispose();
+				}
+				//WHEN MAKING NEW GROUP APPT
+				else{
+					GroupInvitationListDialog_Manual groupInvitationDialog = new GroupInvitationListDialog_Manual(currentAppt,this,null);
+				}
+			}
+		}
+	}
+	
+	private void GroupEventTimeSlotButtonResponse(){		
+		if(saveInfoToAppt() == false){ //when the input for the appt is invalid.
+			return;
+		}
+		else if(!checkValidTimeSlot(d1, inviteeList1, dateList1)){
+			System.out.println("Not a valid timeslot");
+			JOptionPane.showMessageDialog(this, "Not a valid timeslot",
+					"Input Error", JOptionPane.ERROR_MESSAGE);
+			return;
+		}
+		else if(checkGroupEventConditions()){
+			if(checkForNotification()){
+				int hoursBefore = Utility.getNumber(notificationHourField.getText());
+				int minutesBefore = Utility.getNumber(notificationMinuteField.getText());
+				Notification tempGroupNotification = new Notification(currentAppt, hoursBefore, minutesBefore);
+				
+				
+				sendGroupEventInvitation_TimeSlot(currentAppt,this,tempGroupNotification);
+				setVisible(false);
+				dispose();
+			}
+			else{
+				sendGroupEventInvitation_TimeSlot(currentAppt,this,null);
+				setVisible(false);
+				dispose();
+			}
+		}
+	}
+	
+	private boolean sendGroupEventInvitation_TimeSlot( Appt currentAppt, AppScheduler parent, Notification noti){
+		
+		//conversion from arraylist<user> to linkedlist<String>
+		LinkedList<String> userList = new LinkedList<String>();
+		for(User a : inviteeList1){
+			userList.add(a.getID());
+		}
+		
+		
+		if(noti != null){		//when there is notification.
+			if(InviteController.getInstance().saveNewGroupAppt(currentAppt,userList,
+					UserController.getInstance().getCurrentUser().getID(),noti.getHoursBefore(),noti.getMinutesBefore())){
+				JOptionPane.showMessageDialog(parent, "Saved group appointment with notification!");
+				return true;
+			}
+			else{
+				JOptionPane.showMessageDialog(parent, "Failed to save group appointment!");
+				return false;
+			}
+		}
+		else{		//when there is no notification
+			if(InviteController.getInstance().saveNewGroupAppt(currentAppt,userList,
+					UserController.getInstance().getCurrentUser().getID())){
+				JOptionPane.showMessageDialog(parent, "Saved group appointment withOUT notification!");
+				return true;
+			}
+			else{
+				JOptionPane.showMessageDialog(parent, "Failed to save group appointment!");
+				return false;
+			}
+		}
+	}
+	
+	
+	private boolean checkValidTimeSlot(TimeSpan d, ArrayList<User> inviteeList, ArrayList<Date> dateList){
+    	
+		ArrayList<TimeSpan> slotList = new ArrayList<TimeSpan>();
+    	TimeSpan tempSpan = new TimeSpan(d.StartTime(), d.EndTime());
+    	for(int i =0; i<dateList.size(); i++) {
+			slotList = ApptController.getInstance().getSchedulableTimeSpan(inviteeList, dateList.get(i));
+			
+			for(int j=0; j<slotList.size();j++){
+				if(slotList.get(j).Overlap(tempSpan)){
+					//System.out.println("YO "+tempSpan.OnlyTimetoString());
+					//System.out.println("tempSpan Length: "+ tempSpan.TimeLength()/1000);
+					//System.out.println("slotList Length: "+ slotList.get(j).TimeLength()/1000);
+					//System.out.println();
+					if(slotList.get(j).TimeLength()/1000<tempSpan.TimeLength()/1000){
+						tempSpan.StartTime(slotList.get(j).StartTime());
+					}
+					if(slotList.get(j).TimeLength()/1000>=tempSpan.TimeLength()/1000){
+						//System.out.println("===END===");
+						return true;
+					}
+				}
+			}
+    	}
+    	return false;
+	}
+	
+	private boolean checkGroupEventConditions(){
+		if(!oneTimeButton.isSelected()){		//check if event is repeated.
+			JOptionPane.showMessageDialog(this, "Group Event can only be ONE-TIME!",
+					"Input Error", JOptionPane.ERROR_MESSAGE);
+			return false;
+		}
+		if(currentAppt.getLocation().getName().equals("-")){
+			JOptionPane.showMessageDialog(this, "Group Event must have a location!",
+					"Input Error", JOptionPane.ERROR_MESSAGE);
+			return false;
+		}
+		return true;
+	}
+
+	private void modifyNotificationField()
+	{
+		if(notificationEnableBox.isSelected())
+		{
+			notificationHourField.setEditable(true);
+			notificationMinuteField.setEditable(true);
+		}
+		else
+		{
+			notificationHourField.setEditable(false);
+			notificationMinuteField.setEditable(false);
+		}
+	}
+	
+	
 	private void enableEndAtFields(boolean b){
 		endAtYearField.setEditable(b);
 		endAtMonthField.setEditable(b);
 		endAtDayField.setEditable(b);
+	}
+	
+	private void enableGroupEventButton(boolean b){
+		groupEventButton.setEnabled(b);
 	}
 
 	private JPanel createPartOperaPane() {
@@ -599,7 +920,7 @@ ComponentListener {
 
 
 	//helper function
-	private int getTime(JTextField h, JTextField min) 
+	private int getTimeInput(JTextField h, JTextField min) 
 	{
 
 		int hour = Utility.getNumber(h.getText());
@@ -616,8 +937,8 @@ ComponentListener {
 	private int[] getValidTimeInterval() {
 
 		int[] result = new int[2];
-		result[0] = getTime(startTimeHourField, startTimeMinuteField);
-		result[1] = getTime(endTimeHourField, endTimeMinuteField);
+		result[0] = getTimeInput(startTimeHourField, startTimeMinuteField);
+		result[1] = getTimeInput(endTimeHourField, endTimeMinuteField);
 		if ((result[0] % 15) != 0 || (result[1] % 15) != 0) {
 			JOptionPane.showMessageDialog(this,
 					"Minute Must be 0, 15, 30, or 45 !", "Input Error",
@@ -660,27 +981,10 @@ ComponentListener {
 	private void saveButtonResponse() {
 
 		//SAVE ALL THE RELEVENT INFORMATION TO THE NEWAPPT.
-		int[] validDate = getValidDate(yearField,monthField,dayField);
-		int[] validTimeInterval = getValidTimeInterval();
-
-		if(validDate == null || validTimeInterval == null)
-		{
+		if(saveInfoToAppt() == false){
 			return;
 		}
 		
-		Timestamp timestampForStartTime = CreateTimeStamp(validDate, validTimeInterval[0]);
-		Timestamp timestampForEndTime = CreateTimeStamp(validDate, validTimeInterval[1]);
-		TimeSpan timeSpanForAppt = new TimeSpan(timestampForStartTime,timestampForEndTime);
-		currentAppt.setTimeSpan(timeSpanForAppt);
-		currentAppt.setTitle(titleField.getText());
-		currentAppt.setInfo(detailArea.getText());
-
-
-		//SAVE LOCATION
-		String locationString = (String) locationField.getSelectedItem();
-		Location locationObject = LocationController.getInstance().RetrieveLocations(locationString);
-		currentAppt.setLocation(locationObject);
-
 		//SAVE REPEATED APPOINTMENT
 		//CASE: DAILY, WEEKLY, MONTHLY
 		if(!(oneTimeButton.isSelected()))
@@ -693,13 +997,9 @@ ComponentListener {
 			{
 				endAtDate = intArrayToDate(validEndAtDate);
 		
-				if(saveFrequencyWithEndAt(endAtDate))
+				if(saveApptWithEndAt(endAtDate))
 				{
 					//SAVE NOTIFICATION
-					if(checkForNotification())
-					{
-						saveResponseFromNotification();
-					}
 					JOptionPane.showMessageDialog(this, "Saved appointment successfully!");				
 					dispose();
 				}
@@ -712,67 +1012,141 @@ ComponentListener {
 		//CASE: ONE-TIME
 		else
 		{
-			if (saveFrequencyWithoutEndAt()){
+			if (saveApptWithoutEndAt()){
 				JOptionPane.showMessageDialog(this, "Saved appointment successfully");
 				dispose();
 			}
-			else
+			else{
 				JOptionPane.showMessageDialog(this, "Failed to save appointment!");
+			}
 		}
 	}
 	
+	/*
 	private void saveResponseFromNotification()
 	{
-
 		boolean flagOne = false;
 		boolean flagTwo = false;
 		boolean flagThree = false;
 		boolean flagFour = false;
-
+		
 		if(oneHourCheckBox.isSelected())
 		{
-			flagOne = true;
+			flagOne= true;
 		}
-
 		if(threeHourCheckBox.isSelected())
 		{
-			flagTwo = true;
+			flagTwo= true;
 		}
-
 		if(twelveHourCheckBox.isSelected())
 		{
-			flagThree = true;
+			flagThree= true;
 		}
-
 		if(twentyfourHourCheckBox.isSelected())
 		{
-			flagFour = true;
+			flagFour= true;
 		}
-
-
-		/*if(ApptController.getInstance().setNotificationForAppt(currentAppt, flagOne, flagTwo, flagThree, flagFour))
+		
+		
+		if(ApptController.getInstance().setNotificationForAppt(currentAppt, flagOne, flagTwo, flagThree, flagFour))
 		{
 			JOptionPane.showMessageDialog(this, "Saved notification successfully");
 		}
 		else
 		{
 			JOptionPane.showMessageDialog(this, "Failed to save notification");
+		}
+	}*/
+
+	private boolean saveInfoToAppt(){
+		int[] validDate = getValidDate(yearField,monthField,dayField);
+		int[] validTimeInterval = getValidTimeInterval();
+		boolean validNotificationTime = checkValidNotificationTime();
+		
+		if(validDate == null || validTimeInterval == null || validNotificationTime == false)
+		{
+			return false;
+		}
+		
+		Timestamp timestampForStartTime = CreateTimeStamp(validDate, validTimeInterval[0]);
+		Timestamp timestampForEndTime = CreateTimeStamp(validDate, validTimeInterval[1]);
+		
+		TimeSpan timeSpanForAppt = new TimeSpan(timestampForStartTime,timestampForEndTime);
+		d1 = new TimeSpan(timestampForStartTime,timestampForEndTime);
+
+		
+		if(!TimeController.getInstance().isNotPast(timeSpanForAppt)){
+			JOptionPane.showMessageDialog(this, "Input date is past date! ");
+			return false;
+		}
+		
+		currentAppt.setTimeSpan(timeSpanForAppt);
+		currentAppt.setTitle(titleField.getText());
+		currentAppt.setInfo(detailArea.getText());
+		if(setPublicCheckBox.isSelected()){
+			currentAppt.setIsPublic(true);
+		}else{
+			currentAppt.setIsPublic(false);
+		}
+
+		//SAVE LOCATION
+		String locationString = (String) locationField.getSelectedItem();
+		Location locationObject = LocationController.getInstance().RetrieveLocations(locationString);
+	/*	if(!ApptController.getInstance().canUseLocation(timeSpanForAppt, locationObject)){
+			JOptionPane.showMessageDialog(this, "Location is already being used",
+					"Location Error", JOptionPane.ERROR_MESSAGE);
+			return false;
 		}*/
+		
+		if(currentAppt.getLocation()!=null && !(currentAppt.getLocation().getName().equals(locationObject.getName()))){
+			currentAppt.getLocation().decreaseCountForLocation();
+		}
+		
+		
+		currentAppt.setLocation(locationObject);
+		
+		return true;
 	}
-
-
+	
 	private boolean checkForNotification()
 	{
-		if(oneHourCheckBox.isSelected() || threeHourCheckBox.isSelected() || 
-				twelveHourCheckBox.isSelected() || twentyfourHourCheckBox.isSelected())
+		if(notificationEnableBox.isSelected())
 		{
 			return true;
 		}
-
-		return false;
+		else
+		{
+			return false;
+		}
 	}
-
-	private boolean saveFrequencyWithEndAt(Date endAtDate)
+	
+	private boolean checkValidNotificationTime()
+	{
+		if(notificationEnableBox.isSelected())
+		{
+			int notificationHour = Utility.getNumber(notificationHourField.getText());
+			int notificationMinute = Utility.getNumber(notificationMinuteField.getText());
+			if(notificationHour < 0 || notificationHour > 24)
+			{
+				JOptionPane.showMessageDialog(this, "Notification hour range from 0-24!", "Input Error",JOptionPane.ERROR_MESSAGE);
+				return false;
+			}
+			if(notificationMinute < 0 || notificationMinute > 59)
+			{
+				JOptionPane.showMessageDialog(this, "Notification minute range from 0-59!", "Input Error", JOptionPane.ERROR_MESSAGE);
+				return false;
+			}
+			
+			return true;
+		}
+		else
+		{
+			return true;
+		}
+	}
+	
+	
+	private boolean saveApptWithEndAt(Date endAtDate)
 	{
 		System.out.println("Current Appt Time: " + currentAppt.getTimeSpan().StartTime().getTime());
 		
@@ -780,6 +1154,9 @@ ComponentListener {
 				|| (currentAppt.getTimeSpan().StartTime().getTime() > endAtDate.getTime())){
 			return false;
 		}
+		
+		int notificationHoursBefore = Utility.getNumber(notificationHourField.getText());
+		int notificationMinutesBefore = Utility.getNumber(notificationMinuteField.getText());
 		
 		int repeatType;
 		if(dailyButton.isSelected())
@@ -794,40 +1171,40 @@ ComponentListener {
 		currentAppt.setRepeatType(repeatType);
 		
 		if (checkForNotification()){
-			boolean flagOne = oneHourCheckBox.isSelected();
-			boolean flagTwo = threeHourCheckBox.isSelected();
-			boolean flagThree = twelveHourCheckBox.isSelected();
-			boolean flagFour = twentyfourHourCheckBox.isSelected();
-			
-			if (isModifying)
-				return ApptController.getInstance().modifyRepeatedNewAppt(UserController.getInstance().getDefaultUser(), currentAppt, endAtDate,
-						flagOne, flagTwo, flagThree, flagFour);
-			return ApptController.getInstance().saveRepeatedNewAppt(UserController.getInstance().getDefaultUser(), currentAppt, endAtDate,
-					flagOne, flagTwo, flagThree, flagFour);	
+			if (isModifying){
+				return ApptController.getInstance().modifyRepeatedNewAppt(UserController.getInstance().getAdmin(), currentAppt, endAtDate,
+						checkForNotification(),notificationHoursBefore,notificationMinutesBefore);
+			}
+			return ApptController.getInstance().saveRepeatedNewAppt(UserController.getInstance().getAdmin(), currentAppt, endAtDate,
+					checkForNotification(),notificationHoursBefore,notificationMinutesBefore);	
 		}
-		if (isModifying)
-			return ApptController.getInstance().modifyRepeatedNewAppt(UserController.getInstance().getDefaultUser(), currentAppt, endAtDate,
-					false, false, false, false);
-		return ApptController.getInstance().saveRepeatedNewAppt(UserController.getInstance().getDefaultUser(), currentAppt, endAtDate);	
+		if (isModifying){
+			return ApptController.getInstance().modifyRepeatedNewAppt(UserController.getInstance().getAdmin(), currentAppt, endAtDate,
+					checkForNotification(),notificationHoursBefore,notificationMinutesBefore);
+		}
+		return ApptController.getInstance().saveRepeatedNewAppt(UserController.getInstance().getAdmin(), currentAppt, endAtDate);	
 	}
 
-	private boolean saveFrequencyWithoutEndAt()
+	private boolean saveApptWithoutEndAt()
 	{
+
+		int notificationHoursBefore = Utility.getNumber(notificationHourField.getText());
+		int notificationMinutesBefore = Utility.getNumber(notificationMinuteField.getText());
+		
 		if (checkForNotification()){
-			boolean flagOne = oneHourCheckBox.isSelected();
-			boolean flagTwo = threeHourCheckBox.isSelected();
-			boolean flagThree = twelveHourCheckBox.isSelected();
-			boolean flagFour = twentyfourHourCheckBox.isSelected();
-			if (isModifying)
-				return ApptController.getInstance().modifyAppt(UserController.getInstance().getDefaultUser(), currentAppt,
-						flagOne, flagTwo, flagThree, flagFour);
-			return ApptController.getInstance().saveNewAppt(UserController.getInstance().getDefaultUser(), currentAppt,
-					flagOne, flagTwo, flagThree, flagFour);
+			
+			if (isModifying){
+				return ApptController.getInstance().modifyAppt(UserController.getInstance().getAdmin(), currentAppt,
+						checkForNotification(),notificationHoursBefore,notificationMinutesBefore);
+			}
+			return ApptController.getInstance().saveNewAppt(UserController.getInstance().getAdmin(), currentAppt,
+					checkForNotification(),notificationHoursBefore,notificationMinutesBefore);
 		}
-		if (isModifying)
-			return ApptController.getInstance().modifyAppt(UserController.getInstance().getDefaultUser(), currentAppt,
-					false, false, false, false);
-		return ApptController.getInstance().saveNewAppt(UserController.getInstance().getDefaultUser(), currentAppt);
+		if (isModifying){
+			return ApptController.getInstance().modifyAppt(UserController.getInstance().getAdmin(), currentAppt,
+					checkForNotification(),notificationHoursBefore,notificationMinutesBefore);
+		}	
+		return ApptController.getInstance().saveNewAppt(UserController.getInstance().getAdmin(), currentAppt);
 	}
 
 
@@ -836,11 +1213,20 @@ ComponentListener {
 	//to create a Timestamp object.
 	private Timestamp CreateTimeStamp(int[] date, int time) {
 		Timestamp stamp = new Timestamp(0);
-		stamp.setYear(date[0]);
-		stamp.setMonth(date[1] - 1);
-		stamp.setDate(date[2]);
-		stamp.setHours(time / 60);
-		stamp.setMinutes(time % 60);
+		TimeController.getInstance().setYear(stamp, date[0]);
+		TimeController.getInstance().setMonth(stamp, date[1]);
+		if(time/60 == 24)
+		{
+			TimeController.getInstance().setDate(stamp, date[2]+1);
+			TimeController.getInstance().setHour(stamp, 0);
+			TimeController.getInstance().setMinute(stamp, time % 60);
+		}
+		else
+		{
+			TimeController.getInstance().setDate(stamp,date[2]);
+			TimeController.getInstance().setHour(stamp, time/60);
+			TimeController.getInstance().setMinute(stamp, time % 60);
+		}
 		return stamp;
 	}
 
@@ -849,26 +1235,26 @@ ComponentListener {
 	private Date intArrayToDate(int[] intArray)
 	{
 		Date temp = new Date();
-		temp.setYear(intArray[0]-1900);
-		temp.setMonth(intArray[1]-1);
-		temp.setDate(intArray[2]);
-		temp.setHours(23);
-		temp.setMinutes(59);
-
+		TimeController.getInstance().setYear(temp, intArray[0]);
+		TimeController.getInstance().setMonth(temp,intArray[1]);
+		TimeController.getInstance().setDate(temp, intArray[2]);
+		TimeController.getInstance().setHour(temp, 23);
+		TimeController.getInstance().setMinute(temp, 59);
 		return temp;
 	}
 	
 	public void updateSettingAppt(Appt appt) {
 		currentAppt = appt;
-
+		Timestamp startTimestamp = currentAppt.getTimeSpan().StartTime();
+		Timestamp endTimestamp = currentAppt.getTimeSpan().EndTime(); 
 		//Load data on date and time field.
-		yearField.setText(Integer.toString(currentAppt.getTimeSpan().StartTime().getYear()+1900));
-		monthField.setText(Integer.toString(currentAppt.getTimeSpan().StartTime().getMonth()+1));
-		dayField.setText(Integer.toString(currentAppt.getTimeSpan().StartTime().getDate()));
-		startTimeHourField.setText(Integer.toString(currentAppt.getTimeSpan().StartTime().getHours()));
-		startTimeMinuteField.setText(Integer.toString(currentAppt.getTimeSpan().StartTime().getMinutes()));
-		endTimeHourField.setText(Integer.toString(currentAppt.getTimeSpan().EndTime().getHours()));
-		endTimeMinuteField.setText(Integer.toString(currentAppt.getTimeSpan().EndTime().getMinutes()));
+		yearField.setText(Integer.toString(TimeController.getInstance().getYearFrom(startTimestamp)));
+		monthField.setText(Integer.toString(TimeController.getInstance().getMonthFrom(startTimestamp)));
+		dayField.setText(Integer.toString(TimeController.getInstance().getDateFrom(startTimestamp)));
+		startTimeHourField.setText(Integer.toString(TimeController.getInstance().getHourFrom(startTimestamp)));
+		startTimeMinuteField.setText(Integer.toString(TimeController.getInstance().getMinuteFrom(startTimestamp)));
+		endTimeHourField.setText(Integer.toString(TimeController.getInstance().getHourFrom(endTimestamp)));
+		endTimeMinuteField.setText(Integer.toString(TimeController.getInstance().getMinuteFrom(endTimestamp)));
 
 		//Load data on location.
 		if(currentAppt.getLocation() != null)
@@ -881,10 +1267,10 @@ ComponentListener {
 
 		//If Current Appt is Repeated
 		if (currentAppt.isRepeated()){
-			Timestamp endAtTime = currentAppt.getRepeateEndDate();
-			endAtYearField.setText(""+(endAtTime.getYear()+1900));
-			endAtMonthField.setText(""+(endAtTime.getMonth()+1));
-			endAtDayField.setText(""+endAtTime.getDate());
+			Timestamp endAtTime = currentAppt.getRepeatedEndDate();
+			endAtYearField.setText(""+(TimeController.getInstance().getYearFrom(endAtTime)));
+			endAtMonthField.setText(""+(TimeController.getInstance().getMonthFrom(endAtTime)));
+			endAtDayField.setText(""+(TimeController.getInstance().getDateFrom(endAtTime)));
 
 			enableEndAtFields(true);
 			switch(currentAppt.getRepeatType()){
@@ -902,53 +1288,20 @@ ComponentListener {
 			}
 
 		}
-
-
+		
 		//Load data on notification.
 		if(currentAppt.getNotification() != null)
 		{
-			List<Boolean> flagList = currentAppt.getNotification().getFlags();
-			if(flagList.get(0).booleanValue() == true)
-			{
-				oneHourCheckBox.setSelected(true);
-			}
-			else
-			{
-				oneHourCheckBox.setSelected(false);
-			}
-
-			if(flagList.get(1).booleanValue() == true)
-			{
-				threeHourCheckBox.setSelected(true);
-			}
-			else
-			{
-				threeHourCheckBox.setSelected(false);
-			}
-
-			if(flagList.get(2).booleanValue() == true)
-			{
-				twelveHourCheckBox.setSelected(true);
-			}
-			else
-			{
-				twelveHourCheckBox.setSelected(false);
-			}
-
-			if(flagList.get(3).booleanValue() == true)
-			{
-				twentyfourHourCheckBox.setSelected(true);
-			}
-			else
-			{
-				twentyfourHourCheckBox.setSelected(false);
-			}
+			notificationEnableBox.setSelected(true);
+			notificationHourField.setText(Integer.toString(currentAppt.getNotification().getHoursBefore()));
+			notificationHourField.setEditable(true);
+			notificationMinuteField.setText(Integer.toString(currentAppt.getNotification().getMinutesBefore()));
+			notificationMinuteField.setEditable(true);
 		}
-
-		//endAtYearField.setText(Integer.toString(NewAppt.getEndAtTime));
-		//endAtMonthField.setText(Integer.toString(NewAppt.getEndAtTime));
-		//endAtDayField.setText(Integer.toString(NewAppt.getEndAtTime));
-
+		
+		if(currentAppt.getisPublic()){
+			setPublicCheckBox.setSelected(true);
+		}
 		titleField.setText(currentAppt.getTitle());
 		detailArea.setText(currentAppt.getInfo());	
 	}

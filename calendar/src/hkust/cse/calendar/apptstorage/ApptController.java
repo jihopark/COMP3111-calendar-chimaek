@@ -1,32 +1,33 @@
 package hkust.cse.calendar.apptstorage;
 
+import hkust.cse.calendar.diskstorage.JsonStorable;
 import hkust.cse.calendar.notification.NotificationController;
 import hkust.cse.calendar.time.TimeController;
 import hkust.cse.calendar.unit.Appt;
+import hkust.cse.calendar.unit.GroupAppt;
+import hkust.cse.calendar.unit.Location;
 import hkust.cse.calendar.unit.Notification;
 import hkust.cse.calendar.unit.TimeSpan;
 import hkust.cse.calendar.unit.User;
+import hkust.cse.calendar.userstorage.UserController;
 
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 
 public class ApptController {
 
 	/* Applying Singleton Structure */
 	private static ApptController instance = null;
-	private static int apptIDCount = 1;
+	//private static int apptIDCount = 1;
 	public static final int DAILY = 1, WEEKLY = 2, MONTHLY = 3;
-	@Deprecated
-	public final static int REMOVE = 1;
-	@Deprecated	
-	public final static int MODIFY = 2;
-	@Deprecated	
-	public final static int NEW = 3;
-
+	
 	/* The Appt storage */
 	private static ApptStorage mApptStorage = null;
+	private static boolean shouldSave = true;
 
 	/* Empty Constructor, since in singleton getInstance() is used instead*/
 	public ApptController() {
@@ -40,10 +41,11 @@ public class ApptController {
 		return instance;
 	}
 
-	//Initialize mApptStorage. Returns false if ApptStorage object already exists
+	//Initialize mApptStorageMemory. Returns false if ApptStorageMemory object already exists
 	public boolean initApptStorage(ApptStorage storage){
 		if (mApptStorage == null){
 			mApptStorage = storage;
+			rollback();
 			return true;
 		}
 		return false;
@@ -57,73 +59,83 @@ public class ApptController {
 	}
 
 	public List<Appt> RetrieveApptsInList(User user, TimeSpan time){
-		return mApptStorage.RetrieveApptsInList(time);
+		return mApptStorage.RetrieveApptsInList(user, time);
+	}
+	
+	public List<Appt> RetrieveApptsInList(User user) {
+		return mApptStorage.RetrieveApptsInList(user);
 	}
 
-	// overload method to retrieve appointment with the given joint appointment id
-	public Appt RetrieveAppts(int joinApptID) {
-		return mApptStorage.RetrieveAppts(joinApptID);
+	public Appt RetrieveAppt(int apptID) {
+		return mApptStorage.RetrieveAppts(apptID);
+	}
+	
+	public List<Appt> RetrievePublicApptsInList(User user){
+		return mApptStorage.RetrievePublicApptsInList(user);
 	}
 
-	/* Manage the Appt in the storage
-	 * parameters: the Appt involved, the action to take on the Appt */
-	@Deprecated
-	public void ManageAppt(Appt appt, int action) {
-
-		if (action == NEW) {				// Save the Appt into the storage if it is new and non-null
-			if (appt == null)
-				return;
-			mApptStorage.SaveAppt(appt);
-		} else if (action == MODIFY) {		// Update the Appt in the storage if it is modified and non-null
-			if (appt == null)
-				return;
-			//		mApptStorage.UpdateAppt(appt);
-		} else if (action == REMOVE) {		// Remove the Appt from the storage if it should be removed
-			mApptStorage.RemoveAppt(appt);
-		} 
-	}
-
-	//Save Appt with Notification
-	public boolean saveNewAppt(User user, Appt appt, 
-			boolean flagOne, boolean flagTwo, boolean flagThree, boolean flagFour){
-		appt.setID(apptIDCount++);
-		if (flagOne || flagTwo || flagThree || flagFour)
-			setNotificationForAppt(appt, flagOne, flagTwo, flagThree, flagFour);
-		return mApptStorage.SaveAppt(appt);
+	public boolean saveNewAppt(User user,Appt appt, boolean notificationEnabled,
+			int notificationHoursBefore, int notificationMinutesBefore){
+		appt.setID(mApptStorage.getIDCount());
+		if(notificationEnabled)
+			setNotificationForAppt(appt, user, notificationHoursBefore,notificationMinutesBefore);
+		boolean tmp = mApptStorage.SaveAppt(user, appt);
+		
+		if(tmp) updateDiskStorage();
+		return tmp;
 	}
 
 	//Register appt as New Appt of user. Return true if successfully registered
 	public boolean saveNewAppt(User user, Appt appt){
-		appt.setID(apptIDCount++);
-		return mApptStorage.SaveAppt(appt);
+		appt.setID(mApptStorage.getIDCount());
+		boolean tmp = mApptStorage.SaveAppt(user, appt);
+		
+		if (tmp) updateDiskStorage();
+		return tmp;
 	}
 	
-	//Save Repeated Appt with Notification
 	public boolean saveRepeatedNewAppt(User user, Appt appt, Date repeatEndDate, 
-			boolean flagOne, boolean flagTwo, boolean flagThree, boolean flagFour){
+			boolean notificationEnabled, int notificationHoursBefore, int notificationMinutesBefore){
 		List<Appt> tmpList;
 		tmpList = getRepeatedApptList(appt, repeatEndDate);
-		if (mApptStorage.checkOverlaps(tmpList))
+		if (mApptStorage.checkOverlaps(user,tmpList))
 			return false;
 		for (Appt a : tmpList){
 			if (!saveNewAppt(user, a))
 				return false;
-			if (flagOne || flagTwo || flagThree || flagFour)
-				setNotificationForAppt(a, flagOne, flagTwo, flagThree, flagFour);
+			if(notificationEnabled)
+				setNotificationForAppt(a, user, notificationHoursBefore,notificationMinutesBefore);
 		}
+		linkRepeatedAppt(tmpList);
+		updateDiskStorage();
 		return true;
 	}
 	
 	public boolean saveRepeatedNewAppt(User user, Appt appt, Date repeatEndDate){
 		List<Appt> tmpList;
 		tmpList = getRepeatedApptList(appt, repeatEndDate);
-		if (mApptStorage.checkOverlaps(tmpList))
+		if (mApptStorage.checkOverlaps(user, tmpList))
 			return false;
+		Appt tmp = null;
 		for (Appt a : tmpList){
 			if (!saveNewAppt(user, a))
 				return false;
 		}
+		
+		linkRepeatedAppt(tmpList);
+		updateDiskStorage();
 		return true;
+	}
+	
+	private void linkRepeatedAppt(List<Appt> list){
+		Appt tmp = null;
+		for (Appt a : list){
+			if (tmp!=null){
+				a.setPreviousRepeatedAppt(tmp);
+				tmp.setNextRepeatedAppt(a);
+			}
+			tmp = a;
+		}
 	}
 
 
@@ -135,8 +147,6 @@ public class ApptController {
 		endTime.setTime(new Date(appt.getTimeSpan().EndTime().getTime()));
 
 		Appt i = new Appt(appt);
-		i.setNextRepeatedAppt(null);
-		i.setPreviousRepeatedAppt(null);
 		list.add(i);
 
 		Appt j = new Appt(appt);
@@ -156,40 +166,27 @@ public class ApptController {
 			if (endTime.getTime().after(repeatEndDate))
 				break;
 			j.setTimeSpan(new TimeSpan(startTime.getTimeInMillis(), endTime.getTimeInMillis()));
-			j.setNextRepeatedAppt(null);
-			i.setNextRepeatedAppt(j);
-			j.setPreviousRepeatedAppt(i);
 			list.add(j);
 			i = j;
 			j = new Appt(i);
 		}
 		return list;
 	}
-
-	//Modify appt of user. Return true if successfully modified
-	/*
-	public boolean modifyAppt(User user, Appt appt){
-		if (!TimeController.getInstance().isNotPast(appt)){
-			return false;
-		}
-		//Remove Appt First
-		List<Boolean> tmp = appt.getNotification().getFlags();
-		if (removeAppt(user, appt)){
-			return saveNewAppt(user, appt);
-		}
-
-		return false;
-	}*/
 	
 	public boolean modifyAppt(User user, Appt appt, 
-			boolean flagOne, boolean flagTwo, boolean flagThree, boolean flagFour){
-		if (!TimeController.getInstance().isNotPast(appt)){
+			boolean notificationEnabled, int notificationHoursBefore, int notificationMinutesBefore){
+		
+		//check if it is group appt
+		
+		if (!TimeController.getInstance().isNotPast(appt) || mApptStorage.checkOverlaps(user, appt)
+				|| mApptStorage.hasOverlapsInLocation(appt, appt.TimeSpan(), appt.getLocation())){
+			rollback();
 			return false;
 		}
 		//Remove Appt First
 		if (removeAppt(user, appt)){
-			if (flagOne || flagTwo || flagThree || flagFour)
-				return saveNewAppt(user, appt,flagOne, flagTwo, flagThree, flagFour);
+			if (notificationEnabled)
+				return saveNewAppt(user, appt, notificationEnabled,notificationHoursBefore, notificationMinutesBefore);
 			else 
 				return saveNewAppt(user, appt);
 		}
@@ -197,79 +194,332 @@ public class ApptController {
 		return false;
 	}
 	
-	/*public boolean modifyRepeatedNewAppt(User user, Appt appt, Date repeatEndDate,
-			boolean flagOne, boolean flagTwo, boolean flagThree, boolean flagFour){
-		//If repeated, then modify all repeated appts. However, past appts will not be modified
-		if (!TimeController.getInstance().isNotPast(appt)){
-			return false;
+	public boolean modifyGroupApptWithNotification(GroupAppt gAppt, 
+			TimeSpan timeSpanBeforeModified, int hoursBefore, int minutesBefore){
+		
+		final boolean NOTIFICATION_ON = true;
+		
+		//FOR ALL ATTENDEE
+		for(String attendeeString: gAppt.getAttendList()){
+			System.out.println("Changing GroupAppt in: " + attendeeString);
+			
+			//Get the group appt to be modified from each user.
+			User attendee = UserController.getInstance().getUser(attendeeString);
+			List<Appt> listContainingGroupApptToBeModified;
+			if(attendee == UserController.getInstance().getUser(gAppt.getOwner())){
+				listContainingGroupApptToBeModified = ApptController.getInstance().RetrieveApptsInList(attendee,
+						timeSpanBeforeModified);
+			}else{
+				listContainingGroupApptToBeModified = ApptController.getInstance().RetrieveApptsInList(attendee,
+					timeSpanBeforeModified);
+			}
+			GroupAppt eachUserGroupAppt;
+			if(listContainingGroupApptToBeModified.size() <= 1 && listContainingGroupApptToBeModified.size() != 0){
+				eachUserGroupAppt = (GroupAppt)listContainingGroupApptToBeModified.get(0);
+				//should change eachGroupAppt's attribute to same as gGroupAppt and then save the changes.
+				eachUserGroupAppt.copyChangedInfoFrom(gAppt);
+				System.out.println("AppScheduler/groupEventButtonResponse: "+ eachUserGroupAppt.getID());
+			}
+			else{
+				System.out.println("Something wrong in modifying group appt !");
+				return false;
+			}
+			
+			//modify the group appt.
+			if(eachUserGroupAppt != null){
+				boolean modifySuccess = ApptController.getInstance().modifyAppt(attendee, eachUserGroupAppt, 
+						NOTIFICATION_ON, hoursBefore, minutesBefore);
+				if(!modifySuccess){
+					return false;
+				}
+			}
+		}//end of for-loop.
+		
+		return true;
+	}
+	
+	public boolean removeUserFromGroupAppt(GroupAppt gAppt, User user){
+		LinkedList<String> attendList = new LinkedList<String>(gAppt.getAttendList());
+		LinkedList<String> waitingList = new LinkedList<String>(gAppt.getWaitingList());
+		// Case 1) When Deleted user is the owner of the Group Event
+		if(user.toString().equals(gAppt.getOwner())) {
+			// Delete The Group Event for Individuals
+			for(String attendee: attendList) {
+				System.out.println("ApptController/removeUserFromGroupAppt: Deleting Group Event " +gAppt.getTitle()+ " from " +attendee+"'s Group Event");
+				for(Appt a: ApptController.getInstance().RetrieveApptsInList(UserController.getInstance().getUser(attendee))) {
+					if(a instanceof GroupAppt) {
+						//System.out.println("Owner is: " +((GroupAppt) a).getOwner()+ " and User is: " +user.toString());						
+						if(user.toString().equals(((GroupAppt) a).getOwner())) {
+							ApptController.getInstance().removeAppt(UserController.getInstance().getUser(attendee), a);
+							System.out.println("ApptController/removeUserFromGroupAppt: Deleted " +a.getTitle()+ " from " +attendee+" Appt Controller");
+						}
+					}
+				}
+			}
+		// Case 2) When Deleted user is only a participant of the Group Event	
+		} else {
+		// Delete User from individual participant's group event	
+			for(String attendee: attendList) {
+				System.out.println("ApptController/removeUserFromGroupAppt: Deleting Particiapant " +user+ " from " +attendee+"'s Group Event");
+				for(Appt a: ApptController.getInstance().RetrieveApptsInList(UserController.getInstance().getUser(attendee))) {
+					if(a instanceof GroupAppt) {
+						((GroupAppt) a).removeAttendant(user.toString());
+						((GroupAppt) a).removeWaiting(user.toString());
+						System.out.println("ApptController/removeUserFromGroupAppt: Removed " +user.toString() + " from " + a.getTitle()+" Group Event");
+					}
+				}
+			}
 		}
-		//Remove Appt First
-		removeAppt(user, appt);
-
-		//Save Modified Appt
-		if (flagOne || flagTwo || flagThree || flagFour)
-			return saveRepeatedNewAppt(user, appt, repeatEndDate, flagOne, flagTwo, flagThree, flagFour);
-		return saveRepeatedNewAppt(user, appt, repeatEndDate);		
-	}*/
-
+		
+		
+		return true;
+	}
+	
+	
+	public boolean modifyGroupApptWithoutNotification(GroupAppt gAppt, TimeSpan timeSpanBeforeModified){
+		
+		boolean NOTIFICATION_OFF = false;
+		
+		for(String attendeeString: gAppt.getAttendList()){
+			System.out.println("Changing GroupAppt in: " + attendeeString);
+			
+			//Get the group appt to be modified from each user.
+			User attendee = UserController.getInstance().getUser(attendeeString);
+			List<Appt> listContainingGroupApptToBeModified = ApptController.getInstance().RetrieveApptsInList(attendee,
+					timeSpanBeforeModified);
+			GroupAppt eachUserGroupAppt;
+			if(listContainingGroupApptToBeModified.size() <= 1 && listContainingGroupApptToBeModified.size() != 0){
+				eachUserGroupAppt = (GroupAppt)listContainingGroupApptToBeModified.get(0);
+				//should change eachGroupAppt's attribute to same as currentGroupAppt and then save the changes.
+				eachUserGroupAppt.copyChangedInfoFrom(gAppt);
+				System.out.println("AppScheduler/groupEventButtonResponse: "+ eachUserGroupAppt.getID());
+			}
+			else{
+				System.out.println("Something wrong in modifying group appt !");
+				return false;
+			}
+			
+			//modify the group appt.
+			if(eachUserGroupAppt != null){
+				boolean modifySuccess = ApptController.getInstance().modifyAppt(attendee, eachUserGroupAppt, 
+						NOTIFICATION_OFF, 0, 0);
+				if(!modifySuccess){
+					return false;
+				}
+			}
+		}//end of for-loop.
+	
+		return true;
+	}
+	
+	public boolean checkOverlapsForGroupAppt(GroupAppt gAppt, List<String> attendList, TimeSpan timeSpanBeforeModify,
+			TimeSpan timeSpanAfterModify){
+		
+		for(String userString: attendList){
+			System.out.println("CURRENT USER: " + userString);
+			TimeSpan tempTimeSpan;		//used to save original time span.
+			User attendee = UserController.getInstance().getUser(userString);
+			List<Appt> listContainingApptToBeModified;
+			if(attendee == UserController.getInstance().getUser(gAppt.getOwner())){
+				listContainingApptToBeModified= ApptController.getInstance().RetrieveApptsInList(attendee,
+						timeSpanAfterModify);
+			}
+			else{
+				listContainingApptToBeModified= ApptController.getInstance().RetrieveApptsInList(attendee,
+					timeSpanBeforeModify);
+			} 
+			Appt eachUserGroupAppt;
+			if(!listContainingApptToBeModified.isEmpty()){
+				
+				eachUserGroupAppt = listContainingApptToBeModified.get(0);
+				tempTimeSpan = eachUserGroupAppt.getTimeSpan();
+				eachUserGroupAppt.setTimeSpan(timeSpanAfterModify);		//change time span just for checking purpose.
+				boolean temp = mApptStorage.checkOverlaps(attendee, eachUserGroupAppt);
+				eachUserGroupAppt.setTimeSpan(tempTimeSpan);	//set the time span back to orignal.
+				
+				if(temp){	//if overlaps.
+					return true;
+				}
+			}else{
+				return true;
+			}
+		}
+		//if no overlap
+		return false;
+	}
+	
 	public boolean modifyRepeatedNewAppt(User user, Appt appt, Date repeatEndDate,
-			boolean flagOne, boolean flagTwo, boolean flagThree, boolean flagFour){
+			boolean notificationEnabled, int notificationHoursBefore, int notificationMinutesBefore){
 		//If repeated, then modify all repeated appts. However, past appts will not be modified
 		if (!TimeController.getInstance().isNotPast(appt)){
 			return false;
 		}
-		//Remove Appt First
+		
+		//Get the Start of the repeat
+		Appt start = appt.getRepeatStartAppt();
+		if (start==null) start = appt;
+		start.getTimeSpan().setTimeWithoutChangingDay(appt.getTimeSpan());
+		start.setLocation(appt.getLocation());
+		start.setTitle(appt.getTitle());
+		start.setInfo(appt.getInfo());
+		start.setRepeatType(appt.getRepeatType());
+		
+		shouldSave = false;
+		NotificationController.getInstance().setShouldSave(false);
+		//Remove Appts First
 		removeAppt(user, appt);
-
+		
+		boolean tmp;
 		//Save Modified Appt
-		if (flagOne || flagTwo || flagThree || flagFour)
-			return saveRepeatedNewAppt(user, appt, repeatEndDate, flagOne, flagTwo, flagThree, flagFour);
-		return saveRepeatedNewAppt(user, appt, repeatEndDate);		
+		if (notificationEnabled)
+			tmp = saveRepeatedNewAppt(user, start, repeatEndDate, notificationEnabled,
+					notificationHoursBefore, notificationMinutesBefore);
+		else
+			tmp = saveRepeatedNewAppt(user, start, repeatEndDate);
+		shouldSave = true;
+		NotificationController.getInstance().setShouldSave(true);
+		if (!tmp){
+			rollback();
+			NotificationController.getInstance().rollback();
+		}
+		else {
+			updateDiskStorage();
+			NotificationController.getInstance().updateDiskStorage();
+		}
+		
+		return tmp;
 	}
 
 	//Remove appt of user. Return true if successfully removed
 	public boolean removeAppt(User user, Appt appt){
 		//If repeated, then remove all repeated appts. However, past appts will not be removed
+		
+		// check if group appt
 		if (!TimeController.getInstance().isNotPast(appt)){
 			return false;
 		}
-		appt.getLocation().subtractCountForLocation();
+
 		if (appt.isRepeated()){
-			System.out.println("\nRemove Repeated!");
+			System.out.println("ApptController/removeAppt Remove Repeated!");
 			Appt iterator = appt.getNextRepeatedAppt();
 			while (iterator!=null){
-				mApptStorage.RemoveAppt(iterator);
+				System.out.println("ApptController/removeAppt Remove #" +iterator.getID());
+				mApptStorage.RemoveAppt(user, iterator);
 				iterator = iterator.getNextRepeatedAppt();
 			}
 			iterator = appt.getPreviousRepeatedAppt();
 			while (iterator!=null){
-				if (!TimeController.getInstance().isNotPast(iterator))
+				if (!TimeController.getInstance().isNotPast(iterator)){
+					iterator.setNextRepeatedAppt(null);
 					break;
-				mApptStorage.RemoveAppt(iterator);
+				}
+				System.out.println("ApptController/removeAppt Remove #" +iterator.getID());
+				mApptStorage.RemoveAppt(user, iterator);
 				iterator = iterator.getPreviousRepeatedAppt();
 			}
-			mApptStorage.RemoveAppt(appt);
+			mApptStorage.RemoveAppt(user, appt);
+			updateDiskStorage();
 			return true;
 		}
-		return mApptStorage.RemoveAppt(appt);
+		boolean tmp = mApptStorage.RemoveAppt(user, appt);
+		updateDiskStorage();
+		return tmp;
+	}
+	
+	//Return non-overlapping timeslot in one day
+	public ArrayList<TimeSpan> getSchedulableTimeSpan(List<User> users, Date scheduleDay){
+		ArrayList<TimeSpan> timeSlots = new ArrayList<TimeSpan>();
+		
+		//create timeslots in 15min interval of the whole day
+		Date startTime = new Date(scheduleDay.getTime());
+		TimeController.getInstance().setHour(startTime, 0);
+		TimeController.getInstance().setMinute(startTime, 0);
+		TimeController.getInstance().setSecond(startTime, 0);
+
+		Date endTime;
+		
+		do{
+			endTime = new Date(startTime.getTime()+TimeController.FIFTEEN_MINS);
+			TimeSpan span = new TimeSpan(startTime.getTime(), endTime.getTime());
+			if (TimeController.getInstance().isNotPast(span))
+				timeSlots.add(span);
+			startTime = new Date(endTime.getTime());
+		}while(TimeController.getInstance().getDateFrom(endTime)
+				==TimeController.getInstance().getDateFrom(scheduleDay));
+		
+		//remove all timeslots overlaps with the users existing schedule
+		startTime = new Date(scheduleDay.getTime());
+		TimeController.getInstance().setHour(startTime, 0);
+		TimeController.getInstance().setMinute(startTime, 0);
+		TimeController.getInstance().setSecond(startTime, 0);
+
+		endTime = new Date(startTime.getTime() + TimeController.ONE_HOUR*24);
+		TimeSpan oneDay = new TimeSpan(startTime.getTime(), endTime.getTime());
+		
+		for (User user : users){
+			//System.out.println("ApptController/getSchedualableTimeSpan Iterating user " + user.toString());
+			for (Appt appt : mApptStorage.RetrieveApptsInList(user, oneDay)){
+				TimeSpan slot = timeSlots.get(0);
+				Iterator<TimeSpan> it = timeSlots.iterator();
+				while (true){
+					slot = it.next();
+					if (appt.getTimeSpan().Overlap(slot)){
+						System.out.println("Appt TimeSpan: "+ appt.getTimeSpan().OnlyTimetoString());
+						System.out.println("Slot TimeSpan: "+slot.OnlyTimetoString());
+						it.remove();
+					}
+					if (!it.hasNext()) break;
+				}
+			}
+		}
+		//System.out.println("ApptController/getSchedualableTimeSpan Removed " + timeSlots);
+		return timeSlots;
 	}
 
-	public boolean setNotificationForAppt(Appt appt, 
-			boolean flagOne, boolean flagTwo, boolean flagThree, boolean flagFour){
-		System.out.println("ApptController/setNotificationForAppt Notification For " + appt.TimeSpan());
-		Notification noti = new Notification(appt, appt.getTitle(), appt.getTimeSpan().StartTime(),
-				flagOne, flagTwo, flagThree, flagFour);
-		appt.setNotification(noti);
-		return NotificationController.getInstance().saveNewNotification(noti);
+	public boolean setNotificationForAppt(Appt appt, User user, int notificationHoursBefore, int notificationMinutesBefore)
+	{
+		Notification notification = new Notification(appt,notificationHoursBefore, notificationMinutesBefore);
+		boolean tmp = NotificationController.getInstance().saveNewNotification(user, notification);
+		if(tmp)
+			appt.setNotification(notification);
+		return tmp;
 	}
 
-	/* Get the defaultUser of mApptStorage */
+	public boolean setNotificationForAppt(Appt appt, User user, int notificationHoursBefore, int notificationMinutesBefore, boolean pending)
+	{
+		Notification notification = new Notification(appt,notificationHoursBefore, notificationMinutesBefore);
+		notification.setPending(pending);
+		boolean tmp = NotificationController.getInstance().saveNewNotification(user, notification);
+		if(tmp)
+			appt.setNotification(notification);
+		return tmp;
+	}
+
+	
+	/* Get the defaultUser of mApptStorageMemory */
 	public User getDefaultUser() {
-		return mApptStorage.getDefaultUser();
+		return UserController.getInstance().getCurrentUser();
+	}
+	
+
+	/*
+	 * Load ApptStorageMemory Again back from Disk
+	 * */
+	
+	public void updateDiskStorage(){
+		if (mApptStorage instanceof JsonStorable && shouldSave)
+			((JsonStorable) mApptStorage).saveToJson();
 	}
 
-	// method used to load appointment from xml record into hash map
-	public void LoadApptFromXml(){
-		mApptStorage.LoadApptFromXml();
+	public void rollback(){
+		if (mApptStorage instanceof JsonStorable){
+			ApptStorage tmp = (ApptStorage) ((JsonStorable)mApptStorage).loadFromJson();
+			if (tmp != null) mApptStorage = tmp;
+		}
 	}
+
+	public boolean hasOverlapsInLocation(Appt appt, TimeSpan t, Location loc){
+		return mApptStorage.hasOverlapsInLocation(appt, t, loc);
+	}
+	
 }
